@@ -6,6 +6,25 @@ interface QuestCardProps {
 }
 
 export function QuestCard({ quest }: QuestCardProps) {
+  // 日付をフォーマットする関数
+  const formatDate = (dateString: string | null) => {
+    if (!dateString) return null;
+    try {
+      const date = new Date(dateString);
+      return new Intl.DateTimeFormat('ja-JP', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+      }).format(date);
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return null;
+    }
+  };
+
   return (
     <div className="relative">
       {quest.is_important && (
@@ -52,7 +71,27 @@ export function QuestCard({ quest }: QuestCardProps) {
             </div>
           </div>
           <p className="mt-2 text-sm text-gray-600 line-clamp-2">{quest.description}</p>
+
+          {/* 期間情報の表示 */}
+          {quest.is_limited && (
+            <div className="mt-2 space-y-1 text-sm text-gray-600">
+              {quest.start_date && (
+                <div>開始: {formatDate(quest.start_date)}</div>
+              )}
+              {quest.end_date && (
+                <div>終了: {formatDate(quest.end_date)}</div>
+              )}
+            </div>
+          )}
+
+          {/* 参加人数制限の表示 */}
+          {quest.participants_limit !== null && quest.participants_limit > 0 && (
+            <div className="mt-2 text-sm text-gray-600">
+              参加者: {quest.participant_count || 0} / {quest.participants_limit}
+            </div>
+          )}
         </div>
+
         <div className="mt-4 flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <span className="text-sm font-medium text-gray-600">難易度:</span>

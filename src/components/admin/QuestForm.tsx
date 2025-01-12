@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { QuestFormData } from '../../types/quest';
 
 interface QuestFormProps {
@@ -11,6 +12,40 @@ interface QuestFormProps {
 }
 
 export function QuestForm({ quest, onSubmit, onCancel, loading = false, submitLabel = '保存' }: QuestFormProps) {
+  const [formState, setFormState] = useState({
+    isLimited: quest.is_limited || false,
+    isImportant: quest.is_important || false,
+    hasParticipantsLimit: quest.participants_limit !== null && quest.participants_limit !== undefined,
+  });
+
+  // 日付を datetime-local 用のフォーマットに変換する関数
+  const formatDateForInput = (dateString: string | null | undefined) => {
+    if (!dateString) return '';
+    try {
+      const date = new Date(dateString);
+      // YYYY-MM-DDThh:mm 形式に変換
+      return date.toISOString().slice(0, 16);
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return '';
+    }
+  };
+
+  useEffect(() => {
+    setFormState({
+      isLimited: quest.is_limited || false,
+      isImportant: quest.is_important || false,
+      hasParticipantsLimit: quest.participants_limit !== null && quest.participants_limit !== undefined,
+    });
+  }, [quest.is_limited, quest.is_important, quest.participants_limit]);
+
+  const handleCheckboxChange = (name: 'isLimited' | 'isImportant' | 'hasParticipantsLimit') => (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormState(prev => ({
+      ...prev,
+      [name]: e.target.checked
+    }));
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const form = e.target as HTMLFormElement;
@@ -25,8 +60,8 @@ export function QuestForm({ quest, onSubmit, onCancel, loading = false, submitLa
       points: parseInt(formData.get('points') as string) || 0,
       status: formData.get('status') as QuestFormData['status'] || 'draft',
       difficulty: parseInt(formData.get('difficulty') as string) || 1,
-      is_important: formData.has('is_important'),
-      is_limited: formData.has('is_limited'),
+      is_important: formState.isImportant,
+      is_limited: formState.isLimited,
       category: formData.get('category') as string || null,
       tags: null, // TODO: タグの実装
       exp_reward: parseInt(formData.get('points') as string) || 0, // pointsと同じ値を使用
@@ -41,7 +76,7 @@ export function QuestForm({ quest, onSubmit, onCancel, loading = false, submitLa
       external_url: formData.get('external_url') as string || null,
       start_date: formData.get('start_date') as string || null,
       end_date: formData.get('end_date') as string || null,
-      participants_limit: parseInt(formData.get('participants_limit') as string) || null,
+      participants_limit: formState.hasParticipantsLimit ? parseInt(formData.get('participants_limit') as string) || null : null,
       banner_url: formData.get('banner_url') as string || null,
       order_position: parseInt(formData.get('order_position') as string) || null,
     };
@@ -171,7 +206,8 @@ export function QuestForm({ quest, onSubmit, onCancel, loading = false, submitLa
               <input
                 type="checkbox"
                 name="is_important"
-                defaultChecked={quest.is_important || false}
+                checked={formState.isImportant}
+                onChange={handleCheckboxChange('isImportant')}
                 className="mr-2 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
               />
               重要
@@ -180,15 +216,26 @@ export function QuestForm({ quest, onSubmit, onCancel, loading = false, submitLa
               <input
                 type="checkbox"
                 name="is_limited"
-                defaultChecked={quest.is_limited || false}
+                checked={formState.isLimited}
+                onChange={handleCheckboxChange('isLimited')}
                 className="mr-2 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
               />
               期間限定
             </label>
+            <label className="flex items-center text-sm font-medium text-gray-700">
+              <input
+                type="checkbox"
+                name="has_participants_limit"
+                checked={formState.hasParticipantsLimit}
+                onChange={handleCheckboxChange('hasParticipantsLimit')}
+                className="mr-2 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              />
+              参加人数制限を設定
+            </label>
           </div>
         </div>
 
-        {quest.is_limited && (
+        {formState.isLimited && (
           <>
             <div>
               <label className="block text-sm font-medium text-gray-700">
@@ -196,7 +243,7 @@ export function QuestForm({ quest, onSubmit, onCancel, loading = false, submitLa
                 <input
                   type="datetime-local"
                   name="start_date"
-                  defaultValue={quest.start_date || ''}
+                  defaultValue={formatDateForInput(quest.start_date)}
                   className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
                 />
               </label>
@@ -207,24 +254,27 @@ export function QuestForm({ quest, onSubmit, onCancel, loading = false, submitLa
                 <input
                   type="datetime-local"
                   name="end_date"
-                  defaultValue={quest.end_date || ''}
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                />
-              </label>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                参加人数制限
-                <input
-                  type="number"
-                  name="participants_limit"
-                  defaultValue={quest.participants_limit || ''}
-                  min={0}
+                  defaultValue={formatDateForInput(quest.end_date)}
                   className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
                 />
               </label>
             </div>
           </>
+        )}
+
+        {formState.hasParticipantsLimit && (
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              参加人数制限
+              <input
+                type="number"
+                name="participants_limit"
+                defaultValue={quest.participants_limit || ''}
+                min={0}
+                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              />
+            </label>
+          </div>
         )}
 
         {/* 非表示のorder_positionフィールド */}
