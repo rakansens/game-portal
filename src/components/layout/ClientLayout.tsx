@@ -1,33 +1,30 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
-import { Footer } from './Footer';
-import { LiffProvider } from '../providers/LiffProvider';
+import { useEffect } from 'react';
+import { useAuthStore } from '@/store/auth';
+import { useRouter } from 'next/navigation';
 
-export function ClientLayout({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
-  const isAdmin = pathname?.startsWith('/admin');
+interface ClientLayoutProps {
+  children: React.ReactNode;
+}
 
-  // 管理者ページの場合はLiffProviderをスキップ
-  if (isAdmin) {
+export function ClientLayout({ children }: ClientLayoutProps) {
+  const { user, isLoading, initializeAuth } = useAuthStore();
+  const router = useRouter();
+
+  useEffect(() => {
+    initializeAuth();
+  }, [initializeAuth]);
+
+  if (isLoading) {
     return (
-      <div className="flex min-h-screen flex-col">
-        <main className="flex-1 bg-gray-50">
-          {children}
-        </main>
-        <Footer />
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="h-32 w-32 animate-spin rounded-full border-b-2 border-t-2 border-blue-500"></div>
       </div>
     );
   }
 
-  return (
-    <LiffProvider>
-      <div className="flex min-h-screen flex-col">
-        <main className="flex-1 bg-gray-50">
-          {children}
-        </main>
-        <Footer />
-      </div>
-    </LiffProvider>
-  );
+  return <>{children}</>;
 }
+
+export default ClientLayout;
