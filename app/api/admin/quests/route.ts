@@ -67,17 +67,36 @@ export async function PUT(request: NextRequest) {
   }
 
   try {
-    const quest = await request.json();
+    // リクエストボディの検証
+    let quest;
+    try {
+      quest = await request.json();
+    } catch (e) {
+      console.error('Error parsing request body:', e);
+      return NextResponse.json(
+        { error: 'Invalid request body' },
+        { status: 400 }
+      );
+    }
+
     console.log('Received quest data:', quest);
 
-    // 更新データの準備（実際のデータベースカラムに合わせる）
+    // 必須フィールドの検証
+    if (!quest.title) {
+      return NextResponse.json(
+        { error: 'Title is required' },
+        { status: 400 }
+      );
+    }
+
+    // 更新データの準備（自動生成フィールドと外部キーを除外）
     const updateData = {
       title: quest.title,
       description: quest.description,
       type: quest.type,
       platform: quest.platform,
       points: quest.points || 0,
-      status: quest.status,
+      status: quest.status || 'draft',
       difficulty: quest.difficulty || 1,
       is_important: quest.is_important || false,
       is_limited: quest.is_limited || false,
@@ -86,7 +105,7 @@ export async function PUT(request: NextRequest) {
       required_points: quest.required_points || 0,
       auto_progress: quest.auto_progress || false,
       verification_required: quest.verification_required || false,
-      verification_type: quest.verification_type,
+      verification_type: quest.verification_type || 'manual',
       max_attempts: quest.max_attempts,
       cooldown_period: quest.cooldown_period || 0,
       external_url: quest.external_url,
@@ -98,16 +117,19 @@ export async function PUT(request: NextRequest) {
 
     console.log('Updating quest with data:', updateData);
 
-    // 更新前のデータを確認
+    // まず、更新対象のクエストが存在するか確認
     const { data: existingQuest, error: fetchError } = await supabase
       .from('quests')
       .select('*')
       .eq('id', id)
-      .single();
+      .maybeSingle();
 
     if (fetchError) {
       console.error('Error fetching existing quest:', fetchError);
-      throw new Error('Failed to fetch existing quest');
+      return NextResponse.json(
+        { error: `Failed to fetch existing quest: ${fetchError.message}` },
+        { status: 500 }
+      );
     }
 
     if (!existingQuest) {
@@ -117,26 +139,46 @@ export async function PUT(request: NextRequest) {
 
     console.log('Existing quest:', existingQuest);
 
-    // データを更新
-    const { data, error } = await supabase
+    // データを更新（2段階で実行）
+    // 1. まず更新を実行
+    const { error: updateError } = await supabase
       .from('quests')
       .update(updateData)
+      .eq('id', id);
+
+    if (updateError) {
+      console.error('Supabase update error:', updateError);
+      return NextResponse.json(
+        { error: `Failed to update quest: ${updateError.message}` },
+        { status: 500 }
+      );
+    }
+
+    // 2. 更新されたデータを取得
+    const { data: updatedQuest, error: fetchUpdatedError } = await supabase
+      .from('quests')
+      .select('*')
       .eq('id', id)
-      .select()
       .single();
 
-    if (error) {
-      console.error('Supabase update error:', error);
-      throw error;
+    if (fetchUpdatedError) {
+      console.error('Error fetching updated quest:', fetchUpdatedError);
+      return NextResponse.json(
+        { error: `Failed to fetch updated quest: ${fetchUpdatedError.message}` },
+        { status: 500 }
+      );
     }
 
-    if (!data) {
+    if (!updatedQuest) {
       console.error('No data returned after update');
-      throw new Error('Failed to update quest: No data returned');
+      return NextResponse.json(
+        { error: 'Failed to update quest: No data returned' },
+        { status: 500 }
+      );
     }
 
-    console.log('Update successful:', data);
-    return NextResponse.json(data);
+    console.log('Update successful:', updatedQuest);
+    return NextResponse.json(updatedQuest);
   } catch (error) {
     console.error('Error updating quest:', error);
     const message = error instanceof Error ? error.message : 'Failed to update quest';
