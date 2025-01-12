@@ -1,21 +1,39 @@
-import { Quest } from './supabase';
+import { Database } from './supabase';
 
 export type QuestStatus = 'draft' | 'active' | 'completed' | 'archived';
 export type QuestType = 'normal' | 'limited_time' | 'roulette';
-export type VerificationType = 'manual' | 'automatic';
-
-export type QuestFormData = Omit<Quest, 'id' | 'created_at' | 'updated_at' | 'created_by' | 'modified_by'>;
-export type CreateQuestInput = Partial<QuestFormData>;
-export type UpdateQuestInput = Partial<QuestFormData> & { id: string };
-
-export interface QuestForm extends QuestFormData {
-  status: QuestStatus;
-  type: QuestType;
-  verification_type: VerificationType;
-}
 
 export interface QuestFilters {
   search: string;
   type: string;
   status: string;
 }
+
+export interface QuestFormData {
+  title: string;
+  description: string;
+  type: string | null;
+  platform: string | null;
+  points: number | null;
+  status: QuestStatus;
+  difficulty: number;
+  is_important: boolean | null;
+  is_limited: boolean | null;
+  estimated_time: number | null;
+  required_points: number | null;
+  auto_progress: boolean | null;
+  verification_required: boolean | null;
+  verification_type: string | null;
+  max_attempts: number | null;
+  cooldown_period: number | null;
+  external_url: string | null;
+  start_date: string | null;
+  end_date: string | null;
+  participants_limit: number | null;
+  banner_url: string | null;
+  category: string | null;
+  tags: string[] | null;
+}
+
+export type CreateQuestInput = QuestFormData;
+export type UpdateQuestInput = Partial<QuestFormData> & { id: string };

@@ -10,13 +10,24 @@ const initialQuest: Partial<QuestFormData> = {
   title: '',
   description: '',
   type: 'normal',
-  status: 'draft',
-  exp_reward: 0,
+  platform: null,
   points: 0,
+  status: 'draft',
   difficulty: 1,
-  estimated_time: 0,
   is_important: false,
   is_limited: false,
+  estimated_time: null,
+  required_points: 0,
+  auto_progress: false,
+  verification_required: false,
+  verification_type: null,
+  max_attempts: null,
+  cooldown_period: null,
+  external_url: null,
+  start_date: null,
+  end_date: null,
+  participants_limit: null,
+  banner_url: null,
 };
 
 export default function NewQuest() {
@@ -24,7 +35,7 @@ export default function NewQuest() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (quest: Partial<QuestFormData>) => {
+  const handleSubmit = async (quest: QuestFormData) => {
     try {
       setLoading(true);
       setError(null);
@@ -40,11 +51,9 @@ export default function NewQuest() {
 
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">新規クエスト作成</h1>
-        <p className="mt-2 text-sm text-gray-600">
-          新しいクエストを作成します。必要な情報を入力してください。
-        </p>
+      <div className="mb-5">
+        <h1 className="text-xl font-bold text-gray-900">新規クエスト作成</h1>
+        <p className="mt-1 text-sm text-gray-600">新しいクエストを作成します。</p>
       </div>
 
       {error && (

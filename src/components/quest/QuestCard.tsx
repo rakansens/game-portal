@@ -71,16 +71,13 @@ export function QuestCard({ quest }: QuestCardProps) {
               ))}
             </div>
           </div>
-          <div className="text-right">
-            <div className="text-sm font-medium text-gray-900">
-              {quest.exp_reward} EXP
-            </div>
-            {quest.points && quest.points > 0 && (
-              <div className="text-sm text-green-600">
+          {quest.points && quest.points > 0 && (
+            <div className="text-right">
+              <div className="text-sm font-medium text-green-600">
                 {quest.points} Points
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </Link>
     </div>
