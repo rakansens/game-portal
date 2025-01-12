@@ -1,3 +1,5 @@
+'use client';
+
 import { QuestFormData } from '../../types/quest';
 
 interface QuestFormProps {
@@ -25,20 +27,22 @@ export function QuestForm({ quest, onSubmit, onCancel, loading = false, submitLa
       difficulty: parseInt(formData.get('difficulty') as string) || 1,
       is_important: formData.has('is_important'),
       is_limited: formData.has('is_limited'),
-      estimated_time: parseInt(formData.get('estimated_time') as string) || null,
+      category: formData.get('category') as string || null,
+      tags: null, // TODO: タグの実装
+      exp_reward: parseInt(formData.get('points') as string) || 0, // pointsと同じ値を使用
+      is_active: formData.get('status') === 'active', // statusから自動設定
+      estimated_time: parseInt(formData.get('estimated_time') as string) || 0,
       required_points: parseInt(formData.get('required_points') as string) || 0,
       auto_progress: formData.has('auto_progress'),
       verification_required: formData.has('verification_required'),
-      verification_type: formData.get('verification_type') as string || null,
+      verification_type: formData.get('verification_type') as string || 'manual',
       max_attempts: parseInt(formData.get('max_attempts') as string) || null,
-      cooldown_period: parseInt(formData.get('cooldown_period') as string) || null,
+      cooldown_period: parseInt(formData.get('cooldown_period') as string) || 0,
       external_url: formData.get('external_url') as string || null,
       start_date: formData.get('start_date') as string || null,
       end_date: formData.get('end_date') as string || null,
       participants_limit: parseInt(formData.get('participants_limit') as string) || null,
       banner_url: formData.get('banner_url') as string || null,
-      category: formData.get('category') as string || null,
-      tags: null, // TODO: タグの実装
       order_position: parseInt(formData.get('order_position') as string) || null,
     };
 

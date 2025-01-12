@@ -1,7 +1,6 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import { LiffProvider } from '../providers/LiffProvider';
 import { Footer } from './Footer';
 
 export function ClientLayout({ children }: { children: React.ReactNode }) {
@@ -9,11 +8,11 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
   const isAdmin = pathname?.startsWith('/admin');
 
   return (
-    <LiffProvider>
-      <main className={isAdmin ? '' : 'pb-20'}>
+    <div className="flex min-h-screen flex-col">
+      <main className="flex-1 bg-gray-50">
         {children}
       </main>
-      {!isAdmin && <Footer />}
-    </LiffProvider>
+      <Footer />
+    </div>
   );
 }

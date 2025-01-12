@@ -2,9 +2,16 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { Database } from '../../../../src/types/supabase';
 
+// service_roleを使用するクライアントを作成
 const supabase = createClient<Database>(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  process.env.SUPABASE_SERVICE_ROLE_KEY!, // service_roleキーを使用
+  {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false
+    }
+  }
 );
 
 export async function GET(request: NextRequest) {
@@ -89,6 +96,28 @@ export async function PUT(request: NextRequest) {
       );
     }
 
+    // まず、更新対象のクエストが存在するか確認
+    const { data: existingQuest, error: fetchError } = await supabase
+      .from('quests')
+      .select('*')
+      .eq('id', id)
+      .maybeSingle();
+
+    if (fetchError) {
+      console.error('Error fetching existing quest:', fetchError);
+      return NextResponse.json(
+        { error: `Failed to fetch existing quest: ${fetchError.message}` },
+        { status: 500 }
+      );
+    }
+
+    if (!existingQuest) {
+      console.error('Quest not found:', id);
+      return NextResponse.json({ error: 'Quest not found' }, { status: 404 });
+    }
+
+    console.log('Existing quest:', existingQuest);
+
     // 更新データの準備（自動生成フィールドと外部キーを除外）
     const updateData = {
       title: quest.title,
@@ -117,30 +146,7 @@ export async function PUT(request: NextRequest) {
 
     console.log('Updating quest with data:', updateData);
 
-    // まず、更新対象のクエストが存在するか確認
-    const { data: existingQuest, error: fetchError } = await supabase
-      .from('quests')
-      .select('*')
-      .eq('id', id)
-      .maybeSingle();
-
-    if (fetchError) {
-      console.error('Error fetching existing quest:', fetchError);
-      return NextResponse.json(
-        { error: `Failed to fetch existing quest: ${fetchError.message}` },
-        { status: 500 }
-      );
-    }
-
-    if (!existingQuest) {
-      console.error('Quest not found:', id);
-      return NextResponse.json({ error: 'Quest not found' }, { status: 404 });
-    }
-
-    console.log('Existing quest:', existingQuest);
-
-    // データを更新（2段階で実行）
-    // 1. まず更新を実行
+    // データを更新
     const { error: updateError } = await supabase
       .from('quests')
       .update(updateData)
@@ -154,7 +160,7 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    // 2. 更新されたデータを取得
+    // 更新されたデータを取得
     const { data: updatedQuest, error: fetchUpdatedError } = await supabase
       .from('quests')
       .select('*')

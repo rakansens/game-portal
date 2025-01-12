@@ -1,18 +1,17 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { Quest } from '../../../../../src/types/supabase';
 import { QuestFormData } from '../../../../../src/types/quest';
 import { QuestForm } from '../../../../../src/components/admin/QuestForm';
 import { updateQuest } from '../../../../../src/lib/admin-api';
 
-interface EditQuestFormProps {
-  id: string;
-}
-
-export function EditQuestForm({ id }: EditQuestFormProps) {
+export function EditQuestForm() {
   const router = useRouter();
+  const params = useParams();
+  const id = params.id as string;
+
   const [quest, setQuest] = useState<Quest | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -40,7 +39,9 @@ export function EditQuestForm({ id }: EditQuestFormProps) {
   };
 
   useEffect(() => {
-    fetchQuest();
+    if (id) {
+      fetchQuest();
+    }
   }, [id]);
 
   const handleSubmit = async (data: QuestFormData) => {

@@ -1,5 +1,6 @@
 import { Suspense } from 'react';
 import { EditQuestForm } from './EditQuestForm';
+import { Metadata } from 'next';
 
 interface EditQuestPageProps {
   params: {
@@ -7,14 +8,18 @@ interface EditQuestPageProps {
   };
 }
 
-export default function EditQuestPage({ params }: EditQuestPageProps) {
-  return (
-    <div>
-      <div className="mb-5">
-        <h1 className="text-xl font-bold text-gray-900">クエストの編集</h1>
-        <p className="mt-1 text-sm text-gray-600">クエストの内容を編集します。</p>
-      </div>
+export async function generateMetadata(
+  { params }: EditQuestPageProps
+): Promise<Metadata> {
+  return {
+    title: 'クエストの編集',
+  };
+}
 
+export default function EditQuestPage() {
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="mb-8 text-2xl font-bold">クエストの編集</h1>
       <Suspense
         fallback={
           <div className="flex min-h-screen items-center justify-center">
@@ -22,7 +27,7 @@ export default function EditQuestPage({ params }: EditQuestPageProps) {
           </div>
         }
       >
-        <EditQuestForm id={params.id} />
+        <EditQuestForm />
       </Suspense>
     </div>
   );
