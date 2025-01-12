@@ -1,8 +1,25 @@
 import { Quest } from '../types/supabase';
-import { CreateQuestInput, UpdateQuestInput } from '../types/quest';
 
-export async function createQuest(quest: CreateQuestInput): Promise<Quest> {
-  const response = await fetch('/api/admin/quests', {
+const API_BASE_URL = '/api/admin';
+
+export async function fetchQuests(): Promise<Quest[]> {
+  const response = await fetch(`${API_BASE_URL}/quests`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch quests');
+  }
+  return response.json();
+}
+
+export async function fetchQuestById(id: string): Promise<Quest> {
+  const response = await fetch(`${API_BASE_URL}/quests?id=${id}`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch quest');
+  }
+  return response.json();
+}
+
+export async function createQuest(quest: Partial<Quest>): Promise<Quest> {
+  const response = await fetch(`${API_BASE_URL}/quests`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -11,17 +28,14 @@ export async function createQuest(quest: CreateQuestInput): Promise<Quest> {
   });
 
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || 'Failed to create quest');
+    throw new Error('Failed to create quest');
   }
 
   return response.json();
 }
 
-export async function updateQuest(quest: UpdateQuestInput): Promise<Quest> {
-  console.log('Sending update request with data:', quest);
-
-  const response = await fetch(`/api/admin/quests?id=${quest.id}`, {
+export async function updateQuest(id: string, quest: Partial<Quest>): Promise<Quest> {
+  const response = await fetch(`${API_BASE_URL}/quests?id=${id}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -30,23 +44,18 @@ export async function updateQuest(quest: UpdateQuestInput): Promise<Quest> {
   });
 
   if (!response.ok) {
-    const error = await response.json().catch(() => ({ error: 'Failed to parse error response' }));
-    console.error('Update quest error:', error);
-    throw new Error(error.error || 'Failed to update quest');
+    throw new Error('Failed to update quest');
   }
 
-  const data = await response.json();
-  console.log('Update quest response:', data);
-  return data;
+  return response.json();
 }
 
 export async function deleteQuest(id: string): Promise<void> {
-  const response = await fetch(`/api/admin/quests?id=${id}`, {
+  const response = await fetch(`${API_BASE_URL}/quests?id=${id}`, {
     method: 'DELETE',
   });
 
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || 'Failed to delete quest');
+    throw new Error('Failed to delete quest');
   }
 }

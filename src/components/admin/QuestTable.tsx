@@ -1,5 +1,9 @@
+'use client';
+
+import { useState } from 'react';
 import Link from 'next/link';
 import { Quest } from '../../types/supabase';
+import { DeleteConfirmModal } from './DeleteConfirmModal';
 
 interface QuestTableProps {
   quests: Quest[];
@@ -7,6 +11,9 @@ interface QuestTableProps {
 }
 
 export function QuestTable({ quests, onDelete }: QuestTableProps) {
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [questToDelete, setQuestToDelete] = useState<Quest | null>(null);
+
   const getStatusBadgeColor = (status: string) => {
     switch (status) {
       case 'active':
@@ -31,80 +38,109 @@ export function QuestTable({ quests, onDelete }: QuestTableProps) {
     }
   };
 
+  const handleDeleteClick = (quest: Quest) => {
+    setQuestToDelete(quest);
+    setDeleteModalOpen(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    if (questToDelete && onDelete) {
+      onDelete(questToDelete.id);
+    }
+    setDeleteModalOpen(false);
+    setQuestToDelete(null);
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteModalOpen(false);
+    setQuestToDelete(null);
+  };
+
   return (
-    <div className="overflow-x-auto">
-      <table className="min-w-full divide-y divide-gray-200">
-        <thead className="bg-gray-50">
-          <tr>
-            <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-              タイトル
-            </th>
-            <th className="w-24 px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-              ステータス
-            </th>
-            <th className="w-24 px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-              タイプ
-            </th>
-            <th className="w-32 px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-              報酬
-            </th>
-            <th className="w-28 px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-              期限
-            </th>
-            <th className="w-24 px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">
-              操作
-            </th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-gray-200 bg-white">
-          {quests.map((quest) => (
-            <tr key={quest.id} className="hover:bg-gray-50">
-              <td className="whitespace-nowrap px-6 py-4">
-                <div className="text-sm font-medium text-gray-900">{quest.title}</div>
-                <div className="text-sm text-gray-500">{quest.description}</div>
-              </td>
-              <td className="whitespace-nowrap px-6 py-4">
-                <span className={`inline-flex rounded-full px-2 text-xs font-semibold leading-5 ${
-                  getStatusBadgeColor(quest.status)
-                }`}>
-                  {quest.status}
-                </span>
-              </td>
-              <td className="whitespace-nowrap px-6 py-4">
-                <span className={`inline-flex rounded-full px-2 text-xs font-semibold leading-5 ${
-                  getTypeBadgeColor(quest.type)
-                }`}>
-                  {quest.type || 'normal'}
-                </span>
-              </td>
-              <td className="whitespace-nowrap px-6 py-4">
-                {quest.points && quest.points > 0 && (
-                  <div className="text-sm text-gray-900">{quest.points} Points</div>
-                )}
-              </td>
-              <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
-                {quest.end_date ? new Date(quest.end_date).toLocaleDateString() : '-'}
-              </td>
-              <td className="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
-                <Link
-                  href={`/admin/quests/${quest.id}/edit`}
-                  className="text-blue-600 hover:text-blue-900"
-                >
-                  編集
-                </Link>
-                {onDelete && (
-                  <button
-                    onClick={() => onDelete(quest.id)}
-                    className="ml-4 text-red-600 hover:text-red-900"
-                  >
-                    削除
-                  </button>
-                )}
-              </td>
+    <>
+      <div className="overflow-x-auto">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                タイトル
+              </th>
+              <th className="w-24 px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                ステータス
+              </th>
+              <th className="w-24 px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                タイプ
+              </th>
+              <th className="w-32 px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                報酬
+              </th>
+              <th className="w-28 px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+                期限
+              </th>
+              <th className="w-24 px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">
+                操作
+              </th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody className="divide-y divide-gray-200 bg-white">
+            {quests.map((quest) => (
+              <tr key={quest.id} className="hover:bg-gray-50">
+                <td className="whitespace-nowrap px-6 py-4">
+                  <div className="text-sm font-medium text-gray-900">{quest.title}</div>
+                  <div className="text-sm text-gray-500">{quest.description}</div>
+                </td>
+                <td className="whitespace-nowrap px-6 py-4">
+                  <span className={`inline-flex rounded-full px-2 text-xs font-semibold leading-5 ${
+                    getStatusBadgeColor(quest.status)
+                  }`}>
+                    {quest.status}
+                  </span>
+                </td>
+                <td className="whitespace-nowrap px-6 py-4">
+                  <span className={`inline-flex rounded-full px-2 text-xs font-semibold leading-5 ${
+                    getTypeBadgeColor(quest.type)
+                  }`}>
+                    {quest.type || 'normal'}
+                  </span>
+                </td>
+                <td className="whitespace-nowrap px-6 py-4">
+                  {quest.points && quest.points > 0 && (
+                    <div className="text-sm text-gray-900">{quest.points} Points</div>
+                  )}
+                </td>
+                <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                  {quest.end_date ? new Date(quest.end_date).toLocaleDateString() : '-'}
+                </td>
+                <td className="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
+                  <Link
+                    href={`/admin/quests/${quest.id}/edit`}
+                    className="text-blue-600 hover:text-blue-900"
+                  >
+                    編集
+                  </Link>
+                  {onDelete && (
+                    <button
+                      onClick={() => handleDeleteClick(quest)}
+                      className="ml-4 text-red-600 hover:text-red-900"
+                    >
+                      削除
+                    </button>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {questToDelete && (
+        <DeleteConfirmModal
+          isOpen={deleteModalOpen}
+          onClose={handleDeleteCancel}
+          onConfirm={handleDeleteConfirm}
+          title={questToDelete.title}
+        />
+      )}
+    </>
   );
 }
