@@ -23,11 +23,28 @@ export function QuestForm({ quest, onSubmit, onCancel, loading = false, submitLa
     if (!dateString) return '';
     try {
       const date = new Date(dateString);
-      // YYYY-MM-DDThh:mm 形式に変換
-      return date.toISOString().slice(0, 16);
+      // YYYY-MM-DDThh:mm 形式に変換（ローカルタイムゾーン）
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      const hours = String(date.getHours()).padStart(2, '0');
+      const minutes = String(date.getMinutes()).padStart(2, '0');
+      return `${year}-${month}-${day}T${hours}:${minutes}`;
     } catch (error) {
       console.error('Error formatting date:', error);
       return '';
+    }
+  };
+
+  // datetime-local の値を ISO 8601 形式に変換する関数
+  const formatDateForSubmit = (dateString: string | null) => {
+    if (!dateString) return null;
+    try {
+      const date = new Date(dateString);
+      return date.toISOString();
+    } catch (error) {
+      console.error('Error formatting date for submit:', error);
+      return null;
     }
   };
 
@@ -50,6 +67,10 @@ export function QuestForm({ quest, onSubmit, onCancel, loading = false, submitLa
     e.preventDefault();
     const form = e.target as HTMLFormElement;
     const formData = new FormData(form);
+
+    // 日付データの処理
+    const startDate = formData.get('start_date') as string;
+    const endDate = formData.get('end_date') as string;
 
     // 必須フィールドのデフォルト値を設定
     const data: QuestFormData = {
@@ -74,8 +95,8 @@ export function QuestForm({ quest, onSubmit, onCancel, loading = false, submitLa
       max_attempts: parseInt(formData.get('max_attempts') as string) || null,
       cooldown_period: parseInt(formData.get('cooldown_period') as string) || 0,
       external_url: formData.get('external_url') as string || null,
-      start_date: formData.get('start_date') as string || null,
-      end_date: formData.get('end_date') as string || null,
+      start_date: formState.isLimited ? formatDateForSubmit(startDate) : null,
+      end_date: formState.isLimited ? formatDateForSubmit(endDate) : null,
       participants_limit: formState.hasParticipantsLimit ? parseInt(formData.get('participants_limit') as string) || null : null,
       banner_url: formData.get('banner_url') as string || null,
       order_position: parseInt(formData.get('order_position') as string) || null,
