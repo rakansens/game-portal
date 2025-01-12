@@ -59,3 +59,22 @@ export async function deleteQuest(id: string): Promise<void> {
     throw new Error('Failed to delete quest');
   }
 }
+
+export async function updateQuestsOrder(quests: Quest[]): Promise<void> {
+  const response = await fetch(`${API_BASE_URL}/quests/order`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      quests: quests.map((quest, index) => ({
+        id: quest.id,
+        order_index: index,
+      })),
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to update quests order');
+  }
+}

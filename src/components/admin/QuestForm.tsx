@@ -86,20 +86,11 @@ export function QuestForm({ quest, onSubmit, onCancel, loading = false, submitLa
       category: formData.get('category') as string || null,
       tags: null, // TODO: タグの実装
       exp_reward: parseInt(formData.get('points') as string) || 0, // pointsと同じ値を使用
-      is_active: formData.get('status') === 'active', // statusから自動設定
-      estimated_time: parseInt(formData.get('estimated_time') as string) || 0,
-      required_points: parseInt(formData.get('required_points') as string) || 0,
-      auto_progress: formData.has('auto_progress'),
-      verification_required: formData.has('verification_required'),
-      verification_type: formData.get('verification_type') as string || 'manual',
-      max_attempts: parseInt(formData.get('max_attempts') as string) || null,
-      cooldown_period: parseInt(formData.get('cooldown_period') as string) || 0,
-      external_url: formData.get('external_url') as string || null,
       start_date: formState.isLimited ? formatDateForSubmit(startDate) : null,
       end_date: formState.isLimited ? formatDateForSubmit(endDate) : null,
       participants_limit: formState.hasParticipantsLimit ? parseInt(formData.get('participants_limit') as string) || null : null,
-      banner_url: formData.get('banner_url') as string || null,
-      order_position: parseInt(formData.get('order_position') as string) || null,
+      participant_count: null,
+      order_index: parseInt(formData.get('order_index') as string) || 0,
     };
 
     console.log('Form data:', data);
@@ -208,19 +199,6 @@ export function QuestForm({ quest, onSubmit, onCancel, loading = false, submitLa
           </label>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            所要時間（分）
-            <input
-              type="number"
-              name="estimated_time"
-              defaultValue={quest.estimated_time || ''}
-              min={0}
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-            />
-          </label>
-        </div>
-
         <div className="lg:col-span-3">
           <div className="flex items-center space-x-8">
             <label className="flex items-center text-sm font-medium text-gray-700">
@@ -298,11 +276,11 @@ export function QuestForm({ quest, onSubmit, onCancel, loading = false, submitLa
           </div>
         )}
 
-        {/* 非表示のorder_positionフィールド */}
+        {/* 非表示のorder_indexフィールド */}
         <input
           type="hidden"
-          name="order_position"
-          defaultValue={quest.order_position || ''}
+          name="order_index"
+          defaultValue={quest.order_index || ''}
         />
       </div>
 

@@ -5,18 +5,25 @@ import Link from 'next/link';
 import { Quest } from '../../src/types/supabase';
 import { QuestTable } from '../../src/components/admin/QuestTable';
 import { QuestFilters } from '../../src/components/admin/QuestFilters';
-import { fetchQuests, deleteQuest } from '../../src/lib/admin-api';
+import { fetchQuests, deleteQuest, updateQuestsOrder } from '../../src/lib/admin-api';
+import { DeleteConfirmModal } from '../../src/components/admin/DeleteConfirmModal';
 
 export default function AdminPage() {
   const [quests, setQuests] = useState<Quest[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [questToDelete, setQuestToDelete] = useState<Quest | null>(null);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   const loadQuests = async () => {
     try {
       setLoading(true);
       const data = await fetchQuests();
-      setQuests(data);
+      // order_indexでソート
+      const sortedData = [...data].sort((a, b) => 
+        (a.order_index ?? 0) - (b.order_index ?? 0)
+      );
+      setQuests(sortedData);
     } catch (err) {
       setError('クエストの読み込みに失敗しました');
       console.error('Error loading quests:', err);
@@ -29,14 +36,34 @@ export default function AdminPage() {
     loadQuests();
   }, []);
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (quest: Quest) => {
+    setQuestToDelete(quest);
+    setDeleteModalOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!questToDelete) return;
+
     try {
-      await deleteQuest(id);
-      // 削除成功後、クエスト一覧を再読み込み
-      await loadQuests();
+      await deleteQuest(questToDelete.id);
+      await loadQuests(); // クエスト一覧を再読み込み
+      setDeleteModalOpen(false);
+      setQuestToDelete(null);
     } catch (err) {
       console.error('Error deleting quest:', err);
       alert('クエストの削除に失敗しました');
+    }
+  };
+
+  const handleOrderChange = async (updatedQuests: Quest[]) => {
+    try {
+      await updateQuestsOrder(updatedQuests);
+      setQuests(updatedQuests);
+    } catch (err) {
+      console.error('Error updating quests order:', err);
+      alert('クエストの並び順の更新に失敗しました');
+      // エラーが発生した場合は元の順序に戻す
+      await loadQuests();
     }
   };
 
@@ -81,8 +108,24 @@ export default function AdminPage() {
       </div>
 
       <div className="rounded-lg border border-gray-200 bg-white shadow">
-        <QuestTable quests={quests} onDelete={handleDelete} />
+        <QuestTable
+          quests={quests}
+          onDelete={handleDelete}
+          onOrderChange={handleOrderChange}
+        />
       </div>
+
+      {questToDelete && (
+        <DeleteConfirmModal
+          isOpen={deleteModalOpen}
+          onClose={() => {
+            setDeleteModalOpen(false);
+            setQuestToDelete(null);
+          }}
+          onConfirm={handleDeleteConfirm}
+          title={questToDelete.title}
+        />
+      )}
     </div>
   );
 }
