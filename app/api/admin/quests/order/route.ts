@@ -21,7 +21,7 @@ export async function PUT(request: NextRequest) {
     for (const { id, order_index } of quests) {
       const { error } = await supabase
         .from('quests')
-        .update({ order_index })
+        .update({ order_position: order_index })
         .eq('id', id);
 
       if (error) {

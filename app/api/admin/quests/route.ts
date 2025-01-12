@@ -25,7 +25,11 @@ export async function GET(request: NextRequest) {
         .eq('id', id)
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
+
       if (!data) {
         return NextResponse.json({ error: 'Quest not found' }, { status: 404 });
       }
@@ -44,9 +48,18 @@ export async function GET(request: NextRequest) {
     const { data, error } = await supabase
       .from('quests')
       .select('*')
-      .order('created_at', { ascending: false });
+      .order('order_position', { ascending: true })
+      .order('created_at', { ascending: true }); // バックアップのソート順
 
-    if (error) throw error;
+    if (error) {
+      console.error('Supabase error:', error);
+      throw error;
+    }
+
+    if (!data) {
+      console.error('No data returned from Supabase');
+      throw new Error('No data returned from database');
+    }
 
     return NextResponse.json(data);
   } catch (error) {
@@ -61,13 +74,28 @@ export async function GET(request: NextRequest) {
 export async function POST(request: Request) {
   try {
     const quest = await request.json();
+
+    // 新規クエストのorder_positionを設定
+    const { data: maxOrderQuest } = await supabase
+      .from('quests')
+      .select('order_position')
+      .order('order_position', { ascending: false })
+      .limit(1)
+      .single();
+
+    const newOrderPosition = maxOrderQuest ? (maxOrderQuest.order_position + 1) : 0;
+    quest.order_position = newOrderPosition;
+
     const { data, error } = await supabase
       .from('quests')
       .insert([quest])
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) {
+      console.error('Supabase error:', error);
+      throw error;
+    }
 
     return NextResponse.json(data);
   } catch (error) {
@@ -96,7 +124,11 @@ export async function PUT(request: NextRequest) {
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) {
+      console.error('Supabase error:', error);
+      throw error;
+    }
+
     if (!data) {
       return NextResponse.json({ error: 'Quest not found' }, { status: 404 });
     }
@@ -125,7 +157,10 @@ export async function DELETE(request: NextRequest) {
       .delete()
       .eq('id', id);
 
-    if (error) throw error;
+    if (error) {
+      console.error('Supabase error:', error);
+      throw error;
+    }
 
     return NextResponse.json({ success: true });
   } catch (error) {
