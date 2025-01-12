@@ -1,29 +1,13 @@
-import { Quest } from '../../types/supabase';
 import Link from 'next/link';
-import { format } from 'date-fns';
-import { ja } from 'date-fns/locale';
+import { Quest } from '../../types/supabase';
 
 interface QuestCardProps {
   quest: Quest;
 }
 
 export function QuestCard({ quest }: QuestCardProps) {
-  const hasDeadline = quest.end_date !== null && quest.end_date !== undefined;
-  const isExpired = hasDeadline && quest.end_date ? new Date(quest.end_date) < new Date() : false;
-  const isActive = quest.status === 'active';
-
-  const handleExternalLinkClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (quest.external_url) {
-      window.open(quest.external_url, '_blank', 'noopener,noreferrer');
-    }
-  };
-
   return (
-    <div className={`group relative overflow-hidden rounded-lg border ${
-      quest.is_important ? 'border-red-200 bg-red-50' : 'border-gray-200 bg-white'
-    } p-4 shadow-sm transition-all hover:shadow-md ${!isActive && 'opacity-60'}`}>
+    <div className="relative">
       {quest.is_important && (
         <div className="absolute right-0 top-0">
           <span className="inline-block bg-red-500 px-2 py-1 text-xs font-semibold text-white">
@@ -87,74 +71,18 @@ export function QuestCard({ quest }: QuestCardProps) {
               ))}
             </div>
           </div>
-          <div className="flex items-center space-x-2">
+          <div className="text-right">
+            <div className="text-sm font-medium text-gray-900">
+              {quest.exp_reward} EXP
+            </div>
             {quest.points && quest.points > 0 && (
-              <span className="text-sm font-medium text-green-600">
+              <div className="text-sm text-green-600">
                 {quest.points} Points
-              </span>
-            )}
-            {quest.exp_reward > 0 && (
-              <span className="text-sm font-medium text-blue-600">
-                {quest.exp_reward} EXP
-              </span>
+              </div>
             )}
           </div>
         </div>
       </Link>
-
-      <div className="mt-3 space-y-2">
-        <div className="flex flex-wrap gap-2">
-          {quest.estimated_time && quest.estimated_time > 0 && (
-            <span className="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs text-gray-600">
-              約{quest.estimated_time}分
-            </span>
-          )}
-          
-          {hasDeadline && quest.end_date && (
-            <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs ${
-              isExpired ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600'
-            }`}>
-              {isExpired ? '期限切れ' : `${format(new Date(quest.end_date), 'M/d HH:mm', { locale: ja })}まで`}
-            </span>
-          )}
-
-          {quest.participants_limit && (
-            <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs ${
-              (quest.participant_count || 0) >= quest.participants_limit
-                ? 'bg-red-100 text-red-600'
-                : 'bg-gray-100 text-gray-600'
-            }`}>
-              {(quest.participant_count || 0) >= quest.participants_limit ? (
-                '満員'
-              ) : (
-                <>
-                  <span className="font-medium">{quest.participant_count || 0}</span>
-                  <span className="mx-1">/</span>
-                  <span>{quest.participants_limit}人</span>
-                </>
-              )}
-            </span>
-          )}
-
-          {quest.participant_count !== null && quest.participant_count > 0 && quest.completion_rate !== null && (
-            <span className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs text-blue-600">
-              達成率: {Math.round(quest.completion_rate * 100)}%
-            </span>
-          )}
-        </div>
-
-        {quest.external_url && (
-          <button
-            onClick={handleExternalLinkClick}
-            className="mt-2 inline-flex items-center text-xs text-blue-600 hover:text-blue-800 hover:underline"
-          >
-            <svg className="mr-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-            </svg>
-            外部リンク
-          </button>
-        )}
-      </div>
     </div>
   );
 }
