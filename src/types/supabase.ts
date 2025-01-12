@@ -9,16 +9,73 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      notifications: {
+        Row: {
+          id: string;
+          user_id: string;
+          title: string;
+          message: string;
+          is_read: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          title: string;
+          message: string;
+          is_read?: boolean;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          title?: string;
+          message?: string;
+          is_read?: boolean;
+          created_at?: string;
+        };
+      };
+      profiles: {
+        Row: {
+          id: string;
+          user_id: string;
+          display_name: string;
+          avatar_url?: string;
+          level: number;
+          exp: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          display_name: string;
+          avatar_url?: string;
+          level?: number;
+          exp?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          display_name?: string;
+          avatar_url?: string;
+          level?: number;
+          exp?: number;
+          updated_at?: string;
+        };
+      };
       quests: {
         Row: {
           id: string;
           title: string;
           description: string;
           difficulty: number;
-          reward: number;
+          exp_reward: number;
           category: string;
           tags: string[];
-          is_published: boolean;
+          is_active: boolean;
           created_at: string;
           updated_at: string;
         };
@@ -27,10 +84,10 @@ export type Database = {
           title: string;
           description: string;
           difficulty: number;
-          reward: number;
+          exp_reward: number;
           category: string;
           tags?: string[];
-          is_published?: boolean;
+          is_active?: boolean;
           created_at?: string;
           updated_at?: string;
         };
@@ -39,15 +96,14 @@ export type Database = {
           title?: string;
           description?: string;
           difficulty?: number;
-          reward?: number;
+          exp_reward?: number;
           category?: string;
           tags?: string[];
-          is_published?: boolean;
-          created_at?: string;
+          is_active?: boolean;
           updated_at?: string;
         };
       };
-      user_quests: {
+      user_quest_progress: {
         Row: {
           id: string;
           user_id: string;
@@ -55,6 +111,7 @@ export type Database = {
           status: 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED';
           progress: number;
           started_at: string;
+          completed_at?: string;
           updated_at: string;
         };
         Insert: {
@@ -64,6 +121,7 @@ export type Database = {
           status?: 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED';
           progress?: number;
           started_at?: string;
+          completed_at?: string;
           updated_at?: string;
         };
         Update: {
@@ -72,8 +130,53 @@ export type Database = {
           quest_id?: string;
           status?: 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED';
           progress?: number;
-          started_at?: string;
+          completed_at?: string;
           updated_at?: string;
+        };
+      };
+      gacha_items: {
+        Row: {
+          id: string;
+          name: string;
+          description: string;
+          rarity: number;
+          image_url: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          description: string;
+          rarity: number;
+          image_url: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          description?: string;
+          rarity?: number;
+          image_url?: string;
+        };
+      };
+      user_gacha_items: {
+        Row: {
+          id: string;
+          user_id: string;
+          item_id: string;
+          obtained_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          item_id: string;
+          obtained_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          item_id?: string;
+          obtained_at?: string;
         };
       };
     };
@@ -94,6 +197,9 @@ export type Inserts<T extends keyof Database['public']['Tables']> = Database['pu
 export type Updates<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Update'];
 
 export type Quest = Tables<'quests'>;
-export type UserQuest = Tables<'user_quests'> & {
-  quests: Quest | null;
+export type UserQuestProgress = Tables<'user_quest_progress'>;
+export type Profile = Tables<'profiles'>;
+export type GachaItem = Tables<'gacha_items'>;
+export type UserGachaItem = Tables<'user_gacha_items'> & {
+  gacha_items: GachaItem | null;
 };
