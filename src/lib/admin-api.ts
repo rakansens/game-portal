@@ -1,7 +1,5 @@
 import { Quest } from '../types/supabase';
-
-type CreateQuestInput = Omit<Quest, 'id' | 'created_at' | 'updated_at' | 'created_by' | 'modified_by'>;
-type UpdateQuestInput = Partial<CreateQuestInput> & { id: string };
+import { CreateQuestInput, UpdateQuestInput } from '../types/quest';
 
 export async function createQuest(quest: CreateQuestInput): Promise<Quest> {
   const response = await fetch('/api/admin/quests', {
