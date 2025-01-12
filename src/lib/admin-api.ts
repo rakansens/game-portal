@@ -19,7 +19,7 @@ export async function createQuest(quest: CreateQuestInput): Promise<Quest> {
 }
 
 export async function updateQuest(quest: UpdateQuestInput): Promise<Quest> {
-  const response = await fetch('/api/admin/quests', {
+  const response = await fetch(`/api/admin/quests?id=${quest.id}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
