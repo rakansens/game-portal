@@ -3,19 +3,58 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --foreground-rgb: 0, 0, 0;
+  --background-rgb: 243, 244, 246;
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  color: rgb(var(--foreground-rgb));
+  background: rgb(var(--background-rgb));
+}
+
+/* ナビゲーションバー用のスタイル */
+.nav-bar {
+  @apply fixed bottom-0 left-0 right-0 flex justify-around items-center p-3 bg-white border-t border-gray-200;
+}
+
+.nav-item {
+  @apply flex flex-col items-center text-gray-600 text-xs;
+}
+
+.nav-item.active {
+  @apply text-primary;
+}
+
+.nav-icon {
+  @apply w-6 h-6 mb-1;
+}
+
+/* ローディングアニメーション用のスタイル */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* スクロールバーのカスタマイズ */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }

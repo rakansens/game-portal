@@ -1,0 +1,52 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String       @id
+  lineId        String       @unique
+  displayName   String
+  pictureUrl    String?
+  statusMessage String?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  userQuests    UserQuest[]
+  points        Int          @default(0)
+  isAdmin       Boolean      @default(false)
+}
+
+model Quest {
+  id          String       @id @default(cuid())
+  title       String
+  description String
+  difficulty  Int         // 1-5の難易度
+  reward      Int         // クリア時の報酬ポイント
+  category    String
+  tags        String[]
+  isPublished Boolean      @default(false)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  userQuests  UserQuest[]
+}
+
+model UserQuest {
+  id        String   @id @default(cuid())
+  userId    String
+  questId   String
+  status    String   // "NOT_STARTED", "IN_PROGRESS", "COMPLETED"
+  progress  Int      @default(0)
+  startedAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id])
+  quest     Quest    @relation(fields: [questId], references: [id])
+
+  @@unique([userId, questId])
+}
