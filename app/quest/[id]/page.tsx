@@ -1,59 +1,89 @@
 'use client';
 
-import { use } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuthStore } from '../../../src/store/auth';
-import { Quest } from '../../../src/types/liff';
+import { Quest } from '../../../src/types/supabase';
+import { getQuestById, startQuest } from '../../../src/lib/supabase';
 import Link from 'next/link';
 
-// ダミーデータ（後でAPIから取得するように変更）
-const getDummyQuest = (id: string): Quest | null => {
-  const dummyQuests: Record<string, Quest> = {
-    '1': {
-      id: '1',
-      title: '初心者向けクエスト',
-      description: 'ゲームポータルの基本的な機能を学ぶクエストです。詳細な説明や達成条件などがここに表示されます。',
-      difficulty: 1,
-      reward: 100,
-      category: 'チュートリアル',
-      tags: ['初心者向け', '基本'],
-      isPublished: true,
-    },
-    '2': {
-      id: '2',
-      title: '中級者チャレンジ',
-      description: 'より高度な課題に挑戦するクエストです。',
-      difficulty: 3,
-      reward: 300,
-      category: 'チャレンジ',
-      tags: ['中級者向け', '技術'],
-      isPublished: true,
-    },
-    '3': {
-      id: '3',
-      title: '上級者ミッション',
-      description: '最も難しい課題に挑戦する上級者向けクエストです。',
-      difficulty: 5,
-      reward: 500,
-      category: 'ミッション',
-      tags: ['上級者向け', '挑戦'],
-      isPublished: true,
-    },
+interface PageProps {
+  params: {
+    id: string;
+  };
+}
+
+export default function QuestDetail({ params }: PageProps): React.ReactElement {
+  const { user } = useAuthStore();
+  const [quest, setQuest] = useState<Quest | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [joining, setJoining] = useState(false);
+
+  useEffect(() => {
+    const fetchQuest = async () => {
+      if (!params.id) return;
+
+      try {
+        const data = await getQuestById(params.id);
+        if (!data) {
+          setError('クエストが見つかりません');
+          return;
+        }
+        setQuest(data);
+      } catch (err) {
+        setError('クエストの取得に失敗しました');
+        console.error('Error fetching quest:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchQuest();
+  }, [params.id]);
+
+  const handleJoinQuest = async () => {
+    if (!user || !quest) {
+      alert('クエストに参加するにはログインが必要です');
+      return;
+    }
+
+    setJoining(true);
+    try {
+      const result = await startQuest(user.id, quest.id);
+      if (result) {
+        alert('クエストに参加しました！');
+      } else {
+        throw new Error('クエスト参加に失敗しました');
+      }
+    } catch (err) {
+      console.error('Error joining quest:', err);
+      alert('クエスト参加に失敗しました。もう一度お試しください。');
+    } finally {
+      setJoining(false);
+    }
   };
 
-  return dummyQuests[id] || null;
-};
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center">
+          <p className="text-gray-600">読み込み中...</p>
+        </div>
+      </div>
+    );
+  }
 
-export default function QuestDetail({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const resolvedParams = use(params);
-  const { user, isLoading } = useAuthStore();
-  const quest = getDummyQuest(resolvedParams.id);
-
-  if (isLoading) {
-    return null;
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center">
+          <p className="text-red-600">{error}</p>
+          <Link href="/" className="mt-4 inline-block text-blue-600 hover:text-blue-800">
+            トップページに戻る
+          </Link>
+        </div>
+      </div>
+    );
   }
 
   if (!quest) {
@@ -95,7 +125,7 @@ export default function QuestDetail({
           <div className="rounded-lg bg-gray-50 p-4">
             <h2 className="text-lg font-semibold text-gray-900">難易度</h2>
             <div className="mt-2 flex">
-              {[...Array(5)].map((_, i) => (
+              {[...Array(5)].map((_: unknown, i: number) => (
                 <svg
                   key={i}
                   className={`h-6 w-6 ${
@@ -112,14 +142,14 @@ export default function QuestDetail({
 
           <div className="rounded-lg bg-gray-50 p-4">
             <h2 className="text-lg font-semibold text-gray-900">報酬</h2>
-            <p className="mt-2 text-2xl font-bold text-green-600">{quest.reward} pt</p>
+            <p className="mt-2 text-2xl font-bold text-green-600">{quest.exp_reward} EXP</p>
           </div>
         </div>
 
         <div className="mb-6">
           <h2 className="text-lg font-semibold text-gray-900">タグ</h2>
           <div className="mt-2 flex flex-wrap gap-2">
-            {quest.tags.map((tag) => (
+            {quest.tags.map((tag: string) => (
               <span
                 key={tag}
                 className="rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-600"
@@ -131,13 +161,15 @@ export default function QuestDetail({
         </div>
 
         <button
-          className="w-full rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
-          onClick={() => {
-            // TODO: クエスト参加処理の実装
-            alert('クエストに参加しました！');
-          }}
+          className={`w-full rounded-lg px-4 py-2 text-white ${
+            joining
+              ? 'bg-gray-400 cursor-not-allowed'
+              : 'bg-blue-600 hover:bg-blue-700'
+          }`}
+          onClick={handleJoinQuest}
+          disabled={joining}
         >
-          クエストに参加する
+          {joining ? '参加処理中...' : 'クエストに参加する'}
         </button>
       </div>
     </div>

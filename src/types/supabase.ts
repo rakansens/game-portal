@@ -196,7 +196,41 @@ export type Tables<T extends keyof Database['public']['Tables']> = Database['pub
 export type Inserts<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Insert'];
 export type Updates<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Update'];
 
-export type Quest = Tables<'quests'>;
+export interface Quest {
+  id: string;
+  title: string;
+  description: string;
+  type: string | null;
+  platform: string | null;
+  points: number | null;
+  status: 'draft' | 'active' | 'completed' | 'archived';
+  difficulty: number;
+  is_important: boolean;
+  is_limited: boolean;
+  created_at: string;
+  updated_at: string;
+  created_by: string | null;
+  modified_by: string | null;
+  completion_rate: number | null;
+  participant_count: number | null;
+  order_position: number | null;
+  estimated_time: number | null;
+  required_points: number | null;
+  auto_progress: boolean | null;
+  verification_required: boolean | null;
+  verification_type: string | null;
+  max_attempts: number | null;
+  cooldown_period: number | null;
+  external_url: string | null;
+  start_date: string | null;
+  end_date: string | null;
+  participants_limit: number | null;
+  banner_url: string | null;
+  category: string | null;
+  tags: string[] | null;
+  exp_reward: number;
+  is_active: boolean;
+}
 export type UserQuestProgress = Tables<'user_quest_progress'>;
 export type Profile = Tables<'profiles'>;
 export type GachaItem = Tables<'gacha_items'>;
