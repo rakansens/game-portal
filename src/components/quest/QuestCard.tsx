@@ -18,12 +18,42 @@ export function QuestCard({ quest }: QuestCardProps) {
         hour: '2-digit',
         minute: '2-digit',
         hour12: false,
+        timeZone: 'Asia/Tokyo'
       }).format(date);
     } catch (error) {
       console.error('Error formatting date:', error);
       return null;
     }
   };
+
+  // 期間の状態を取得する関数
+  const getPeriodStatus = () => {
+    if (!quest.is_limited) return null;
+
+    const now = new Date();
+    const startDate = quest.start_date ? new Date(quest.start_date) : null;
+    const endDate = quest.end_date ? new Date(quest.end_date) : null;
+
+    if (startDate && now < startDate) {
+      return {
+        text: '開始前',
+        color: 'bg-blue-100 text-blue-800'
+      };
+    } else if (endDate && now > endDate) {
+      return {
+        text: '終了',
+        color: 'bg-gray-100 text-gray-800'
+      };
+    } else if (startDate || endDate) {
+      return {
+        text: '開催中',
+        color: 'bg-green-100 text-green-800'
+      };
+    }
+    return null;
+  };
+
+  const periodStatus = getPeriodStatus();
 
   return (
     <div className="relative">
@@ -55,7 +85,9 @@ export function QuestCard({ quest }: QuestCardProps) {
                 quest.type === 'roulette' ? 'bg-purple-100 text-purple-800' :
                 'bg-blue-100 text-blue-800'
               }`}>
-                {quest.type || quest.category}
+                {quest.type === 'limited_time' ? '期間限定' :
+                 quest.type === 'roulette' ? 'ルーレット' :
+                 '通常'}
               </span>
               {quest.platform && (
                 <span className={`rounded-full px-2.5 py-0.5 text-sm ${
@@ -74,13 +106,20 @@ export function QuestCard({ quest }: QuestCardProps) {
 
           {/* 期間情報の表示 */}
           {quest.is_limited && (
-            <div className="mt-2 space-y-1 text-sm text-gray-600">
-              {quest.start_date && (
-                <div>開始: {formatDate(quest.start_date)}</div>
+            <div className="mt-2 space-y-1 text-sm">
+              {periodStatus && (
+                <div className={`inline-block rounded px-2 py-0.5 text-xs font-semibold ${periodStatus.color}`}>
+                  {periodStatus.text}
+                </div>
               )}
-              {quest.end_date && (
-                <div>終了: {formatDate(quest.end_date)}</div>
-              )}
+              <div className="text-gray-600">
+                {quest.start_date && (
+                  <div>開始: {formatDate(quest.start_date)}</div>
+                )}
+                {quest.end_date && (
+                  <div>終了: {formatDate(quest.end_date)}</div>
+                )}
+              </div>
             </div>
           )}
 

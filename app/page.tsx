@@ -18,6 +18,7 @@ export default function Home() {
         setLoading(true);
         setError(null);
         const data = await fetchQuests();
+        console.log('Fetched quests:', JSON.stringify(data, null, 2));
         setQuests(data);
       } catch (err) {
         console.error('Error loading quests:', err);
@@ -64,17 +65,45 @@ export default function Home() {
     const isActive = quest.status === 'active';
     
     // 期間のチェック
+    // 期間限定クエストの場合：
+    // - 開始日が設定されている場合は、終了日前のみ表示
+    // - 開始日が設定されていない場合は、終了日前のみ表示
+    // - どちらも設定されていない場合は表示
     const isInPeriod = !quest.is_limited || (
-      (!startDate || startDate <= now) &&
-      (!endDate || endDate >= now)
+      (!startDate || now <= endDate!) &&
+      (!endDate || now <= endDate)
     );
     
     // 参加可能人数のチェック
     const hasAvailableSlots = !quest.participants_limit || 
       (quest.participant_count || 0) < quest.participants_limit;
 
+    // デバッグログ
+    if (quest.is_limited) {
+      console.log('Limited quest:', JSON.stringify({
+        id: quest.id,
+        title: quest.title,
+        startDate: startDate?.toISOString(),
+        endDate: endDate?.toISOString(),
+        now: now.toISOString(),
+        isActive,
+        isInPeriod,
+        hasAvailableSlots,
+        is_limited: quest.is_limited,
+        start_date: quest.start_date,
+        end_date: quest.end_date,
+        periodCheck: {
+          startCheck: !startDate || now <= endDate!,
+          endCheck: !endDate || now <= endDate
+        }
+      }, null, 2));
+    }
+
     return isActive && isInPeriod && hasAvailableSlots;
   });
+
+  // デバッグログ
+  console.log('Active quests:', JSON.stringify(activeQuests, null, 2));
 
   return (
     <div className="container mx-auto max-w-md px-4 py-6">

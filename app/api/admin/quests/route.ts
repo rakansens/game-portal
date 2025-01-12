@@ -137,8 +137,8 @@ export async function PUT(request: NextRequest) {
       max_attempts: quest.max_attempts,
       cooldown_period: quest.cooldown_period || 0,
       external_url: quest.external_url,
-      start_date: quest.start_date, // 新しい日付を使用
-      end_date: quest.end_date,     // 新しい日付を使用
+      start_date: quest.start_date,  // 新しい日付を使用
+      end_date: quest.end_date,      // 新しい日付を使用
       participants_limit: quest.participants_limit,
       banner_url: quest.banner_url,
       // 以下のフィールドは既存の値を保持
