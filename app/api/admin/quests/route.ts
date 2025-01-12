@@ -1,44 +1,58 @@
-import { NextResponse } from 'next/server';
-import { supabase } from '../../../../src/lib/supabase';
-import { Quest } from '../../../../src/types/supabase';
+import { NextRequest, NextResponse } from 'next/server';
+import { createClient } from '@supabase/supabase-js';
+import { Database } from '../../../../src/types/supabase';
 
-type CreateQuestInput = Omit<Quest, 'id' | 'created_at' | 'updated_at' | 'created_by' | 'modified_by'>;
+const supabase = createClient<Database>(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
-export async function POST(request: Request) {
+export async function GET(request: NextRequest) {
+  const searchParams = request.nextUrl.searchParams;
+  const id = searchParams.get('id');
+
+  if (!id) {
+    return NextResponse.json({ error: 'ID is required' }, { status: 400 });
+  }
+
   try {
-    const input = await request.json() as CreateQuestInput;
-    
-    // TODO: 管理者権限のチェック
-    // const session = await getSession();
-    // if (!session?.user?.isAdmin) {
-    //   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    // }
-
     const { data, error } = await supabase
       .from('quests')
-      .insert([{
-        ...input,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        // created_by: session.user.id,
-        // modified_by: session.user.id,
-      }])
-      .select()
+      .select('*')
+      .eq('id', id)
       .single();
 
-    if (error) {
-      console.error('Error creating quest:', error);
-      return NextResponse.json(
-        { error: 'Failed to create quest' },
-        { status: 500 }
-      );
+    if (error) throw error;
+    if (!data) {
+      return NextResponse.json({ error: 'Quest not found' }, { status: 404 });
     }
 
     return NextResponse.json(data);
-  } catch (err) {
-    console.error('Server error:', err);
+  } catch (error) {
+    console.error('Error fetching quest:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Failed to fetch quest' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: Request) {
+  try {
+    const quest = await request.json();
+    const { data, error } = await supabase
+      .from('quests')
+      .insert([quest])
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    return NextResponse.json(data);
+  } catch (error) {
+    console.error('Error creating quest:', error);
+    return NextResponse.json(
+      { error: 'Failed to create quest' },
       { status: 500 }
     );
   }
@@ -46,71 +60,47 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
   try {
-    const { id, ...updates } = await request.json();
-    
-    // TODO: 管理者権限のチェック
-    
+    const quest = await request.json();
     const { data, error } = await supabase
       .from('quests')
-      .update({
-        ...updates,
-        updated_at: new Date().toISOString(),
-        // modified_by: session.user.id,
-      })
-      .eq('id', id)
+      .update(quest)
+      .eq('id', quest.id)
       .select()
       .single();
 
-    if (error) {
-      console.error('Error updating quest:', error);
-      return NextResponse.json(
-        { error: 'Failed to update quest' },
-        { status: 500 }
-      );
-    }
+    if (error) throw error;
 
     return NextResponse.json(data);
-  } catch (err) {
-    console.error('Server error:', err);
+  } catch (error) {
+    console.error('Error updating quest:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Failed to update quest' },
       { status: 500 }
     );
   }
 }
 
-export async function DELETE(request: Request) {
+export async function DELETE(request: NextRequest) {
+  const searchParams = request.nextUrl.searchParams;
+  const id = searchParams.get('id');
+
+  if (!id) {
+    return NextResponse.json({ error: 'ID is required' }, { status: 400 });
+  }
+
   try {
-    const { searchParams } = new URL(request.url);
-    const id = searchParams.get('id');
-
-    if (!id) {
-      return NextResponse.json(
-        { error: 'Quest ID is required' },
-        { status: 400 }
-      );
-    }
-
-    // TODO: 管理者権限のチェック
-
     const { error } = await supabase
       .from('quests')
       .delete()
       .eq('id', id);
 
-    if (error) {
-      console.error('Error deleting quest:', error);
-      return NextResponse.json(
-        { error: 'Failed to delete quest' },
-        { status: 500 }
-      );
-    }
+    if (error) throw error;
 
     return NextResponse.json({ success: true });
-  } catch (err) {
-    console.error('Server error:', err);
+  } catch (error) {
+    console.error('Error deleting quest:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Failed to delete quest' },
       { status: 500 }
     );
   }

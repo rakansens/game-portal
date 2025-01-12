@@ -22,10 +22,17 @@ export default function EditQuest({ params }: EditQuestProps) {
   useEffect(() => {
     const fetchQuest = async () => {
       try {
-        const response = await fetch(`/api/admin/quests?id=${params.id}`);
+        const response = await fetch(`/api/admin/quests?id=${params.id}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
         if (!response.ok) {
           throw new Error('クエストの取得に失敗しました');
         }
+
         const data = await response.json();
         setQuest(data);
       } catch (err) {
@@ -34,7 +41,9 @@ export default function EditQuest({ params }: EditQuestProps) {
       }
     };
 
-    fetchQuest();
+    if (params.id) {
+      fetchQuest();
+    }
   }, [params.id]);
 
   const handleSubmit = async (data: QuestFormData) => {
