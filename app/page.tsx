@@ -9,7 +9,7 @@ import { fetchQuests } from '../src/lib/api';
 export default function Home() {
   const { user, isLoading: authLoading } = useAuthStore();
   const [quests, setQuests] = useState<Quest[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -27,14 +27,17 @@ export default function Home() {
       }
     };
 
-    loadQuests();
+    if (!authLoading) {
+      loadQuests();
 
-    // 1分ごとに自動更新
-    const interval = setInterval(loadQuests, 60000);
-    return () => clearInterval(interval);
-  }, []);
+      // 1分ごとに自動更新
+      const interval = setInterval(loadQuests, 60000);
+      return () => clearInterval(interval);
+    }
+  }, [authLoading]);
 
-  if (loading || authLoading) {
+  // 認証のローディング中のみローディング画面を表示
+  if (authLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="h-32 w-32 animate-spin rounded-full border-b-2 border-t-2 border-blue-500"></div>
@@ -84,20 +87,26 @@ export default function Home() {
         </p>
       </div>
 
-      <div className="space-y-4">
-        {activeQuests.map((quest) => (
-          <QuestCard key={quest.id} quest={quest} />
-        ))}
-        {activeQuests.length === 0 && (
-          <div className="rounded-lg border-2 border-dashed border-gray-300 p-8 text-center">
-            <p className="text-sm text-gray-600">
-              現在利用可能なクエストはありません。
-              <br />
-              また後でチェックしてください。
-            </p>
-          </div>
-        )}
-      </div>
+      {loading ? (
+        <div className="flex justify-center py-8">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-blue-500 border-t-transparent"></div>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {activeQuests.map((quest) => (
+            <QuestCard key={quest.id} quest={quest} />
+          ))}
+          {activeQuests.length === 0 && (
+            <div className="rounded-lg border-2 border-dashed border-gray-300 p-8 text-center">
+              <p className="text-sm text-gray-600">
+                現在利用可能なクエストはありません。
+                <br />
+                また後でチェックしてください。
+              </p>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

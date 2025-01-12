@@ -226,9 +226,16 @@ export function QuestForm({ quest, onSubmit, onCancel, loading = false, submitLa
             </div>
           </>
         )}
+
+        {/* 非表示のorder_positionフィールド */}
+        <input
+          type="hidden"
+          name="order_position"
+          defaultValue={quest.order_position || ''}
+        />
       </div>
 
-      <div className="flex justify-end space-x-3">
+      <div className="mt-6 flex justify-end space-x-3">
         <button
           type="button"
           onClick={onCancel}

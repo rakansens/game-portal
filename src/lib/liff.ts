@@ -20,9 +20,7 @@ export const initializeLiff = async (): Promise<void> => {
     // 開発環境でLIFF IDが設定されていない場合はモックユーザーを使用
     if (!liffId || process.env.NODE_ENV === 'development') {
       console.log('Using mock user for development');
-      setTimeout(() => {
-        auth.setUser(mockUser);
-      }, 1000); // 開発環境でもローディング状態を確認できるよう少し遅延を入れる
+      auth.setUser(mockUser); // 即座にユーザーを設定
       return;
     }
 
