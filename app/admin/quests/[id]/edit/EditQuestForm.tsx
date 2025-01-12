@@ -46,7 +46,21 @@ export function EditQuestForm({ id }: EditQuestFormProps) {
     try {
       setLoading(true);
       setError(null);
-      await updateQuest({ ...data, id });
+
+      // 必須フィールドの設定
+      const updateData = {
+        ...data,
+        id,
+        is_important: data.is_important || false,
+        is_limited: data.is_limited || false,
+        auto_progress: data.auto_progress || false,
+        verification_required: data.verification_required || false,
+        points: data.points || 0,
+        difficulty: data.difficulty || 1,
+        required_points: data.required_points || 0,
+      };
+
+      await updateQuest(updateData);
       router.push('/admin');
     } catch (err) {
       console.error('Error updating quest:', err);

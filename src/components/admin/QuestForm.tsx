@@ -19,15 +19,15 @@ export function QuestForm({ quest, onSubmit, onCancel, loading = false, submitLa
       description: formData.get('description') as string,
       type: formData.get('type') as string,
       platform: formData.get('platform') as string || null,
-      points: parseInt(formData.get('points') as string) || null,
+      points: parseInt(formData.get('points') as string) || 0,
       status: formData.get('status') as QuestFormData['status'],
       difficulty: parseInt(formData.get('difficulty') as string) || 1,
-      is_important: formData.get('is_important') === 'true',
-      is_limited: formData.get('is_limited') === 'true',
+      is_important: formData.has('is_important'),
+      is_limited: formData.has('is_limited'),
       estimated_time: parseInt(formData.get('estimated_time') as string) || null,
-      required_points: parseInt(formData.get('required_points') as string) || null,
-      auto_progress: formData.get('auto_progress') === 'true',
-      verification_required: formData.get('verification_required') === 'true',
+      required_points: parseInt(formData.get('required_points') as string) || 0,
+      auto_progress: formData.has('auto_progress'),
+      verification_required: formData.has('verification_required'),
       verification_type: formData.get('verification_type') as string || null,
       max_attempts: parseInt(formData.get('max_attempts') as string) || null,
       cooldown_period: parseInt(formData.get('cooldown_period') as string) || null,
@@ -164,7 +164,6 @@ export function QuestForm({ quest, onSubmit, onCancel, loading = false, submitLa
               <input
                 type="checkbox"
                 name="is_important"
-                value="true"
                 defaultChecked={quest.is_important || false}
                 className="mr-2 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
               />
@@ -174,7 +173,6 @@ export function QuestForm({ quest, onSubmit, onCancel, loading = false, submitLa
               <input
                 type="checkbox"
                 name="is_limited"
-                value="true"
                 defaultChecked={quest.is_limited || false}
                 className="mr-2 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
               />
