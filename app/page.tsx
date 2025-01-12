@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { QuestCard } from '../src/components/quest/QuestCard';
 import { useAuthStore } from '../src/store/auth';
 import { Quest } from '../src/types/supabase';
-import { getQuests } from '../src/lib/supabase';
+import { fetchQuests } from '../src/lib/api';
 
 export default function Home() {
   const { user, isLoading: authLoading } = useAuthStore();
@@ -13,11 +13,13 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchQuests = async () => {
+    let interval: NodeJS.Timeout;
+
+    const loadQuests = async () => {
       try {
         setLoading(true);
         setError(null);
-        const data = await getQuests();
+        const data = await fetchQuests();
         setQuests(data);
       } catch (err) {
         console.error('Error fetching quests:', err);
@@ -27,10 +29,10 @@ export default function Home() {
       }
     };
 
-    fetchQuests();
+    loadQuests();
 
     // 30秒ごとに自動更新
-    const interval = setInterval(fetchQuests, 30000);
+    interval = setInterval(loadQuests, 30000);
     return () => clearInterval(interval);
   }, []);
 
