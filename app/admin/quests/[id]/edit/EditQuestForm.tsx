@@ -17,29 +17,29 @@ export function EditQuestForm({ id }: EditQuestFormProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchQuest = async () => {
-      try {
-        const response = await fetch(`/api/admin/quests?id=${id}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
+  const fetchQuest = async () => {
+    try {
+      const response = await fetch(`/api/admin/quests?id=${id}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
 
-        if (!response.ok) {
-          throw new Error('クエストの取得に失敗しました');
-        }
-
-        const data = await response.json();
-        console.log('Fetched quest:', data);
-        setQuest(data);
-      } catch (err) {
-        console.error('Error fetching quest:', err);
-        setError(err instanceof Error ? err.message : 'クエストの取得に失敗しました');
+      if (!response.ok) {
+        throw new Error('クエストの取得に失敗しました');
       }
-    };
 
+      const data = await response.json();
+      console.log('Fetched quest:', data);
+      setQuest(data);
+    } catch (err) {
+      console.error('Error fetching quest:', err);
+      setError(err instanceof Error ? err.message : 'クエストの取得に失敗しました');
+    }
+  };
+
+  useEffect(() => {
     fetchQuest();
   }, [id]);
 
@@ -56,24 +56,14 @@ export function EditQuestForm({ id }: EditQuestFormProps) {
 
       console.log('Updating quest with data:', updateData);
 
-      // 更新前のデータを確認
-      const response = await fetch(`/api/admin/quests?id=${id}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('クエストの取得に失敗しました');
-      }
-
-      const existingQuest = await response.json();
-      console.log('Existing quest:', existingQuest);
-
       // データを更新
       await updateQuest(updateData);
       console.log('Update successful');
+
+      // 更新後のデータを再取得
+      await fetchQuest();
+
+      // 管理画面に戻る
       router.push('/admin');
     } catch (err) {
       console.error('Error updating quest:', err);
