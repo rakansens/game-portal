@@ -40,19 +40,19 @@ export function QuestTable({ quests, onDelete }: QuestTableProps) {
             <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
               タイトル
             </th>
-            <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+            <th className="w-24 px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
               ステータス
             </th>
-            <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+            <th className="w-24 px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
               タイプ
             </th>
-            <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+            <th className="w-32 px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
               報酬
             </th>
-            <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
+            <th className="w-28 px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
               期限
             </th>
-            <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">
+            <th className="w-24 px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">
               操作
             </th>
           </tr>
