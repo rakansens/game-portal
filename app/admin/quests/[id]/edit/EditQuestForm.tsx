@@ -32,6 +32,7 @@ export function EditQuestForm({ id }: EditQuestFormProps) {
         }
 
         const data = await response.json();
+        console.log('Fetched quest:', data);
         setQuest(data);
       } catch (err) {
         console.error('Error fetching quest:', err);
@@ -60,6 +61,7 @@ export function EditQuestForm({ id }: EditQuestFormProps) {
         required_points: data.required_points || 0,
       };
 
+      console.log('Updating quest with data:', updateData);
       await updateQuest(updateData);
       router.push('/admin');
     } catch (err) {

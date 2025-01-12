@@ -58,23 +58,49 @@ export async function POST(request: Request) {
   }
 }
 
-export async function PUT(request: Request) {
+export async function PUT(request: NextRequest) {
+  const searchParams = request.nextUrl.searchParams;
+  const id = searchParams.get('id');
+
+  if (!id) {
+    return NextResponse.json({ error: 'ID is required' }, { status: 400 });
+  }
+
   try {
     const quest = await request.json();
+    console.log('Updating quest:', { id, quest });
+
+    // 不要なフィールドを削除
+    delete quest.created_at;
+    delete quest.updated_at;
+    delete quest.created_by;
+    delete quest.modified_by;
+    delete quest.completion_rate;
+    delete quest.participant_count;
+
     const { data, error } = await supabase
       .from('quests')
       .update(quest)
-      .eq('id', quest.id)
+      .eq('id', id)
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) {
+      console.error('Supabase error:', error);
+      throw error;
+    }
 
+    if (!data) {
+      console.error('No data returned after update');
+      throw new Error('Failed to update quest: No data returned');
+    }
+
+    console.log('Update successful:', data);
     return NextResponse.json(data);
   } catch (error) {
     console.error('Error updating quest:', error);
     return NextResponse.json(
-      { error: 'Failed to update quest' },
+      { error: error instanceof Error ? error.message : 'Failed to update quest' },
       { status: 500 }
     );
   }

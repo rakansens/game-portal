@@ -38,6 +38,8 @@ export function QuestForm({ quest, onSubmit, onCancel, loading = false, submitLa
       banner_url: formData.get('banner_url') as string || null,
       category: formData.get('category') as string || null,
       tags: null, // TODO: タグの実装
+      exp_reward: parseInt(formData.get('points') as string) || 0, // pointsと同じ値を使用
+      is_active: true, // デフォルトでtrue
     };
 
     onSubmit(data);
