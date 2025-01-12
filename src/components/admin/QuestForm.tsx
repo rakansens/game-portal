@@ -16,9 +16,9 @@ export function QuestForm({ quest, onSubmit, onCancel, loading, submitLabel = '�
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8">
-      <div className="grid grid-cols-1 gap-x-8 gap-y-6 lg:grid-cols-2">
-        <div className="lg:col-span-2">
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="grid grid-cols-1 gap-x-6 gap-y-4 lg:grid-cols-3">
+        <div className="lg:col-span-3">
           <label className="block text-sm font-medium text-gray-700">
             タイトル
             <input
@@ -31,7 +31,7 @@ export function QuestForm({ quest, onSubmit, onCancel, loading, submitLabel = '�
           </label>
         </div>
 
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-3">
           <label className="block text-sm font-medium text-gray-700">
             説明
             <textarea
@@ -129,8 +129,8 @@ export function QuestForm({ quest, onSubmit, onCancel, loading, submitLabel = '�
           </label>
         </div>
 
-        <div className="lg:col-span-2">
-          <div className="flex space-x-6">
+        <div className="lg:col-span-3">
+          <div className="flex items-center space-x-8">
             <label className="flex items-center">
               <input
                 type="checkbox"

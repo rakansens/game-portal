@@ -39,7 +39,7 @@ export default function NewQuest() {
   };
 
   return (
-    <div className="mx-auto max-w-5xl">
+    <div>
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900">新規クエスト作成</h1>
         <p className="mt-2 text-sm text-gray-600">

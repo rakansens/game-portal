@@ -69,7 +69,7 @@ export default async function AdminLayout({
         {/* メインコンテンツ */}
         <div className="flex-1 pl-64">
           <header className="bg-white shadow-sm">
-            <div className="px-8 py-4">
+            <div className="px-6 py-4">
               <div className="flex items-center justify-between">
                 <h1 className="text-2xl font-semibold text-gray-900">管理画面</h1>
                 <button className="rounded-md bg-gray-800 px-4 py-2 text-sm font-medium text-white hover:bg-gray-700">
@@ -79,7 +79,7 @@ export default async function AdminLayout({
             </div>
           </header>
 
-          <main className="px-8 py-6">
+          <main className="p-6">
             {children}
           </main>
         </div>
