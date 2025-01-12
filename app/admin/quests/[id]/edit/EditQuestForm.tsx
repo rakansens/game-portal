@@ -43,7 +43,7 @@ export function EditQuestForm({ id }: EditQuestFormProps) {
     fetchQuest();
   }, [id]);
 
-  const handleSubmit = async (data: QuestFormData) => {
+  const handleSubmit = async (data: Partial<QuestFormData>) => {
     try {
       setLoading(true);
       setError(null);

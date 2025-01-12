@@ -39,8 +39,7 @@ export function QuestForm({ quest, onSubmit, onCancel, loading = false, submitLa
       banner_url: formData.get('banner_url') as string || null,
       category: formData.get('category') as string || null,
       tags: null, // TODO: タグの実装
-      exp_reward: parseInt(formData.get('points') as string) || 0,
-      is_active: true,
+      order_position: parseInt(formData.get('order_position') as string) || null,
     };
 
     console.log('Form data:', data);

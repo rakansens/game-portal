@@ -70,7 +70,7 @@ export async function PUT(request: NextRequest) {
     const quest = await request.json();
     console.log('Received quest data:', quest);
 
-    // 更新データの準備
+    // 更新データの準備（実際のデータベースカラムに合わせる）
     const updateData = {
       title: quest.title,
       description: quest.description,
@@ -81,17 +81,14 @@ export async function PUT(request: NextRequest) {
       difficulty: quest.difficulty || 1,
       is_important: quest.is_important || false,
       is_limited: quest.is_limited || false,
-      category: quest.category,
-      tags: quest.tags,
-      exp_reward: quest.exp_reward || quest.points || 0,
-      is_active: true,
-      estimated_time: quest.estimated_time,
+      order_position: quest.order_position,
+      estimated_time: quest.estimated_time || 0,
       required_points: quest.required_points || 0,
       auto_progress: quest.auto_progress || false,
       verification_required: quest.verification_required || false,
       verification_type: quest.verification_type,
       max_attempts: quest.max_attempts,
-      cooldown_period: quest.cooldown_period,
+      cooldown_period: quest.cooldown_period || 0,
       external_url: quest.external_url,
       start_date: quest.start_date,
       end_date: quest.end_date,
@@ -99,8 +96,28 @@ export async function PUT(request: NextRequest) {
       banner_url: quest.banner_url,
     };
 
-    console.log('Updating with data:', updateData);
+    console.log('Updating quest with data:', updateData);
 
+    // 更新前のデータを確認
+    const { data: existingQuest, error: fetchError } = await supabase
+      .from('quests')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (fetchError) {
+      console.error('Error fetching existing quest:', fetchError);
+      throw new Error('Failed to fetch existing quest');
+    }
+
+    if (!existingQuest) {
+      console.error('Quest not found:', id);
+      return NextResponse.json({ error: 'Quest not found' }, { status: 404 });
+    }
+
+    console.log('Existing quest:', existingQuest);
+
+    // データを更新
     const { data, error } = await supabase
       .from('quests')
       .update(updateData)
@@ -109,7 +126,7 @@ export async function PUT(request: NextRequest) {
       .single();
 
     if (error) {
-      console.error('Supabase error:', error);
+      console.error('Supabase update error:', error);
       throw error;
     }
 
@@ -122,8 +139,10 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json(data);
   } catch (error) {
     console.error('Error updating quest:', error);
+    const message = error instanceof Error ? error.message : 'Failed to update quest';
+    console.error('Error message:', message);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to update quest' },
+      { error: message },
       { status: 500 }
     );
   }

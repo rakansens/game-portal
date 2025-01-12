@@ -21,8 +21,7 @@ export interface QuestFormData {
   is_limited: boolean | null;
   category: string | null;
   tags: string[] | null;
-  exp_reward: number | null;
-  is_active: boolean;
+  order_position: number | null;
   estimated_time: number | null;
   required_points: number | null;
   auto_progress: boolean | null;
