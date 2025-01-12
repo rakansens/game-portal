@@ -68,19 +68,42 @@ export async function PUT(request: NextRequest) {
 
   try {
     const quest = await request.json();
-    console.log('Updating quest:', { id, quest });
+    console.log('Received quest data:', quest);
 
-    // 不要なフィールドを削除
-    delete quest.created_at;
-    delete quest.updated_at;
-    delete quest.created_by;
-    delete quest.modified_by;
-    delete quest.completion_rate;
-    delete quest.participant_count;
+    // 更新データの準備
+    const updateData = {
+      title: quest.title,
+      description: quest.description,
+      type: quest.type,
+      platform: quest.platform,
+      points: quest.points || 0,
+      status: quest.status,
+      difficulty: quest.difficulty || 1,
+      is_important: quest.is_important || false,
+      is_limited: quest.is_limited || false,
+      category: quest.category,
+      tags: quest.tags,
+      exp_reward: quest.exp_reward || quest.points || 0,
+      is_active: true,
+      estimated_time: quest.estimated_time,
+      required_points: quest.required_points || 0,
+      auto_progress: quest.auto_progress || false,
+      verification_required: quest.verification_required || false,
+      verification_type: quest.verification_type,
+      max_attempts: quest.max_attempts,
+      cooldown_period: quest.cooldown_period,
+      external_url: quest.external_url,
+      start_date: quest.start_date,
+      end_date: quest.end_date,
+      participants_limit: quest.participants_limit,
+      banner_url: quest.banner_url,
+    };
+
+    console.log('Updating with data:', updateData);
 
     const { data, error } = await supabase
       .from('quests')
-      .update(quest)
+      .update(updateData)
       .eq('id', id)
       .select()
       .single();
