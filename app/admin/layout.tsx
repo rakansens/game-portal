@@ -29,7 +29,7 @@ export default async function AdminLayout({
     <div className="min-h-screen bg-gray-50">
       <div className="flex">
         {/* サイドバー */}
-        <div className="fixed inset-y-0 left-0 w-64 bg-white border-r border-gray-200">
+        <div className="fixed inset-y-0 left-0 w-56 bg-white border-r border-gray-200">
           <div className="flex h-16 items-center justify-center border-b border-gray-200">
             <span className="text-xl font-bold text-gray-900">Admin Dashboard</span>
           </div>
@@ -67,9 +67,9 @@ export default async function AdminLayout({
         </div>
 
         {/* メインコンテンツ */}
-        <div className="flex-1 pl-64">
+        <div className="flex-1 pl-52">
           <header className="bg-white shadow-sm">
-            <div className="px-6 py-4">
+            <div className="px-4 py-4">
               <div className="flex items-center justify-between">
                 <h1 className="text-2xl font-semibold text-gray-900">管理画面</h1>
                 <button className="rounded-md bg-gray-800 px-4 py-2 text-sm font-medium text-white hover:bg-gray-700">
@@ -79,7 +79,7 @@ export default async function AdminLayout({
             </div>
           </header>
 
-          <main className="p-6">
+          <main className="p-4">
             {children}
           </main>
         </div>
