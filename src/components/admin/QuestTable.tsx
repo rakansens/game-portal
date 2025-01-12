@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import { Quest } from '../../types/supabase';
-import { QuestStatus, QuestType } from '../../types/quest';
 
 interface QuestTableProps {
   quests: Quest[];
@@ -8,7 +7,7 @@ interface QuestTableProps {
 }
 
 export function QuestTable({ quests, onDelete }: QuestTableProps) {
-  const getStatusBadgeColor = (status: QuestStatus) => {
+  const getStatusBadgeColor = (status: string) => {
     switch (status) {
       case 'active':
         return 'bg-green-100 text-green-800';
@@ -21,7 +20,7 @@ export function QuestTable({ quests, onDelete }: QuestTableProps) {
     }
   };
 
-  const getTypeBadgeColor = (type: QuestType) => {
+  const getTypeBadgeColor = (type: string | null) => {
     switch (type) {
       case 'limited_time':
         return 'bg-purple-100 text-purple-800';
@@ -66,22 +65,21 @@ export function QuestTable({ quests, onDelete }: QuestTableProps) {
               </td>
               <td className="whitespace-nowrap px-6 py-4">
                 <span className={`inline-flex rounded-full px-2 text-xs font-semibold leading-5 ${
-                  getStatusBadgeColor(quest.status as QuestStatus)
+                  getStatusBadgeColor(quest.status)
                 }`}>
                   {quest.status}
                 </span>
               </td>
               <td className="whitespace-nowrap px-6 py-4">
                 <span className={`inline-flex rounded-full px-2 text-xs font-semibold leading-5 ${
-                  getTypeBadgeColor(quest.type as QuestType)
+                  getTypeBadgeColor(quest.type)
                 }`}>
-                  {quest.type}
+                  {quest.type || 'normal'}
                 </span>
               </td>
               <td className="whitespace-nowrap px-6 py-4">
-                <div className="text-sm text-gray-900">{quest.exp_reward} EXP</div>
                 {quest.points && quest.points > 0 && (
-                  <div className="text-sm text-gray-500">{quest.points} Points</div>
+                  <div className="text-sm text-gray-900">{quest.points} Points</div>
                 )}
               </td>
               <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
