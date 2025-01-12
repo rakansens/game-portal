@@ -1,9 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { Quest } from '../src/types/supabase';
 import { QuestCard } from '../src/components/quest/QuestCard';
 import { useAuthStore } from '../src/store/auth';
-import { Quest } from '../src/types/supabase';
 import { fetchQuests } from '../src/lib/api';
 
 export default function Home() {
@@ -13,8 +13,6 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    let interval: NodeJS.Timeout;
-
     const loadQuests = async () => {
       try {
         setLoading(true);
@@ -22,8 +20,8 @@ export default function Home() {
         const data = await fetchQuests();
         setQuests(data);
       } catch (err) {
-        console.error('Error fetching quests:', err);
-        setError('クエストの取得に失敗しました。もう一度お試しください。');
+        console.error('Error loading quests:', err);
+        setError('クエストの読み込みに失敗しました');
       } finally {
         setLoading(false);
       }
@@ -32,23 +30,21 @@ export default function Home() {
     loadQuests();
 
     // 1分ごとに自動更新
-    interval = setInterval(loadQuests, 60000);
+    const interval = setInterval(loadQuests, 60000);
     return () => clearInterval(interval);
   }, []);
 
-  if (authLoading || loading) {
+  if (loading || authLoading) {
     return (
-      <div className="px-4 py-6">
-        <div className="flex items-center justify-center">
-          <div className="h-32 w-32 animate-spin rounded-full border-b-2 border-t-2 border-blue-500"></div>
-        </div>
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="h-32 w-32 animate-spin rounded-full border-b-2 border-t-2 border-blue-500"></div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="px-4 py-6">
+      <div className="container mx-auto max-w-md px-4 py-6">
         <div className="rounded-lg border-2 border-red-300 bg-red-50 p-4 text-center text-red-600">
           <p>{error}</p>
         </div>
@@ -78,7 +74,7 @@ export default function Home() {
   });
 
   return (
-    <div className="px-4 py-6">
+    <div className="container mx-auto max-w-md px-4 py-6">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">
           ようこそ、{user?.displayName || 'ゲスト'}さん
@@ -88,23 +84,20 @@ export default function Home() {
         </p>
       </div>
 
-      {/* クエスト一覧 */}
-      <div className="grid gap-4">
+      <div className="space-y-4">
         {activeQuests.map((quest) => (
           <QuestCard key={quest.id} quest={quest} />
         ))}
+        {activeQuests.length === 0 && (
+          <div className="rounded-lg border-2 border-dashed border-gray-300 p-8 text-center">
+            <p className="text-sm text-gray-600">
+              現在利用可能なクエストはありません。
+              <br />
+              また後でチェックしてください。
+            </p>
+          </div>
+        )}
       </div>
-
-      {/* 空の状態 */}
-      {activeQuests.length === 0 && (
-        <div className="rounded-lg border-2 border-dashed border-gray-300 p-8 text-center">
-          <p className="text-sm text-gray-600">
-            現在利用可能なクエストはありません。
-            <br />
-            また後でチェックしてください。
-          </p>
-        </div>
-      )}
     </div>
   );
 }
