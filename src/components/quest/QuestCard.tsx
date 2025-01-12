@@ -41,7 +41,7 @@ export function QuestCard({ quest }: QuestCardProps) {
       
       <Link
         href={`/quest/${quest.id}`}
-        className="block transition-all duration-200 hover:opacity-80"
+        className="block transition-all duration-200 active:bg-gray-50"
       >
         <div className="mb-2">
           <div className="flex items-center justify-between">

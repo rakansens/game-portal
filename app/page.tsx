@@ -36,7 +36,7 @@ export default function Home() {
 
   if (authLoading || loading) {
     return (
-      <div className="container mx-auto px-4 py-8">
+      <div className="px-4 py-6">
         <div className="flex items-center justify-center">
           <div className="h-32 w-32 animate-spin rounded-full border-b-2 border-t-2 border-blue-500"></div>
         </div>
@@ -46,7 +46,7 @@ export default function Home() {
 
   if (error) {
     return (
-      <div className="container mx-auto px-4 py-8">
+      <div className="px-4 py-6">
         <div className="rounded-lg border-2 border-red-300 bg-red-50 p-4 text-center text-red-600">
           <p>{error}</p>
         </div>
@@ -69,27 +69,25 @@ export default function Home() {
     );
     
     // 参加可能人数のチェック
-    const hasAvailableSlots = !quest.participants_limit ||
+    const hasAvailableSlots = !quest.participants_limit || 
       (quest.participant_count || 0) < quest.participants_limit;
 
     return isActive && isInPeriod && hasAvailableSlots;
   });
 
-  console.log('Active quests:', activeQuests.length);
-
   return (
-    <main className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">
+    <div className="px-4 py-6">
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-gray-900">
           ようこそ、{user?.displayName || 'ゲスト'}さん
         </h1>
-        <p className="mt-2 text-gray-600">
+        <p className="mt-2 text-sm text-gray-600">
           利用可能なクエスト一覧です。興味のあるクエストに参加してみましょう！
         </p>
       </div>
 
       {/* クエスト一覧 */}
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4">
         {activeQuests.map((quest) => (
           <QuestCard key={quest.id} quest={quest} />
         ))}
@@ -97,14 +95,14 @@ export default function Home() {
 
       {/* 空の状態 */}
       {activeQuests.length === 0 && (
-        <div className="rounded-lg border-2 border-dashed border-gray-300 p-12 text-center">
-          <p className="text-gray-600">
+        <div className="rounded-lg border-2 border-dashed border-gray-300 p-8 text-center">
+          <p className="text-sm text-gray-600">
             現在利用可能なクエストはありません。
             <br />
             また後でチェックしてください。
           </p>
         </div>
       )}
-    </main>
+    </div>
   );
 }
