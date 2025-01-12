@@ -19,6 +19,8 @@ export async function createQuest(quest: CreateQuestInput): Promise<Quest> {
 }
 
 export async function updateQuest(quest: UpdateQuestInput): Promise<Quest> {
+  console.log('Sending update request with data:', quest);
+
   const response = await fetch(`/api/admin/quests?id=${quest.id}`, {
     method: 'PUT',
     headers: {
@@ -28,11 +30,14 @@ export async function updateQuest(quest: UpdateQuestInput): Promise<Quest> {
   });
 
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || 'Failed to update quest');
+    const error = await response.json().catch(() => ({ error: 'Failed to parse error response' }));
+    console.error('Update quest error:', error);
+    throw new Error(error.error || 'Failed to update quest');
   }
 
-  return response.json();
+  const data = await response.json();
+  console.log('Update quest response:', data);
+  return data;
 }
 
 export async function deleteQuest(id: string): Promise<void> {
