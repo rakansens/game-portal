@@ -1,6 +1,7 @@
 import './globals.css';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
+import { ClientLayout } from '../src/components/layout/ClientLayout';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -8,8 +9,6 @@ export const metadata: Metadata = {
   title: 'Game Portal',
   description: 'LINE LIFF Game Portal',
 };
-
-import { ClientLayout } from '../src/components/layout/ClientLayout';
 
 export default function RootLayout({
   children,
