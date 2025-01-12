@@ -14,13 +14,14 @@ export function QuestForm({ quest, onSubmit, onCancel, loading = false, submitLa
     const form = e.target as HTMLFormElement;
     const formData = new FormData(form);
 
+    // 必須フィールドのデフォルト値を設定
     const data: QuestFormData = {
       title: formData.get('title') as string,
       description: formData.get('description') as string,
-      type: formData.get('type') as string,
+      type: formData.get('type') as string || 'normal',
       platform: formData.get('platform') as string || null,
       points: parseInt(formData.get('points') as string) || 0,
-      status: formData.get('status') as QuestFormData['status'],
+      status: formData.get('status') as QuestFormData['status'] || 'draft',
       difficulty: parseInt(formData.get('difficulty') as string) || 1,
       is_important: formData.has('is_important'),
       is_limited: formData.has('is_limited'),
@@ -38,10 +39,11 @@ export function QuestForm({ quest, onSubmit, onCancel, loading = false, submitLa
       banner_url: formData.get('banner_url') as string || null,
       category: formData.get('category') as string || null,
       tags: null, // TODO: タグの実装
-      exp_reward: parseInt(formData.get('points') as string) || 0, // pointsと同じ値を使用
-      is_active: true, // デフォルトでtrue
+      exp_reward: parseInt(formData.get('points') as string) || 0,
+      is_active: true,
     };
 
+    console.log('Form data:', data);
     onSubmit(data);
   };
 
