@@ -43,26 +43,37 @@ export function EditQuestForm({ id }: EditQuestFormProps) {
     fetchQuest();
   }, [id]);
 
-  const handleSubmit = async (data: Partial<QuestFormData>) => {
+  const handleSubmit = async (data: QuestFormData) => {
     try {
       setLoading(true);
       setError(null);
 
-      // 必須フィールドの設定
+      // 更新データの準備
       const updateData = {
         ...data,
         id,
-        is_important: data.is_important || false,
-        is_limited: data.is_limited || false,
-        auto_progress: data.auto_progress || false,
-        verification_required: data.verification_required || false,
-        points: data.points || 0,
-        difficulty: data.difficulty || 1,
-        required_points: data.required_points || 0,
       };
 
       console.log('Updating quest with data:', updateData);
+
+      // 更新前のデータを確認
+      const response = await fetch(`/api/admin/quests?id=${id}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('クエストの取得に失敗しました');
+      }
+
+      const existingQuest = await response.json();
+      console.log('Existing quest:', existingQuest);
+
+      // データを更新
       await updateQuest(updateData);
+      console.log('Update successful');
       router.push('/admin');
     } catch (err) {
       console.error('Error updating quest:', err);
