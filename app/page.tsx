@@ -31,8 +31,8 @@ export default function Home() {
 
     loadQuests();
 
-    // 30秒ごとに自動更新
-    interval = setInterval(loadQuests, 30000);
+    // 1分ごとに自動更新
+    interval = setInterval(loadQuests, 60000);
     return () => clearInterval(interval);
   }, []);
 
