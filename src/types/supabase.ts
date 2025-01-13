@@ -26,7 +26,7 @@ export interface Database {
           is_important: boolean
           created_at: string
           updated_at: string
-          order_index: number
+          order_position: number
           tags: string[] | null
           category: string | null
           participants_limit: number | null
@@ -57,7 +57,7 @@ export interface Database {
           is_important?: boolean
           created_at?: string
           updated_at?: string
-          order_index?: number
+          order_position?: number
           tags?: string[] | null
           category?: string | null
           participants_limit?: number | null
@@ -88,7 +88,7 @@ export interface Database {
           is_important?: boolean
           created_at?: string
           updated_at?: string
-          order_index?: number
+          order_position?: number
           tags?: string[] | null
           category?: string | null
           participants_limit?: number | null
@@ -172,7 +172,7 @@ export interface QuestFormData {
   category: string | null
   participants_limit: number | null
   participant_count: number | null
-  order_index: number
+  order_position: number
   estimated_time?: number | null
   required_points?: number | null
   auto_progress?: boolean

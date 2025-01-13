@@ -50,13 +50,13 @@ export async function deleteQuest(id: string): Promise<void> {
 
 interface UpdateOrderRequest {
   id: string;
-  order_index: number;
+  order_position: number; // order_indexからorder_positionに変更
 }
 
 export async function updateQuestsOrder(quests: Quest[]): Promise<void> {
-  const orderUpdates: UpdateOrderRequest[] = quests.map((quest, index) => ({
+  const orderUpdates: UpdateOrderRequest[] = quests.map((quest) => ({
     id: quest.id,
-    order_index: index,
+    order_position: quest.order_position, // order_positionを使用
   }));
 
   const response = await fetch(`${API_BASE_URL}/quests/order`, {

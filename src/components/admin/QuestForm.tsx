@@ -90,7 +90,7 @@ export function QuestForm({ quest, onSubmit, onCancel, loading = false, submitLa
       end_date: formState.isLimited ? formatDateForSubmit(endDate) : null,
       participants_limit: formState.hasParticipantsLimit ? parseInt(formData.get('participants_limit') as string) || null : null,
       participant_count: null,
-      order_index: parseInt(formData.get('order_index') as string) || 0,
+      order_position: parseInt(formData.get('order_position') as string) || 0,
     };
 
     console.log('Form data:', data);
@@ -276,11 +276,11 @@ export function QuestForm({ quest, onSubmit, onCancel, loading = false, submitLa
           </div>
         )}
 
-        {/* 非表示のorder_indexフィールド */}
+        {/* 非表示のorder_positionフィールド */}
         <input
           type="hidden"
-          name="order_index"
-          defaultValue={quest.order_index || ''}
+          name="order_position"
+          defaultValue={quest.order_position || ''}
         />
       </div>
 

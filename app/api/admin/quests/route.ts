@@ -1,173 +1,150 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
-import { Database } from '../../../../src/types/supabase';
-
-const supabase = createClient<Database>(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false
-    }
-  }
-);
+import { NextRequest } from 'next/server';
+import {
+  supabaseAdmin,
+  withTransaction,
+  createErrorResponse,
+  checkAdminAuth,
+} from '../../../../src/lib/supabase-admin';
 
 export async function GET(request: NextRequest) {
-  const searchParams = request.nextUrl.searchParams;
-  const id = searchParams.get('id');
+  try {
+    await checkAdminAuth();
 
-  if (id) {
-    try {
-      const { data, error } = await supabase
+    const searchParams = request.nextUrl.searchParams;
+    const id = searchParams.get('id');
+
+    if (id) {
+      const { data, error } = await supabaseAdmin
         .from('quests')
         .select('*')
         .eq('id', id)
         .single();
 
-      if (error) {
-        console.error('Supabase error:', error);
-        throw error;
-      }
+      if (error) throw error;
+      if (!data) return createErrorResponse('Quest not found', 404);
 
-      if (!data) {
-        return NextResponse.json({ error: 'Quest not found' }, { status: 404 });
-      }
-
-      return NextResponse.json(data);
-    } catch (error) {
-      console.error('Error fetching quest:', error);
-      return NextResponse.json(
-        { error: 'Failed to fetch quest' },
-        { status: 500 }
-      );
+      return Response.json(data);
     }
-  }
 
-  try {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseAdmin
       .from('quests')
       .select('*')
       .order('order_position', { ascending: true })
-      .order('created_at', { ascending: true }); // バックアップのソート順
+      .order('created_at', { ascending: true });
 
-    if (error) {
-      console.error('Supabase error:', error);
-      throw error;
-    }
+    if (error) throw error;
+    if (!data) throw new Error('No data returned from database');
 
-    if (!data) {
-      console.error('No data returned from Supabase');
-      throw new Error('No data returned from database');
-    }
-
-    return NextResponse.json(data);
+    return Response.json(data);
   } catch (error) {
-    console.error('Error fetching quests:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch quests' },
-      { status: 500 }
-    );
+    return createErrorResponse('Failed to fetch quests', 500, error);
   }
 }
 
 export async function POST(request: Request) {
   try {
+    await checkAdminAuth();
+
     const quest = await request.json();
 
-    // 新規クエストのorder_positionを設定
-    const { data: maxOrderQuest } = await supabase
-      .from('quests')
-      .select('order_position')
-      .order('order_position', { ascending: false })
-      .limit(1)
-      .single();
+    // トランザクション内で新規クエストを作成
+    const result = await withTransaction(async () => {
+      // 最大のorder_positionを取得
+      const { data: maxOrderQuest } = await supabaseAdmin
+        .from('quests')
+        .select('order_position')
+        .order('order_position', { ascending: false })
+        .limit(1)
+        .single();
 
-    const newOrderPosition = maxOrderQuest ? (maxOrderQuest.order_position + 1) : 0;
-    quest.order_position = newOrderPosition;
+      const newOrderPosition = maxOrderQuest ? maxOrderQuest.order_position + 1 : 0;
+      quest.order_position = newOrderPosition;
 
-    const { data, error } = await supabase
-      .from('quests')
-      .insert([quest])
-      .select()
-      .single();
+      const { data, error } = await supabaseAdmin
+        .from('quests')
+        .insert([quest])
+        .select()
+        .single();
 
-    if (error) {
-      console.error('Supabase error:', error);
-      throw error;
-    }
+      if (error) throw error;
+      return data;
+    });
 
-    return NextResponse.json(data);
+    return Response.json(result);
   } catch (error) {
-    console.error('Error creating quest:', error);
-    return NextResponse.json(
-      { error: 'Failed to create quest' },
-      { status: 500 }
-    );
+    return createErrorResponse('Failed to create quest', 500, error);
   }
 }
 
 export async function PUT(request: NextRequest) {
-  const searchParams = request.nextUrl.searchParams;
-  const id = searchParams.get('id');
-
-  if (!id) {
-    return NextResponse.json({ error: 'ID is required' }, { status: 400 });
-  }
-
   try {
+    await checkAdminAuth();
+
+    const searchParams = request.nextUrl.searchParams;
+    const id = searchParams.get('id');
+
+    if (!id) {
+      return createErrorResponse('ID is required', 400);
+    }
+
     const quest = await request.json();
-    const { data, error } = await supabase
+
+    const { data, error } = await supabaseAdmin
       .from('quests')
       .update(quest)
       .eq('id', id)
       .select()
       .single();
 
-    if (error) {
-      console.error('Supabase error:', error);
-      throw error;
-    }
+    if (error) throw error;
+    if (!data) return createErrorResponse('Quest not found', 404);
 
-    if (!data) {
-      return NextResponse.json({ error: 'Quest not found' }, { status: 404 });
-    }
-
-    return NextResponse.json(data);
+    return Response.json(data);
   } catch (error) {
-    console.error('Error updating quest:', error);
-    return NextResponse.json(
-      { error: 'Failed to update quest' },
-      { status: 500 }
-    );
+    return createErrorResponse('Failed to update quest', 500, error);
   }
 }
 
 export async function DELETE(request: NextRequest) {
-  const searchParams = request.nextUrl.searchParams;
-  const id = searchParams.get('id');
-
-  if (!id) {
-    return NextResponse.json({ error: 'ID is required' }, { status: 400 });
-  }
-
   try {
-    const { error } = await supabase
-      .from('quests')
-      .delete()
-      .eq('id', id);
+    await checkAdminAuth();
 
-    if (error) {
-      console.error('Supabase error:', error);
-      throw error;
+    const searchParams = request.nextUrl.searchParams;
+    const id = searchParams.get('id');
+
+    if (!id) {
+      return createErrorResponse('ID is required', 400);
     }
 
-    return NextResponse.json({ success: true });
+    // トランザクション内で削除と並び順の更新を実行
+    await withTransaction(async () => {
+      // 削除対象のクエストの現在の並び順を取得
+      const { data: targetQuest } = await supabaseAdmin
+        .from('quests')
+        .select('order_position')
+        .eq('id', id)
+        .single();
+
+      if (!targetQuest) throw new Error('Quest not found');
+
+      // クエストを削除
+      const { error: deleteError } = await supabaseAdmin
+        .from('quests')
+        .delete()
+        .eq('id', id);
+
+      if (deleteError) throw deleteError;
+
+      // 削除したクエストより後ろの並び順を更新
+      const { error: updateError } = await supabaseAdmin.rpc('update_quest_order_after_delete', {
+        target_position: targetQuest.order_position
+      });
+
+      if (updateError) throw updateError;
+    });
+
+    return Response.json({ success: true });
   } catch (error) {
-    console.error('Error deleting quest:', error);
-    return NextResponse.json(
-      { error: 'Failed to delete quest' },
-      { status: 500 }
-    );
+    return createErrorResponse('Failed to delete quest', 500, error);
   }
 }

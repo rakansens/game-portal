@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   DndContext,
   closestCenter,
@@ -53,7 +53,12 @@ export function QuestTable({ quests, onDelete, onOrderChange }: QuestTableProps)
           const oldIndex = items.findIndex((item) => item.id === active.id);
           const newIndex = items.findIndex((item) => item.id === over.id);
 
-          const newItems = arrayMove(items, oldIndex, newIndex);
+          // 並び順を更新
+          const newItems = arrayMove(items, oldIndex, newIndex).map((item, index) => ({
+            ...item,
+            order_position: index,
+          }));
+
           onOrderChange?.(newItems);
           return newItems;
         });
@@ -61,6 +66,11 @@ export function QuestTable({ quests, onDelete, onOrderChange }: QuestTableProps)
     },
     [onOrderChange]
   );
+
+  // quests propが変更されたら items を更新
+  useEffect(() => {
+    setItems(quests);
+  }, [quests]);
 
   const sortableItems = useMemo(() => items.map((q) => q.id), [items]);
 

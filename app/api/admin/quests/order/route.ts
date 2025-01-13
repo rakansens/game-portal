@@ -1,41 +1,46 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
-import { Database } from '../../../../../src/types/supabase';
-
-const supabase = createClient<Database>(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false
-    }
-  }
-);
+import { NextRequest } from 'next/server';
+import {
+  supabaseAdmin,
+  withTransaction,
+  createErrorResponse,
+  checkAdminAuth,
+} from '../../../../../src/lib/supabase-admin';
 
 export async function PUT(request: NextRequest) {
   try {
+    // 管理者権限チェック
+    await checkAdminAuth();
+
     const { quests } = await request.json();
 
-    // 並び順の更新を一括で行う
-    for (const { id, order_index } of quests) {
-      const { error } = await supabase
-        .from('quests')
-        .update({ order_position: order_index })
-        .eq('id', id);
+    // バルク更新のためのデータを準備
+    const updates = quests.map(({ id, order_position }: { id: string; order_position: number }) => ({
+      id,
+      order_position,
+    }));
 
-      if (error) {
-        console.error('Error updating quest order:', error);
-        throw error;
+    // トランザクション内でバルク更新を実行
+    await withTransaction(async () => {
+      for (const update of updates) {
+        const { error } = await supabaseAdmin
+          .from('quests')
+          .update({ order_position: update.order_position })
+          .eq('id', update.id);
+
+        if (error) {
+          console.error('Error updating quest order:', error);
+          throw error;
+        }
       }
-    }
+    });
 
-    return NextResponse.json({ success: true });
+    return Response.json({ success: true });
   } catch (error) {
-    console.error('Error updating quests order:', error);
-    return NextResponse.json(
-      { error: 'Failed to update quests order' },
-      { status: 500 }
+    console.error('Error in PUT /api/admin/quests/order:', error);
+    return createErrorResponse(
+      '並び順の更新に失敗しました',
+      500,
+      error
     );
   }
 }

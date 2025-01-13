@@ -19,9 +19,9 @@ export default function AdminPage() {
     try {
       setLoading(true);
       const data = await fetchQuests();
-      // order_indexでソート
+      // order_positionでソート
       const sortedData = [...data].sort((a, b) => 
-        (a.order_index ?? 0) - (b.order_index ?? 0)
+        (a.order_position ?? 0) - (b.order_position ?? 0)
       );
       setQuests(sortedData);
     } catch (err) {
