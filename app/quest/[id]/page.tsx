@@ -149,7 +149,7 @@ export default function QuestDetail({ params }: PageProps): React.ReactElement {
         <div className="mb-6">
           <h2 className="text-lg font-semibold text-gray-900">タグ</h2>
           <div className="mt-2 flex flex-wrap gap-2">
-            {quest.tags.map((tag: string) => (
+            {quest.tags?.map((tag: string) => (
               <span
                 key={tag}
                 className="rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-600"

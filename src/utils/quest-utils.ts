@@ -1,0 +1,63 @@
+import { Quest, QuestFormData, QuestStatus, VerificationType } from '../types/quest';
+
+export function questToFormData(quest: Quest): QuestFormData {
+  return {
+    title: quest.title,
+    description: quest.description,
+    type: quest.type,
+    platform: quest.platform,
+    points: quest.points,
+    status: quest.status as QuestStatus,
+    difficulty: quest.difficulty,
+    is_important: quest.is_important,
+    is_limited: quest.is_limited,
+    category: quest.category,
+    tags: quest.tags,
+    exp_reward: quest.exp_reward,
+    start_date: quest.start_date,
+    end_date: quest.end_date,
+    participants_limit: quest.participants_limit,
+    participant_count: quest.participant_count,
+    order_index: quest.order_index,
+    estimated_time: quest.estimated_time,
+    required_points: quest.required_points,
+    auto_progress: quest.auto_progress,
+    verification_required: quest.verification_required,
+    verification_type: quest.verification_type as VerificationType | null,
+    max_attempts: quest.max_attempts,
+    cooldown_period: quest.cooldown_period,
+    external_url: quest.external_url,
+    banner_url: quest.banner_url,
+  };
+}
+
+export function formDataToQuest(formData: QuestFormData, id?: string): Partial<Quest> {
+  return {
+    ...(id && { id }),
+    title: formData.title,
+    description: formData.description,
+    type: formData.type,
+    platform: formData.platform,
+    points: formData.points,
+    status: formData.status,
+    difficulty: formData.difficulty,
+    is_important: formData.is_important,
+    is_limited: formData.is_limited,
+    category: formData.category,
+    tags: formData.tags,
+    exp_reward: formData.exp_reward,
+    start_date: formData.start_date,
+    end_date: formData.end_date,
+    participants_limit: formData.participants_limit,
+    order_index: formData.order_index,
+    estimated_time: formData.estimated_time,
+    required_points: formData.required_points,
+    auto_progress: formData.auto_progress,
+    verification_required: formData.verification_required,
+    verification_type: formData.verification_type,
+    max_attempts: formData.max_attempts,
+    cooldown_period: formData.cooldown_period,
+    external_url: formData.external_url,
+    banner_url: formData.banner_url,
+  };
+}

@@ -4,13 +4,15 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Quest } from '../../types/supabase';
 import Link from 'next/link';
+import { memo } from 'react';
+import { getStatusBadgeColor, getTypeBadgeColor } from '../../utils/badge-utils';
 
 interface DraggableQuestRowProps {
   quest: Quest;
   onDelete?: (quest: Quest) => void;
 }
 
-export function DraggableQuestRow({ quest, onDelete }: DraggableQuestRowProps) {
+function DraggableQuestRowComponent({ quest, onDelete }: DraggableQuestRowProps) {
   const {
     attributes,
     listeners,
@@ -27,29 +29,13 @@ export function DraggableQuestRow({ quest, onDelete }: DraggableQuestRowProps) {
     cursor: 'move',
   };
 
-  const getStatusBadgeColor = (status: string) => {
-    switch (status) {
-      case 'active':
-        return 'bg-green-100 text-green-800';
-      case 'draft':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'archived':
-        return 'bg-gray-100 text-gray-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const getTypeBadgeColor = (type: string | null) => {
-    switch (type) {
-      case 'limited_time':
-        return 'bg-purple-100 text-purple-800';
-      case 'roulette':
-        return 'bg-blue-100 text-blue-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
-  };
+  const formattedEndDate = quest.end_date
+    ? new Date(quest.end_date).toLocaleDateString('ja-JP', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+      })
+    : '-';
 
   return (
     <tr
@@ -87,7 +73,7 @@ export function DraggableQuestRow({ quest, onDelete }: DraggableQuestRowProps) {
         )}
       </td>
       <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
-        {quest.end_date ? new Date(quest.end_date).toLocaleDateString() : '-'}
+        {formattedEndDate}
       </td>
       <td className="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
         <Link
@@ -108,3 +94,5 @@ export function DraggableQuestRow({ quest, onDelete }: DraggableQuestRowProps) {
     </tr>
   );
 }
+
+export const DraggableQuestRow = memo(DraggableQuestRowComponent);

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import {
   DndContext,
   closestCenter,
@@ -25,6 +25,15 @@ interface QuestTableProps {
   onOrderChange?: (quests: Quest[]) => void;
 }
 
+const TABLE_HEADERS = [
+  { label: 'タイトル', className: '' },
+  { label: 'ステータス', className: 'w-24' },
+  { label: 'タイプ', className: 'w-24' },
+  { label: '報酬', className: 'w-32' },
+  { label: '期限', className: 'w-28' },
+  { label: '操作', className: 'w-24 text-right' },
+] as const;
+
 export function QuestTable({ quests, onDelete, onOrderChange }: QuestTableProps) {
   const [items, setItems] = useState(quests);
 
@@ -35,22 +44,25 @@ export function QuestTable({ quests, onDelete, onOrderChange }: QuestTableProps)
     })
   );
 
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
+  const handleDragEnd = useCallback(
+    (event: DragEndEvent) => {
+      const { active, over } = event;
 
-    if (over && active.id !== over.id) {
-      setItems((items) => {
-        const oldIndex = items.findIndex((item) => item.id === active.id);
-        const newIndex = items.findIndex((item) => item.id === over.id);
+      if (over && active.id !== over.id) {
+        setItems((items) => {
+          const oldIndex = items.findIndex((item) => item.id === active.id);
+          const newIndex = items.findIndex((item) => item.id === over.id);
 
-        const newItems = arrayMove(items, oldIndex, newIndex);
-        if (onOrderChange) {
-          onOrderChange(newItems);
-        }
-        return newItems;
-      });
-    }
-  };
+          const newItems = arrayMove(items, oldIndex, newIndex);
+          onOrderChange?.(newItems);
+          return newItems;
+        });
+      }
+    },
+    [onOrderChange]
+  );
+
+  const sortableItems = useMemo(() => items.map((q) => q.id), [items]);
 
   return (
     <DndContext
@@ -62,28 +74,21 @@ export function QuestTable({ quests, onDelete, onOrderChange }: QuestTableProps)
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                タイトル
-              </th>
-              <th className="w-24 px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                ステータス
-              </th>
-              <th className="w-24 px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                タイプ
-              </th>
-              <th className="w-32 px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                報酬
-              </th>
-              <th className="w-28 px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">
-                期限
-              </th>
-              <th className="w-24 px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-gray-500">
-                操作
-              </th>
+              {TABLE_HEADERS.map((header) => (
+                <th
+                  key={header.label}
+                  className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 ${header.className}`}
+                >
+                  {header.label}
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200 bg-white">
-            <SortableContext items={items.map((q) => q.id)} strategy={verticalListSortingStrategy}>
+            <SortableContext
+              items={sortableItems}
+              strategy={verticalListSortingStrategy}
+            >
               {items.map((quest) => (
                 <DraggableQuestRow
                   key={quest.id}

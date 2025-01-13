@@ -2,7 +2,8 @@
 
 import { useEffect } from 'react';
 import { useAuthStore } from '@/store/auth';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
+import { Footer } from './Footer';
 
 interface ClientLayoutProps {
   children: React.ReactNode;
@@ -11,6 +12,7 @@ interface ClientLayoutProps {
 export function ClientLayout({ children }: ClientLayoutProps) {
   const { user, isLoading, initializeAuth } = useAuthStore();
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     initializeAuth();
@@ -24,7 +26,14 @@ export function ClientLayout({ children }: ClientLayoutProps) {
     );
   }
 
-  return <>{children}</>;
+  const isAdminPage = pathname?.startsWith('/admin');
+
+  return (
+    <>
+      {children}
+      {!isAdminPage && <Footer />}
+    </>
+  );
 }
 
 export default ClientLayout;
