@@ -1,3 +1,6 @@
+'use client';
+
+import React, { FC } from 'react';
 import Link from 'next/link';
 import { Quest } from '@/types/quest';
 import { Badge } from '@/components/user/ui/Badge';
@@ -6,7 +9,7 @@ interface QuestCardProps {
   quest: Quest;
 }
 
-export function QuestCard({ quest }: QuestCardProps) {
+export const QuestCard: FC<QuestCardProps> = ({ quest }) => {
   const formatDate = (dateString: string | null) => {
     if (!dateString) return null;
     try {
@@ -188,4 +191,4 @@ export function QuestCard({ quest }: QuestCardProps) {
       </div>
     </Link>
   );
-}
+};
