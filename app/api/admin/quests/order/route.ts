@@ -5,27 +5,34 @@ import {
   createErrorResponse,
   checkAdminAuth,
 } from '../../../../../src/lib/supabase-admin';
+import { validateQuestOrder } from '../../../../../src/lib/validations/quest';
 
 export async function PUT(request: NextRequest) {
   try {
     // 管理者権限チェック
     await checkAdminAuth();
 
-    const { quests } = await request.json();
+    // リクエストデータのバリデーション
+    const body = await request.json();
+    const validation = validateQuestOrder(body);
 
-    // バルク更新のためのデータを準備
-    const updates = quests.map(({ id, order_position }: { id: string; order_position: number }) => ({
-      id,
-      order_position,
-    }));
+    if (validation.error) {
+      return createErrorResponse(
+        'Invalid request data',
+        400,
+        validation.error
+      );
+    }
+
+    const { quests } = validation.data;
 
     // トランザクション内でバルク更新を実行
     await withTransaction(async () => {
-      for (const update of updates) {
+      for (const quest of quests) {
         const { error } = await supabaseAdmin
           .from('quests')
-          .update({ order_position: update.order_position })
-          .eq('id', update.id);
+          .update({ order_position: quest.order_position })
+          .eq('id', quest.id);
 
         if (error) {
           console.error('Error updating quest order:', error);
@@ -36,11 +43,14 @@ export async function PUT(request: NextRequest) {
 
     return Response.json({ success: true });
   } catch (error) {
-    console.error('Error in PUT /api/admin/quests/order:', error);
-    return createErrorResponse(
-      '並び順の更新に失敗しました',
-      500,
-      error
-    );
+    // エラーログからスタックトレースを除外
+    if (error instanceof Error) {
+      return createErrorResponse(
+        '並び順の更新に失敗しました',
+        500,
+        { message: error.message }
+      );
+    }
+    return createErrorResponse('並び順の更新に失敗しました', 500);
   }
 }

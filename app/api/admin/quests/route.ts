@@ -5,6 +5,7 @@ import {
   createErrorResponse,
   checkAdminAuth,
 } from '../../../../src/lib/supabase-admin';
+import { validateQuest, validateQuestUpdate } from '../../../../src/lib/validations/quest';
 
 export async function GET(request: NextRequest) {
   try {
@@ -37,7 +38,10 @@ export async function GET(request: NextRequest) {
 
     return Response.json(data);
   } catch (error) {
-    return createErrorResponse('Failed to fetch quests', 500, error);
+    if (error instanceof Error) {
+      return createErrorResponse('Failed to fetch quests', 500, { message: error.message });
+    }
+    return createErrorResponse('Failed to fetch quests', 500);
   }
 }
 
@@ -45,7 +49,19 @@ export async function POST(request: Request) {
   try {
     await checkAdminAuth();
 
-    const quest = await request.json();
+    // リクエストデータのバリデーション
+    const body = await request.json();
+    const validation = validateQuest(body);
+
+    if (validation.error) {
+      return createErrorResponse(
+        'Invalid request data',
+        400,
+        validation.error
+      );
+    }
+
+    const quest = validation.data;
 
     // トランザクション内で新規クエストを作成
     const result = await withTransaction(async () => {
@@ -72,7 +88,10 @@ export async function POST(request: Request) {
 
     return Response.json(result);
   } catch (error) {
-    return createErrorResponse('Failed to create quest', 500, error);
+    if (error instanceof Error) {
+      return createErrorResponse('Failed to create quest', 500, { message: error.message });
+    }
+    return createErrorResponse('Failed to create quest', 500);
   }
 }
 
@@ -87,7 +106,19 @@ export async function PUT(request: NextRequest) {
       return createErrorResponse('ID is required', 400);
     }
 
-    const quest = await request.json();
+    // リクエストデータのバリデーション
+    const body = await request.json();
+    const validation = validateQuestUpdate(body);
+
+    if (validation.error) {
+      return createErrorResponse(
+        'Invalid request data',
+        400,
+        validation.error
+      );
+    }
+
+    const quest = validation.data;
 
     const { data, error } = await supabaseAdmin
       .from('quests')
@@ -101,7 +132,10 @@ export async function PUT(request: NextRequest) {
 
     return Response.json(data);
   } catch (error) {
-    return createErrorResponse('Failed to update quest', 500, error);
+    if (error instanceof Error) {
+      return createErrorResponse('Failed to update quest', 500, { message: error.message });
+    }
+    return createErrorResponse('Failed to update quest', 500);
   }
 }
 
@@ -145,6 +179,9 @@ export async function DELETE(request: NextRequest) {
 
     return Response.json({ success: true });
   } catch (error) {
-    return createErrorResponse('Failed to delete quest', 500, error);
+    if (error instanceof Error) {
+      return createErrorResponse('Failed to delete quest', 500, { message: error.message });
+    }
+    return createErrorResponse('Failed to delete quest', 500);
   }
 }
