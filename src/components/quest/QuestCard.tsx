@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { Quest } from '../../types/supabase';
+import { Quest } from '@/types/quest';
+import { Badge } from '@/components/user/ui/Badge';
 
 interface QuestCardProps {
   quest: Quest;
@@ -37,17 +38,17 @@ export function QuestCard({ quest }: QuestCardProps) {
     if (startDate && now < startDate) {
       return {
         text: '開始前',
-        color: 'bg-blue-100 text-blue-800'
+        variant: 'info'
       };
     } else if (endDate && now > endDate) {
       return {
         text: '終了',
-        color: 'bg-gray-100 text-gray-800'
+        variant: 'secondary'
       };
     } else if (startDate || endDate) {
       return {
         text: '開催中',
-        color: 'bg-green-100 text-green-800'
+        variant: 'success'
       };
     }
     return null;
@@ -59,46 +60,42 @@ export function QuestCard({ quest }: QuestCardProps) {
     <div className="relative">
       {quest.is_important && (
         <div className="absolute right-0 top-0">
-          <span className="inline-block bg-red-500 px-2 py-1 text-xs font-semibold text-white">
-            重要
-          </span>
+          <Badge variant="danger">重要</Badge>
         </div>
       )}
       {quest.is_limited && (
         <div className="absolute left-0 top-0">
-          <span className="inline-block bg-yellow-500 px-2 py-1 text-xs font-semibold text-white">
-            期間限定
-          </span>
+          <Badge variant="warning">期間限定</Badge>
         </div>
       )}
       
       <Link
         href={`/quest/${quest.id}`}
-        className="block rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-all duration-200 active:bg-gray-50"
+        className="block rounded-lg border-2 border-gray-100 bg-white p-4 shadow-sm transition-all duration-200 hover:border-blue-100 active:bg-blue-50"
       >
         <div className="mb-2">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold text-gray-900">{quest.title}</h3>
             <div className="flex items-center space-x-2">
-              <span className={`rounded-full px-2.5 py-0.5 text-sm ${
-                quest.type === 'limited_time' ? 'bg-yellow-100 text-yellow-800' :
-                quest.type === 'roulette' ? 'bg-purple-100 text-purple-800' :
-                'bg-blue-100 text-blue-800'
-              }`}>
+              <Badge variant={
+                quest.type === 'limited_time' ? 'warning' :
+                quest.type === 'roulette' ? 'purple' :
+                'info'
+              }>
                 {quest.type === 'limited_time' ? '期間限定' :
                  quest.type === 'roulette' ? 'ルーレット' :
                  '通常'}
-              </span>
+              </Badge>
               {quest.platform && (
-                <span className={`rounded-full px-2.5 py-0.5 text-sm ${
-                  quest.platform === 'discord' ? 'bg-indigo-100 text-indigo-800' :
-                  quest.platform === 'x' ? 'bg-gray-100 text-gray-800' :
-                  'bg-gray-100 text-gray-800'
-                }`}>
+                <Badge variant={
+                  quest.platform === 'discord' ? 'indigo' :
+                  quest.platform === 'x' ? 'secondary' :
+                  'secondary'
+                }>
                   {quest.platform === 'discord' ? 'Discord' :
                    quest.platform === 'x' ? 'X' :
                    quest.platform}
-                </span>
+                </Badge>
               )}
             </div>
           </div>
@@ -108,9 +105,9 @@ export function QuestCard({ quest }: QuestCardProps) {
           {quest.is_limited && (
             <div className="mt-2 space-y-1 text-sm">
               {periodStatus && (
-                <div className={`inline-block rounded px-2 py-0.5 text-xs font-semibold ${periodStatus.color}`}>
+                <Badge variant={periodStatus.variant as any}>
                   {periodStatus.text}
-                </div>
+                </Badge>
               )}
               <div className="text-gray-600">
                 {quest.start_date && (
@@ -151,9 +148,9 @@ export function QuestCard({ quest }: QuestCardProps) {
           </div>
           {quest.points && quest.points > 0 && (
             <div className="text-right">
-              <div className="text-sm font-medium text-green-600">
+              <Badge variant="success" className="text-sm font-medium">
                 {quest.points} Points
-              </div>
+              </Badge>
             </div>
           )}
         </div>

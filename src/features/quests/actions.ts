@@ -1,105 +1,111 @@
 import { supabase } from '@/lib/supabase/client';
-import { Quest } from '@/types/supabase';
+import type { Quest } from '@/types/shared';
 
 /**
- * 公開クエスト一覧を取得
+ * 公開中のクエストを取得
  */
 export async function fetchPublicQuests() {
   try {
     const { data, error } = await supabase
       .from('quests')
       .select('*')
-      .eq('status', 'active')
-      .order('order_position', { ascending: true });
+      .eq('status', 'published')
+      .order('order_index', { ascending: true })
+      .order('created_at', { ascending: false });
 
-    if (error) throw error;
-    return { data, error: null };
+    if (error) {
+      throw error;
+    }
+
+    return { data: data as Quest[], error: null };
   } catch (error) {
-    console.error('Failed to fetch public quests:', error);
+    console.error('Error fetching quests:', error);
     return { data: null, error: 'クエストの取得に失敗しました' };
   }
 }
 
 /**
- * 公開クエストの詳細を取得
+ * 公開中のクエストを1件取得
  */
 export async function fetchPublicQuestById(id: string) {
   try {
     const { data, error } = await supabase
       .from('quests')
-      .select(`
-        *,
-        quest_progress(
-          status,
-          started_at,
-          completed_at
-        )
-      `)
+      .select('*')
+      .eq('status', 'published')
       .eq('id', id)
-      .eq('status', 'active')
       .single();
 
-    if (error) throw error;
-    return { data, error: null };
+    if (error) {
+      throw error;
+    }
+
+    return { data: data as Quest, error: null };
   } catch (error) {
-    console.error('Failed to fetch public quest:', error);
+    console.error('Error fetching quest:', error);
     return { data: null, error: 'クエストの取得に失敗しました' };
   }
 }
 
 /**
- * クエストの進捗を更新
+ * クエストに参加
  */
-export async function updateQuestProgress(questId: string, status: string) {
+export async function joinQuest(questId: string, userId: string) {
   try {
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    if (authError || !user) throw new Error('認証が必要です');
-
-    const { data, error } = await supabase
-      .from('quest_progress')
-      .upsert({
-        quest_id: questId,
-        user_id: user.id,
-        status,
-        updated_at: new Date().toISOString(),
-      })
-      .select()
+    // 参加上限チェック
+    const { data: quest, error: questError } = await supabase
+      .from('quests')
+      .select('participants_limit, participant_count')
+      .eq('id', questId)
       .single();
 
-    if (error) throw error;
-    return { data, error: null };
+    if (questError) throw questError;
+
+    if (
+      quest.participants_limit !== null &&
+      quest.participant_count >= quest.participants_limit
+    ) {
+      return { data: null, error: '参加上限に達しています' };
+    }
+
+    // 既に参加済みかチェック
+    const { data: existing, error: existingError } = await supabase
+      .from('quest_participants')
+      .select('id')
+      .eq('quest_id', questId)
+      .eq('user_id', userId)
+      .single();
+
+    if (existingError && existingError.code !== 'PGRST116') {
+      throw existingError;
+    }
+
+    if (existing) {
+      return { data: null, error: '既に参加済みです' };
+    }
+
+    // トランザクション開始
+    const { error: participantError } = await supabase
+      .from('quest_participants')
+      .insert([
+        {
+          quest_id: questId,
+          user_id: userId,
+        },
+      ]);
+
+    if (participantError) throw participantError;
+
+    // 参加者数をインクリメント
+    const { error: updateError } = await supabase.rpc('increment_participant_count', {
+      quest_id: questId,
+    });
+
+    if (updateError) throw updateError;
+
+    return { data: true, error: null };
   } catch (error) {
-    console.error('Failed to update quest progress:', error);
-    return { data: null, error: '進捗の更新に失敗しました' };
+    console.error('Error joining quest:', error);
+    return { data: null, error: 'クエストへの参加に失敗しました' };
   }
-}
-
-/**
- * クエストの利用可能状態をチェック
- */
-export function isQuestAvailable(quest: Quest): boolean {
-  const now = new Date();
-  const startDate = quest.start_date ? new Date(quest.start_date) : null;
-  const endDate = quest.end_date ? new Date(quest.end_date) : null;
-
-  // 開始日時チェック
-  if (startDate && startDate > now) {
-    return false;
-  }
-
-  // 終了日時チェック
-  if (endDate && endDate < now) {
-    return false;
-  }
-
-  // 参加人数制限チェック
-  if (
-    quest.participants_limit !== null &&
-    quest.participant_count !== null &&
-    quest.participant_count >= quest.participants_limit
-  ) {
-    return false;
-  }
-
-  return true;
 }
