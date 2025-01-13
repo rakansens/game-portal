@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Quest } from '@/types/quest';
-import { QuestCard } from '@/components/quest/QuestCard';
+import { QuestCard } from '@/components/user/quest/QuestCard';
 import { useAuthStore } from '@/store/auth';
 import { fetchQuests } from '@/lib/api';
 
