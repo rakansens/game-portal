@@ -16,7 +16,7 @@ export const questSchema = z.object({
   start_date: z.string().nullable(),
   end_date: z.string().nullable(),
   participants_limit: z.number().nullable(),
-  order_position: z.number().min(0),
+  order_position: z.number().nullable(),
   estimated_time: z.number().nullable(),
   required_points: z.number().nullable(),
   auto_progress: z.boolean().optional(),

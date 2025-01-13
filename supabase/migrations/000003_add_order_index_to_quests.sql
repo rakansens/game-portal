@@ -23,26 +23,18 @@ FROM indexed_quests
 WHERE quests.id = indexed_quests.id
 AND quests.order_position IS NULL;
 
--- order_positionにNOT NULL制約を追加
-ALTER TABLE quests ALTER COLUMN order_position SET NOT NULL;
-
--- order_positionにデフォルト値を設定（新規作成時は最後尾に追加）
-ALTER TABLE quests ALTER COLUMN order_position SET DEFAULT (
-  SELECT COALESCE(MAX(order_position) + 1, 0) FROM quests
-);
-
 -- インデックスを作成してパフォーマンスを向上
 CREATE INDEX IF NOT EXISTS quests_order_position_idx ON quests(order_position);
 
--- order_indexをorder_positionのエイリアスとして作成
+-- order_indexカラムが存在する場合は削除
 DO $$ 
 BEGIN 
-    IF NOT EXISTS (
+    IF EXISTS (
         SELECT 1 
         FROM information_schema.columns 
         WHERE table_name = 'quests' 
         AND column_name = 'order_index'
     ) THEN
-        ALTER TABLE quests ADD COLUMN order_index integer GENERATED ALWAYS AS (order_position) STORED;
+        ALTER TABLE quests DROP COLUMN order_index;
     END IF;
 END $$;

@@ -108,6 +108,7 @@ export async function PUT(request: NextRequest) {
 
     // リクエストデータのバリデーション
     const body = await request.json();
+    console.log('Update quest request body:', body);
     const validation = validateQuestUpdate(body);
 
     if (validation.error) {
@@ -120,9 +121,25 @@ export async function PUT(request: NextRequest) {
 
     const quest = validation.data;
 
+    // 既存のクエストを取得して、order_positionを維持
+    const { data: existingQuest, error: fetchError } = await supabaseAdmin
+      .from('quests')
+      .select('order_position')
+      .eq('id', id)
+      .single();
+
+    if (fetchError) throw fetchError;
+    if (!existingQuest) return createErrorResponse('Quest not found', 404);
+
+    // order_positionを維持
+    const updatedQuest = {
+      ...quest,
+      order_position: existingQuest.order_position
+    };
+
     const { data, error } = await supabaseAdmin
       .from('quests')
-      .update(quest)
+      .update(updatedQuest)
       .eq('id', id)
       .select()
       .single();
