@@ -31,8 +31,8 @@ export default function Home() {
     if (!authLoading) {
       loadQuests();
 
-      // 1分ごとに自動更新
-      const interval = setInterval(loadQuests, 60000);
+      // 24時間ごとに自動更新
+      const interval = setInterval(loadQuests, 86400000);
       return () => clearInterval(interval);
     }
   }, [authLoading]);
