@@ -1,10 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Quest } from '../src/types/supabase';
-import { QuestCard } from '../src/components/quest/QuestCard';
-import { useAuthStore } from '../src/store/auth';
-import { fetchQuests } from '../src/lib/api';
+import { Quest } from '@/types/quest';
+import { QuestCard } from '@/components/quest/QuestCard';
+import { useAuthStore } from '@/store/auth';
+import { fetchQuests } from '@/lib/api';
 
 export default function Home() {
   const { user, isLoading: authLoading } = useAuthStore();
@@ -31,8 +31,8 @@ export default function Home() {
     if (!authLoading) {
       loadQuests();
 
-      // 1分ごとに自動更新
-      const interval = setInterval(loadQuests, 60000);
+      // 1日（24時間）ごとに自動更新
+      const interval = setInterval(loadQuests, 24 * 60 * 60 * 1000);
       return () => clearInterval(interval);
     }
   }, [authLoading]);
