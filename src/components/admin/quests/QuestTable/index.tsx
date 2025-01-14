@@ -16,7 +16,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import { DraggableRow } from '@/components/ui/admin/QuestTable/DraggableRow';
+import { DraggableRow } from './DraggableRow';
 import type { Quest } from '@/types/quest';
 
 interface QuestTableProps {
@@ -93,7 +93,8 @@ export function QuestTable({ quests, onDelete, onOrderChange }: QuestTableProps)
               {TABLE_HEADERS.map((header) => (
                 <th
                   key={header.label}
-                  className={`py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 ${header.className}`}
+                  scope="col"
+                  className={`${header.className} py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500`}
                 >
                   {header.label}
                 </th>
@@ -101,15 +102,12 @@ export function QuestTable({ quests, onDelete, onOrderChange }: QuestTableProps)
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200 bg-white">
-            <SortableContext
-              items={sortableItems}
-              strategy={verticalListSortingStrategy}
-            >
+            <SortableContext items={sortableItems} strategy={verticalListSortingStrategy}>
               {items.map((quest) => (
                 <DraggableRow
                   key={quest.id}
                   quest={quest}
-                  onDelete={onDelete ? () => onDelete(quest) : undefined}
+                  onDelete={() => onDelete?.(quest)}
                 />
               ))}
             </SortableContext>

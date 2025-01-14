@@ -2,11 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Quest } from '../../src/types/supabase';
-import { QuestTable } from '../../src/components/admin/QuestTable';
-import { QuestFilters } from '../../src/components/admin/QuestFilters';
-import { fetchQuests, deleteQuest, updateQuestsOrder } from '../../src/lib/admin-api';
-import { DeleteConfirmModal } from '../../src/components/admin/DeleteConfirmModal';
+import { Quest } from '@/types/quest';
+import { QuestTable } from '@/components/admin/QuestTable';
+import { QuestFilters } from '@/components/admin/QuestFilters';
+import { fetchQuests, deleteQuest, updateQuestsOrder } from '@/lib/admin-api';
+import { DeleteConfirmModal } from '@/components/admin/DeleteConfirmModal';
 
 export default function AdminPage() {
   const [quests, setQuests] = useState<Quest[]>([]);
@@ -14,6 +14,9 @@ export default function AdminPage() {
   const [error, setError] = useState<string | null>(null);
   const [questToDelete, setQuestToDelete] = useState<Quest | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
+  const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
+  const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
 
   const loadQuests = async () => {
     try {
@@ -67,6 +70,14 @@ export default function AdminPage() {
     }
   };
 
+  // フィルタリングされたクエストを取得
+  const filteredQuests = quests.filter(quest => {
+    const typeMatch = selectedTypes.length === 0 || (quest.type && selectedTypes.includes(quest.type));
+    const platformMatch = selectedPlatforms.length === 0 || (quest.platform && selectedPlatforms.includes(quest.platform));
+    const statusMatch = selectedStatuses.length === 0 || selectedStatuses.includes(quest.status);
+    return typeMatch && platformMatch && statusMatch;
+  });
+
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
@@ -100,16 +111,18 @@ export default function AdminPage() {
       <div className="mb-6">
         <QuestFilters
           quests={quests}
-          onFilterChange={(filters) => {
-            // TODO: フィルター機能の実装
-            console.log('Filters:', filters);
-          }}
+          selectedTypes={selectedTypes}
+          selectedPlatforms={selectedPlatforms}
+          selectedStatuses={selectedStatuses}
+          onTypeChange={setSelectedTypes}
+          onPlatformChange={setSelectedPlatforms}
+          onStatusChange={setSelectedStatuses}
         />
       </div>
 
       <div className="rounded-lg border border-gray-200 bg-white shadow">
         <QuestTable
-          quests={quests}
+          quests={filteredQuests}
           onDelete={handleDelete}
           onOrderChange={handleOrderChange}
         />
