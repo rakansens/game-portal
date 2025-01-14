@@ -22,9 +22,8 @@ export default function HomePage() {
           throw new Error(result.error);
         }
         if (result.data) {
-          // クエストデータをPublicQuest型に変換
           const publicQuests = result.data.map(quest => 
-            toPublicQuest(quest, true) // 全てのクエストを利用可能として表示
+            toPublicQuest(quest, true)
           );
           setQuests(publicQuests);
         }
@@ -60,7 +59,7 @@ export default function HomePage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="mb-6 text-2xl font-bold text-gray-900">クエスト一覧</h1>
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         {quests.map((quest) => (
           <QuestCard key={quest.id} quest={quest} />
         ))}
