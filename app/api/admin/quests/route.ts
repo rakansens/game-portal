@@ -29,8 +29,7 @@ export async function GET(request: NextRequest) {
     const { data, error } = await supabaseAdmin
       .from('quests')
       .select('*')
-      .order('order_position', { ascending: true })
-      .order('created_at', { ascending: true });
+      .order('order_position', { ascending: true });
 
     if (error) throw error;
     if (!data) throw new Error('No data returned from database');
@@ -138,31 +137,9 @@ export async function PUT(request: NextRequest) {
 
     const quest = validation.data;
 
-    // 既存のクエストを取得して、order_positionを維持
-    const { data: existingQuest, error: fetchError } = await supabaseAdmin
-      .from('quests')
-      .select('order_position')
-      .eq('id', id)
-      .single();
-
-    if (fetchError) {
-      console.error('Error fetching existing quest:', fetchError);
-      return createErrorResponse('Failed to fetch existing quest', 500, fetchError);
-    }
-
-    if (!existingQuest) {
-      return createErrorResponse('Quest not found', 404);
-    }
-
-    // order_positionを維持
-    const updatedQuest = {
-      ...quest,
-      order_position: existingQuest.order_position
-    };
-
     const { data, error } = await supabaseAdmin
       .from('quests')
-      .update(updatedQuest)
+      .update(quest)
       .eq('id', id)
       .select()
       .single();
@@ -197,23 +174,6 @@ export async function DELETE(request: NextRequest) {
       return createErrorResponse('ID is required', 400);
     }
 
-    // 削除対象のクエストの現在の並び順を取得
-    const { data: targetQuest, error: fetchError } = await supabaseAdmin
-      .from('quests')
-      .select('order_position')
-      .eq('id', id)
-      .single();
-
-    if (fetchError) {
-      console.error('Error fetching quest for delete:', fetchError);
-      return createErrorResponse('Failed to fetch quest for delete', 500, fetchError);
-    }
-
-    if (!targetQuest) {
-      return createErrorResponse('Quest not found', 404);
-    }
-
-    // クエストを削除
     const { error: deleteError } = await supabaseAdmin
       .from('quests')
       .delete()
@@ -222,16 +182,6 @@ export async function DELETE(request: NextRequest) {
     if (deleteError) {
       console.error('Error deleting quest:', deleteError);
       return createErrorResponse('Failed to delete quest', 500, deleteError);
-    }
-
-    // 削除したクエストより後ろの並び順を更新
-    const { error: updateError } = await supabaseAdmin.rpc('update_quest_order_after_delete', {
-      target_position: targetQuest.order_position
-    });
-
-    if (updateError) {
-      console.error('Error updating order after delete:', updateError);
-      return createErrorResponse('Failed to update order after delete', 500, updateError);
     }
 
     return Response.json({ success: true });

@@ -91,6 +91,7 @@ export type Database = {
           description: string
           end_date: string | null
           id: string
+          order_position: number | null
           participants_limit: number | null
           points: number
           required_points: number | null
@@ -103,6 +104,7 @@ export type Database = {
           description: string
           end_date?: string | null
           id?: string
+          order_position?: number | null
           participants_limit?: number | null
           points?: number
           required_points?: number | null
@@ -115,6 +117,7 @@ export type Database = {
           description?: string
           end_date?: string | null
           id?: string
+          order_position?: number | null
           participants_limit?: number | null
           points?: number
           required_points?: number | null
@@ -171,12 +174,19 @@ export type Database = {
         }
         Returns: undefined
       }
-      update_quests_order: {
-        Args: {
-          quest_updates: Json[]
-        }
-        Returns: undefined
-      }
+      update_quests_order:
+        | {
+            Args: {
+              quest_updates: Json[]
+            }
+            Returns: undefined
+          }
+        | {
+            Args: {
+              quest_updates: Json[]
+            }
+            Returns: undefined
+          }
     }
     Enums: {
       [_ in never]: never
