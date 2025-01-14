@@ -4,6 +4,7 @@ import { Input } from '@/components/shared/ui/Input';
 import { Select } from '@/components/shared/ui/Select';
 import { Checkbox } from '@/components/shared/ui/Checkbox';
 import { QuestFormFieldsProps } from './types';
+import { QuestStatus, QuestType } from '@/types/quest';
 
 export function QuestFormFields({
   register,
@@ -51,7 +52,7 @@ export function QuestFormFields({
           disabled={isSubmitting}
           options={[
             { value: 'draft', label: '下書き' },
-            { value: 'active', label: '公開' },
+            { value: 'active', label: 'アクティブ' },
             { value: 'completed', label: '完了' },
             { value: 'archived', label: 'アーカイブ' },
           ]}
