@@ -3,8 +3,8 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Quest } from '@/types/quest';
-import { QuestTable } from '@/components/admin/QuestTable';
-import { QuestFilters } from '@/components/admin/QuestFilters';
+import { QuestTable } from '@/components/admin/quests/QuestTable';
+import { QuestFilters } from '@/components/admin/quests/QuestFilters';
 import { fetchQuests, deleteQuest, updateQuestsOrder } from '@/lib/admin-api';
 import { DeleteConfirmModal } from '@/components/admin/DeleteConfirmModal';
 

@@ -1,3 +1,5 @@
+'use client';
+
 import { Select } from '@/components/shared/ui/Select';
 import { Quest } from '@/types/quest';
 import { Checkbox } from '@/components/shared/ui/Checkbox';
