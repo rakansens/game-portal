@@ -24,8 +24,9 @@ export function QuestCard({ quest, onStart, onComplete }: QuestCardProps) {
           'relative overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 shadow-lg transition-all duration-500',
           'border-2 transform-gpu group-hover:scale-[1.02] group-hover:rotate-y-[-5deg]',
           'clip-corners',
-          'before:absolute before:inset-0 before:bg-gradient-to-br before:from-transparent before:via-[#2761c3]/10 before:to-[#27c39f]/20',
+          'before:absolute before:inset-0 before:bg-gradient-to-br before:from-transparent before:via-[#2761c3]/10 before:to-[#27c39f]/20 before:transition-opacity before:duration-500',
           'after:absolute after:inset-0 after:bg-[linear-gradient(45deg,transparent_25%,rgba(68,68,68,0.2)_50%,transparent_75%,transparent_100%)] after:bg-[length:250%_250%] after:animate-shimmer',
+          'group-hover:before:opacity-50',
           isImportant && 'border-yellow-400 before:via-yellow-500/10 before:to-yellow-600/20 shadow-[0_0_15px_rgba(234,179,8,0.3)] group-hover:shadow-[0_0_25px_rgba(234,179,8,0.5)]',
           isLimited && 'border-[#27c39f] before:via-[#27c39f]/10 before:to-[#2761c3]/20 shadow-[0_0_15px_rgba(45,192,156,0.3)] group-hover:shadow-[0_0_25px_rgba(45,192,156,0.5)]',
           !isImportant && !isLimited && 'border-[#2761c3] shadow-[0_0_15px_rgba(39,97,195,0.3)] group-hover:shadow-[0_0_25px_rgba(39,97,195,0.5)]'
@@ -37,7 +38,7 @@ export function QuestCard({ quest, onStart, onComplete }: QuestCardProps) {
 
         {/* ヘッダー部分 */}
         <div className="flex items-center justify-between border-b border-[#2761c3]/30 p-4 backdrop-blur-sm">
-          <h3 className="text-lg font-bold text-[#ddebf0] text-shadow-neon group-hover:text-shadow-neon-strong">{quest.title}</h3>
+          <h3 className="text-lg font-bold text-[#ddebf0] text-shadow-neon transition-all duration-300 group-hover:text-shadow-neon-strong">{quest.title}</h3>
           <div className="flex gap-1.5">
             <Badge variant={quest.type === 'normal' ? 'default' : 'special'} size="sm">
               {quest.type === 'normal' ? 'ノーマル' : 'スペシャル'}
@@ -69,7 +70,7 @@ export function QuestCard({ quest, onStart, onComplete }: QuestCardProps) {
 
           {/* 期間情報 */}
           {isLimited && quest.start_date && quest.end_date && (
-            <div className="mb-4 flex items-center rounded-lg bg-[#2761c3]/10 px-3 py-2 text-sm text-[#27c39f] backdrop-blur-sm transition-colors duration-300 group-hover:bg-[#2761c3]/20">
+            <div className="mb-4 flex items-center rounded-lg bg-[#2761c3]/10 px-3 py-2 text-sm text-[#27c39f] backdrop-blur-sm transition-all duration-300 group-hover:bg-[#2761c3]/20 group-hover:scale-[1.02]">
               <svg className="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
@@ -158,6 +159,7 @@ export function QuestCard({ quest, onStart, onComplete }: QuestCardProps) {
 
         {/* 装飾的な要素 */}
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 group-hover:animate-shine" />
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 group-hover:animate-shine" style={{ animationDelay: '0.2s' }} />
       </div>
     </div>
   );
