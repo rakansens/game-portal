@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react';
 import { QuestCard } from '@/components/user/quests/QuestCard';
 import { Quest } from '@/types/quest';
-import { fetchQuests } from '@/lib/api';
+import { supabase } from '@/lib/supabase';
+import Link from 'next/link';
 
 export default function HomePage() {
   const [quests, setQuests] = useState<Quest[]>([]);
@@ -14,8 +15,13 @@ export default function HomePage() {
     const loadQuests = async () => {
       try {
         setLoading(true);
-        const data = await fetchQuests();
-        setQuests(data);
+        const { data, error } = await supabase
+          .from('quests')
+          .select('*')
+          .order('order_position', { ascending: true });
+
+        if (error) throw error;
+        setQuests(data || []);
       } catch (err) {
         setError('クエストの読み込みに失敗しました');
         console.error('Error loading quests:', err);
@@ -73,24 +79,24 @@ export default function HomePage() {
       {/* 下部ナビゲーション */}
       <nav className="fixed bottom-0 left-0 right-0 border-t border-gray-700 bg-gray-800 py-2">
         <div className="container mx-auto flex justify-around">
-          <button className="flex flex-col items-center p-2 text-blue-400">
+          <Link href="/" className="flex flex-col items-center p-2 text-blue-400">
             <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
             </svg>
             <span className="mt-1 text-xs">クエスト</span>
-          </button>
-          <button className="flex flex-col items-center p-2 text-gray-400 hover:text-blue-400">
+          </Link>
+          <Link href="/games" className="flex flex-col items-center p-2 text-gray-400 hover:text-blue-400">
+            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
+            </svg>
+            <span className="mt-1 text-xs">ゲーム</span>
+          </Link>
+          <Link href="/ranking" className="flex flex-col items-center p-2 text-gray-400 hover:text-blue-400">
             <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
             </svg>
             <span className="mt-1 text-xs">ランキング</span>
-          </button>
-          <button className="flex flex-col items-center p-2 text-gray-400 hover:text-blue-400">
-            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
-            </svg>
-            <span className="mt-1 text-xs">報酬</span>
-          </button>
+          </Link>
         </div>
       </nav>
     </div>

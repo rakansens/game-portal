@@ -1,15 +1,17 @@
-import { Quest } from '../types/supabase';
+import { Game } from '@/types/game';
+import { supabase } from '@/lib/supabase';
 
-export async function fetchQuests(): Promise<Quest[]> {
-  try {
-    const response = await fetch('/api/quests');
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Failed to fetch quests');
-    }
-    return response.json();
-  } catch (error) {
-    console.error('Error fetching quests:', error);
+export async function fetchGames(): Promise<Game[]> {
+  const { data, error } = await supabase
+    .from('games')
+    .select('*')
+    .eq('is_active', true)
+    .order('order_position', { ascending: true });
+
+  if (error) {
+    console.error('Error fetching games:', error);
     throw error;
   }
+
+  return data || [];
 }
