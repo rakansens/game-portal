@@ -7,10 +7,10 @@ import { Checkbox } from '@/components/admin/ui/Checkbox/index';
 type FilterKey = 'type' | 'platform' | 'status';
 
 interface QuestFiltersProps {
-  filters: {
+  filters?: {
     [K in FilterKey]?: string[];
   };
-  onChange: (filters: QuestFiltersProps['filters']) => void;
+  onChange: (filters: NonNullable<QuestFiltersProps['filters']>) => void;
 }
 
 interface FilterGroup {
@@ -51,7 +51,7 @@ const FILTER_GROUPS: FilterGroup[] = [
   },
 ];
 
-export function QuestFilters({ filters, onChange }: QuestFiltersProps) {
+export function QuestFilters({ filters = {}, onChange }: QuestFiltersProps) {
   const handleFilterChange = useCallback(
     (group: FilterKey, value: string, checked: boolean) => {
       const currentValues = filters[group] || [];
