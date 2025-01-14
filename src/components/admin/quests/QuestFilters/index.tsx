@@ -1,8 +1,10 @@
 'use client';
 
 import { useCallback } from 'react';
+import { cn } from '@/utils/cn';
 import { Button } from '@/components/admin/ui/Button';
 import { Checkbox } from '@/components/admin/ui/Checkbox/index';
+import { Badge } from '@/components/admin/ui/Badge';
 
 type FilterKey = 'type' | 'platform' | 'status';
 
@@ -19,6 +21,7 @@ interface FilterGroup {
   options: Array<{
     value: string;
     label: string;
+    color?: 'success' | 'warning' | 'info' | 'default';
   }>;
 }
 
@@ -27,26 +30,26 @@ const FILTER_GROUPS: FilterGroup[] = [
     label: 'タイプ',
     key: 'type',
     options: [
-      { value: 'normal', label: 'ノーマル' },
-      { value: 'limited_time', label: '期間限定' },
-      { value: 'special', label: 'スペシャル' },
+      { value: 'normal', label: 'ノーマル', color: 'default' },
+      { value: 'limited_time', label: '期間限定', color: 'warning' },
+      { value: 'special', label: 'スペシャル', color: 'info' },
     ],
   },
   {
     label: 'プラットフォーム',
     key: 'platform',
     options: [
-      { value: 'discord', label: 'Discord' },
-      { value: 'other', label: 'その他' },
+      { value: 'discord', label: 'Discord', color: 'info' },
+      { value: 'other', label: 'その他', color: 'default' },
     ],
   },
   {
     label: 'ステータス',
     key: 'status',
     options: [
-      { value: 'active', label: '公開中' },
-      { value: 'draft', label: '下書き' },
-      { value: 'completed', label: '終了' },
+      { value: 'active', label: '公開中', color: 'success' },
+      { value: 'draft', label: '下書き', color: 'warning' },
+      { value: 'completed', label: '終了', color: 'default' },
     ],
   },
 ];
@@ -89,27 +92,42 @@ export function QuestFilters({ filters = {}, onChange }: QuestFiltersProps) {
         )}
       </div>
 
-      <div className="space-y-8">
+      <div className="space-y-6">
         {FILTER_GROUPS.map((group) => (
           <div key={group.key} className="space-y-3">
-            <h3 className="text-sm font-medium text-gray-900">{group.label}</h3>
-            <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-medium text-gray-900">{group.label}</h3>
+              {filters[group.key]?.length ? (
+                <Badge variant="info" size="sm">
+                  {filters[group.key]?.length}個選択中
+                </Badge>
+              ) : null}
+            </div>
+            <div className="grid grid-cols-2 gap-2">
               {group.options.map((option) => (
-                <div key={option.value} className="flex items-center">
+                <label
+                  key={option.value}
+                  className={cn(
+                    'flex cursor-pointer items-center rounded-lg border p-3 transition-colors',
+                    filters[group.key]?.includes(option.value)
+                      ? 'border-admin-primary bg-admin-primary/5'
+                      : 'border-gray-200 hover:bg-gray-50'
+                  )}
+                >
                   <Checkbox
                     id={`${group.key}-${option.value}`}
                     checked={filters[group.key]?.includes(option.value) || false}
                     onCheckedChange={(checked: boolean) =>
                       handleFilterChange(group.key, option.value, checked)
                     }
+                    className="sr-only"
                   />
-                  <label
-                    htmlFor={`${group.key}-${option.value}`}
-                    className="ml-2 text-sm text-gray-600"
-                  >
-                    {option.label}
-                  </label>
-                </div>
+                  <div className="ml-2 flex items-center gap-2">
+                    <Badge variant={option.color} size="sm">
+                      {option.label}
+                    </Badge>
+                  </div>
+                </label>
               ))}
             </div>
           </div>
