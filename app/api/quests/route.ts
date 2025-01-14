@@ -23,13 +23,20 @@ export async function GET(request: NextRequest) {
       .from('quests')
       .select('*');
 
-    if (error) throw error;
+    if (error) {
+      console.error('Supabase error:', error);
+      console.error('Error details:', error.details, error.hint, error.message);
+      throw error;
+    }
+
+    console.log('Raw data from Supabase:', data);
     if (!data) throw new Error('No data returned from database');
 
     // レスポンスデータを整形
-    const formattedData = data.map(quest => 
+    const formattedData = data.map(quest =>
       toPublicQuest(quest, isQuestAvailable(quest))
     );
+    console.log('Formatted data:', formattedData);
 
     return Response.json(formattedData);
   } catch (error) {
@@ -54,12 +61,9 @@ function isQuestAvailable(quest: Database['public']['Tables']['quests']['Row']):
   }
 
   // 参加人数制限チェック
-  if (
-    quest.participants_limit !== null &&
-    quest.participant_count !== null &&
-    quest.participant_count >= quest.participants_limit
-  ) {
-    return false;
+  if (quest.participants_limit !== null) {
+    // TODO: 参加人数の取得は未実装
+    return true;
   }
 
   return true;

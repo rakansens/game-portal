@@ -15,15 +15,13 @@ export default function HomePage() {
     const loadQuests = async () => {
       try {
         setLoading(true);
-        const { data, error } = await supabase
-          .from('quests')
-          .select('*');
-
-        if (error) {
-          console.error('Supabase error:', error);
-          throw error;
+        const response = await fetch('/api/quests');
+        if (!response.ok) {
+          throw new Error('Failed to fetch quests');
         }
+        const data = await response.json();
         console.log('Fetched quests:', data);
+        console.log('Quests length:', data?.length);
         setQuests(data || []);
       } catch (err) {
         setError('クエストの読み込みに失敗しました');

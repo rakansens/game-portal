@@ -20,18 +20,18 @@ create table public.quests (
 -- RLSポリシーを設定
 alter table public.quests enable row level security;
 
+-- 全てのユーザー（匿名含む）が閲覧可能
+create policy "全てのユーザーがクエストを閲覧可能" on public.quests
+  for select
+  to anon, authenticated
+  using (true);
+
 -- 管理者のみがCRUD操作可能
 create policy "管理者のみがクエストを管理可能" on public.quests
   for all
   to authenticated
   using (auth.jwt() ->> 'role' = 'admin')
   with check (auth.jwt() ->> 'role' = 'admin');
-
--- 一般ユーザーは閲覧のみ可能
-create policy "一般ユーザーはクエストを閲覧可能" on public.quests
-  for select
-  to authenticated
-  using (true);
 
 -- updated_atを自動更新するトリガー
 create function public.handle_updated_at()
