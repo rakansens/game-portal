@@ -14,9 +14,11 @@ export default function AdminPage() {
   const [error, setError] = useState<string | null>(null);
   const [questToDelete, setQuestToDelete] = useState<Quest | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
-  const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
-  const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
+  const [filters, setFilters] = useState<{
+    type?: string[];
+    platform?: string[];
+    status?: string[];
+  }>({});
 
   const loadQuests = async () => {
     try {
@@ -72,9 +74,9 @@ export default function AdminPage() {
 
   // フィルタリングされたクエストを取得
   const filteredQuests = quests.filter(quest => {
-    const typeMatch = selectedTypes.length === 0 || (quest.type && selectedTypes.includes(quest.type));
-    const platformMatch = selectedPlatforms.length === 0 || (quest.platform && selectedPlatforms.includes(quest.platform));
-    const statusMatch = selectedStatuses.length === 0 || selectedStatuses.includes(quest.status);
+    const typeMatch = !filters.type?.length || (quest.type && filters.type.includes(quest.type));
+    const platformMatch = !filters.platform?.length || (quest.platform && filters.platform.includes(quest.platform));
+    const statusMatch = !filters.status?.length || filters.status.includes(quest.status);
     return typeMatch && platformMatch && statusMatch;
   });
 
@@ -102,7 +104,7 @@ export default function AdminPage() {
         <h1 className="text-2xl font-bold text-gray-900">クエスト管理</h1>
         <Link
           href="/admin/quests/new"
-          className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+          className="rounded-md bg-admin-primary px-4 py-2 text-sm font-medium text-white hover:bg-admin-primary/90"
         >
           新規作成
         </Link>
@@ -110,13 +112,8 @@ export default function AdminPage() {
 
       <div className="mb-6">
         <QuestFilters
-          quests={quests}
-          selectedTypes={selectedTypes}
-          selectedPlatforms={selectedPlatforms}
-          selectedStatuses={selectedStatuses}
-          onTypeChange={setSelectedTypes}
-          onPlatformChange={setSelectedPlatforms}
-          onStatusChange={setSelectedStatuses}
+          filters={filters}
+          onChange={setFilters}
         />
       </div>
 

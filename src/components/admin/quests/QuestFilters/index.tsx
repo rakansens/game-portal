@@ -3,7 +3,6 @@
 import { useCallback } from 'react';
 import { cn } from '@/utils/cn';
 import { Button } from '@/components/admin/ui/Button';
-import { Checkbox } from '@/components/admin/ui/Checkbox/index';
 import { Badge } from '@/components/admin/ui/Badge';
 
 type FilterKey = 'type' | 'platform' | 'status';
@@ -56,11 +55,11 @@ const FILTER_GROUPS: FilterGroup[] = [
 
 export function QuestFilters({ filters = {}, onChange }: QuestFiltersProps) {
   const handleFilterChange = useCallback(
-    (group: FilterKey, value: string, checked: boolean) => {
+    (group: FilterKey, value: string) => {
       const currentValues = filters[group] || [];
-      const newValues = checked
-        ? [...currentValues, value]
-        : currentValues.filter((v) => v !== value);
+      const newValues = currentValues.includes(value)
+        ? currentValues.filter((v) => v !== value)
+        : [...currentValues, value];
 
       onChange({
         ...filters,
@@ -105,29 +104,20 @@ export function QuestFilters({ filters = {}, onChange }: QuestFiltersProps) {
             </div>
             <div className="grid grid-cols-2 gap-2">
               {group.options.map((option) => (
-                <label
+                <button
                   key={option.value}
+                  onClick={() => handleFilterChange(group.key, option.value)}
                   className={cn(
-                    'flex cursor-pointer items-center rounded-lg border p-3 transition-colors',
+                    'flex w-full cursor-pointer items-center justify-center rounded-lg border p-3 transition-colors',
                     filters[group.key]?.includes(option.value)
                       ? 'border-admin-primary bg-admin-primary/5'
                       : 'border-gray-200 hover:bg-gray-50'
                   )}
                 >
-                  <Checkbox
-                    id={`${group.key}-${option.value}`}
-                    checked={filters[group.key]?.includes(option.value) || false}
-                    onCheckedChange={(checked: boolean) =>
-                      handleFilterChange(group.key, option.value, checked)
-                    }
-                    className="sr-only"
-                  />
-                  <div className="ml-2 flex items-center gap-2">
-                    <Badge variant={option.color} size="sm">
-                      {option.label}
-                    </Badge>
-                  </div>
-                </label>
+                  <Badge variant={option.color} size="sm">
+                    {option.label}
+                  </Badge>
+                </button>
               ))}
             </div>
           </div>
