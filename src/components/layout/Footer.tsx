@@ -51,12 +51,12 @@ export function Footer() {
   ];
 
   return (
-    <footer className="fixed bottom-0 left-0 right-0 z-50 bg-[#070809]">
+    <footer className="fixed bottom-0 left-0 right-0 z-50 bg-background">
       {/* グラデーションボーダー */}
-      <div className="h-px w-full bg-gradient-to-r from-[#2761c3] via-[#27c39f] to-[#2761c3] opacity-20" />
+      <div className="h-px w-full bg-gradient-to-r from-primary via-primary-hover to-primary opacity-20" />
       
       {/* メインコンテンツ */}
-      <nav className="bg-[#070809] border-t border-[#2761c3]/10">
+      <nav className="bg-background-dark border-t border-primary/10">
         <div className="mx-auto max-w-[280px] px-2">
           <div className="flex h-14 items-center justify-around">
             {menuItems.map((item) => (
@@ -66,8 +66,8 @@ export function Footer() {
                 className={cn(
                   'group flex flex-col items-center gap-0.5 transition-all duration-300',
                   'relative px-2 py-1',
-                  'hover:text-[#27c39f]',
-                  item.active ? 'text-[#27c39f]' : 'text-[#ddebf0]/60'
+                  'hover:text-primary-hover',
+                  item.active ? 'text-primary-hover' : 'text-[#ddebf0]/60'
                 )}
               >
                 {/* アイコン */}
@@ -81,7 +81,7 @@ export function Footer() {
 
                 {/* アクティブインジケーター */}
                 {item.active && (
-                  <div className="absolute -bottom-1 left-1/2 h-0.5 w-6 -translate-x-1/2 rounded-full bg-gradient-to-r from-[#2761c3] via-[#27c39f] to-[#2761c3] shadow-[0_0_10px_rgba(39,193,159,0.5)]" />
+                  <div className="absolute -bottom-1 left-1/2 h-0.5 w-6 -translate-x-1/2 rounded-full bg-gradient-to-r from-primary via-primary-hover to-primary shadow-[0_0_10px_rgba(39,193,159,0.5)]" />
                 )}
               </Link>
             ))}
