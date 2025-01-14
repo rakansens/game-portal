@@ -12,11 +12,13 @@ export const descriptionStyles = 'mt-2 text-sm text-gray-500 line-clamp-3';
 
 export const badgeContainerStyles = 'mt-4 flex flex-wrap gap-2';
 
-export const infoContainerStyles = 'mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4';
+export const infoContainerStyles = 'mt-6 grid grid-cols-1 gap-3';
 
-export const infoItemStyles = 'flex items-center space-x-2 text-sm text-gray-600';
+export const infoSectionStyles = 'grid grid-cols-1 sm:grid-cols-2 gap-3';
 
-export const infoLabelStyles = 'font-medium min-w-[5rem]';
+export const infoItemStyles = 'flex items-center text-sm text-gray-600';
+
+export const infoLabelStyles = 'font-medium min-w-[5.5rem] shrink-0';
 
 export const infoValueStyles = 'text-gray-900';
 
@@ -25,3 +27,7 @@ export const tagContainerStyles = 'mt-4 flex flex-wrap gap-2';
 export const rewardContainerStyles = 'mt-4 flex flex-wrap items-center gap-4';
 
 export const rewardItemStyles = 'flex items-center gap-2 text-sm font-medium';
+
+export const dateContainerStyles = 'flex flex-col sm:flex-row sm:gap-6';
+
+export const statusContainerStyles = 'flex flex-col sm:flex-row sm:gap-6';

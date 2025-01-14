@@ -12,12 +12,15 @@ import {
   descriptionStyles,
   badgeContainerStyles,
   infoContainerStyles,
+  infoSectionStyles,
   infoItemStyles,
   infoLabelStyles,
   infoValueStyles,
   tagContainerStyles,
   rewardContainerStyles,
   rewardItemStyles,
+  dateContainerStyles,
+  statusContainerStyles,
 } from './styles';
 
 export function QuestCard({ quest }: QuestCardProps) {
@@ -58,48 +61,53 @@ export function QuestCard({ quest }: QuestCardProps) {
       </div>
 
       <div className={infoContainerStyles}>
-        {quest.start_date && (
-          <div className={infoItemStyles}>
-            <span className={infoLabelStyles}>開始日:</span>
-            <span className={infoValueStyles}>
-              {format(new Date(quest.start_date), 'yyyy年MM月dd日', { locale: ja })}
-            </span>
-          </div>
-        )}
-        {quest.end_date && (
-          <div className={infoItemStyles}>
-            <span className={infoLabelStyles}>終了日:</span>
-            <span className={infoValueStyles}>
-              {format(new Date(quest.end_date), 'yyyy年MM月dd日', { locale: ja })}
-            </span>
-          </div>
-        )}
-        {quest.estimated_time && (
-          <div className={infoItemStyles}>
-            <span className={infoLabelStyles}>所要時間:</span>
-            <span className={infoValueStyles}>約{quest.estimated_time}分</span>
-          </div>
-        )}
-        {quest.participants_limit && (
-          <div className={infoItemStyles}>
-            <span className={infoLabelStyles}>参加状況:</span>
-            <span className={infoValueStyles}>
-              {quest.participant_count || 0}/{quest.participants_limit}人
-            </span>
-          </div>
-        )}
-        {quest.required_points && (
-          <div className={infoItemStyles}>
-            <span className={infoLabelStyles}>必要ポイント:</span>
-            <span className={infoValueStyles}>{quest.required_points}ポイント</span>
-          </div>
-        )}
-        {quest.max_attempts && (
-          <div className={infoItemStyles}>
-            <span className={infoLabelStyles}>挑戦回数:</span>
-            <span className={infoValueStyles}>最大{quest.max_attempts}回まで</span>
-          </div>
-        )}
+        <div className={dateContainerStyles}>
+          {quest.start_date && (
+            <div className={infoItemStyles}>
+              <span className={infoLabelStyles}>開始日:</span>
+              <span className={infoValueStyles}>
+                {format(new Date(quest.start_date), 'yyyy年MM月dd日', { locale: ja })}
+              </span>
+            </div>
+          )}
+          {quest.end_date && (
+            <div className={infoItemStyles}>
+              <span className={infoLabelStyles}>終了日:</span>
+              <span className={infoValueStyles}>
+                {format(new Date(quest.end_date), 'yyyy年MM月dd日', { locale: ja })}
+              </span>
+            </div>
+          )}
+        </div>
+
+        <div className={infoSectionStyles}>
+          {quest.participants_limit && (
+            <div className={infoItemStyles}>
+              <span className={infoLabelStyles}>参加状況:</span>
+              <span className={infoValueStyles}>
+                {quest.participant_count || 0}/{quest.participants_limit}人
+              </span>
+            </div>
+          )}
+          {quest.required_points && (
+            <div className={infoItemStyles}>
+              <span className={infoLabelStyles}>必要ポイント:</span>
+              <span className={infoValueStyles}>{quest.required_points}ポイント</span>
+            </div>
+          )}
+          {quest.estimated_time && (
+            <div className={infoItemStyles}>
+              <span className={infoLabelStyles}>所要時間:</span>
+              <span className={infoValueStyles}>約{quest.estimated_time}分</span>
+            </div>
+          )}
+          {quest.max_attempts && (
+            <div className={infoItemStyles}>
+              <span className={infoLabelStyles}>挑戦回数:</span>
+              <span className={infoValueStyles}>最大{quest.max_attempts}回まで</span>
+            </div>
+          )}
+        </div>
       </div>
 
       {quest.tags && quest.tags.length > 0 && (
