@@ -57,15 +57,25 @@ const config: Config = {
       boxShadow: {
         'neon-exp': '0 0 5px theme("colors.green.400"), 0 0 20px theme("colors.green.600")',
         'neon-points': '0 0 5px theme("colors.yellow.400"), 0 0 20px theme("colors.yellow.600")',
+        'neon-progress': '0 0 10px rgba(39,97,195,0.5)',
       },
       animation: {
         'fade-in': 'fadeIn 0.5s ease-out',
+        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'shimmer': 'shimmer 3s linear infinite',
       },
       keyframes: {
         fadeIn: {
           '0%': { opacity: '0', transform: 'translateY(10px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
         },
+        shimmer: {
+          '0%': { backgroundPosition: '0 0' },
+          '100%': { backgroundPosition: '-250% 0' },
+        },
+      },
+      textShadow: {
+        'neon': '0 0 5px rgba(221,235,240,0.5)',
       },
     },
   },
@@ -77,6 +87,9 @@ const config: Config = {
         },
         '.clip-corners-sm': {
           clipPath: 'polygon(96% 0, 100% 12.5%, 100% 100%, 4% 100%, 0 87.5%, 0 0)',
+        },
+        '.text-shadow-neon': {
+          textShadow: '0 0 5px rgba(221,235,240,0.5)',
         },
       });
     }),

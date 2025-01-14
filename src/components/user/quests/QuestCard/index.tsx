@@ -21,19 +21,19 @@ export function QuestCard({ quest, onStart, onComplete }: QuestCardProps) {
     <div className="w-full max-w-md animate-fade-in mx-auto">
       <div
         className={cn(
-          'relative overflow-hidden bg-gradient-to-br from-gray-900 to-gray-800 shadow-lg transition-all duration-300',
-          'border-2 border-[#2761c3]',
-          'before:absolute before:inset-0 before:bg-gradient-to-br before:from-transparent before:to-[#2761c3]/20',
-          'after:absolute after:inset-0 after:bg-gradient-to-br after:from-transparent after:to-black/5',
-          '-webkit-clip-path: polygon(92% 0, 100% 25%, 100% 100%, 8% 100%, 0 75%, 0 0)',
-          'clip-path: polygon(92% 0, 100% 25%, 100% 100%, 8% 100%, 0 75%, 0 0)',
-          isImportant && 'border-yellow-400 from-yellow-900/50 to-gray-800',
-          isLimited && 'border-[#27c39f] from-[#27c39f]/20 to-gray-800'
+          'relative overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 shadow-lg transition-all duration-300',
+          'border-2',
+          'clip-corners',
+          'before:absolute before:inset-0 before:bg-gradient-to-br before:from-transparent before:via-[#2761c3]/10 before:to-[#27c39f]/20',
+          'after:absolute after:inset-0 after:bg-[linear-gradient(45deg,transparent_25%,rgba(68,68,68,0.2)_50%,transparent_75%,transparent_100%)] after:bg-[length:250%_250%] after:animate-shimmer',
+          isImportant && 'border-yellow-400 before:via-yellow-500/10 before:to-yellow-600/20 shadow-[0_0_15px_rgba(234,179,8,0.3)]',
+          isLimited && 'border-[#27c39f] before:via-[#27c39f]/10 before:to-[#2761c3]/20 shadow-[0_0_15px_rgba(45,192,156,0.3)]',
+          !isImportant && !isLimited && 'border-[#2761c3] shadow-[0_0_15px_rgba(39,97,195,0.3)]'
         )}
       >
         {/* ヘッダー部分 */}
-        <div className="flex items-center justify-between border-b border-[#2761c3]/30 p-4">
-          <h3 className="text-lg font-bold text-[#ddebf0]">{quest.title}</h3>
+        <div className="flex items-center justify-between border-b border-[#2761c3]/30 p-4 backdrop-blur-sm">
+          <h3 className="text-lg font-bold text-[#ddebf0] text-shadow-neon">{quest.title}</h3>
           <div className="flex gap-1.5">
             <Badge variant={quest.type === 'normal' ? 'default' : 'special'} size="sm">
               {quest.type === 'normal' ? 'ノーマル' : 'スペシャル'}
@@ -43,20 +43,20 @@ export function QuestCard({ quest, onStart, onComplete }: QuestCardProps) {
         </div>
 
         {/* メインコンテンツ */}
-        <div className="p-4">
+        <div className="p-4 backdrop-blur-sm">
           {/* 説明文 */}
-          <p className="mb-4 text-sm text-[#ddebf0]/80 line-clamp-2">{quest.description}</p>
+          <p className="mb-4 text-sm text-[#ddebf0]/80">{quest.description}</p>
 
           {/* 報酬情報 */}
           <div className="mb-4 flex flex-wrap gap-2">
             {quest.exp_reward > 0 && (
-              <Badge variant="exp" size="lg" className="flex items-center gap-1 shadow-neon-exp">
+              <Badge variant="exp" size="lg" className="flex items-center gap-1 shadow-neon-exp animate-pulse-slow">
                 <span className="font-bold">{quest.exp_reward}</span>
                 <span>EXP</span>
               </Badge>
             )}
             {quest.points && quest.points > 0 && (
-              <Badge variant="points" size="lg" className="flex items-center gap-1 shadow-neon-points">
+              <Badge variant="points" size="lg" className="flex items-center gap-1 shadow-neon-points animate-pulse-slow">
                 <span className="font-bold">{quest.points}</span>
                 <span>ポイント</span>
               </Badge>
@@ -65,7 +65,7 @@ export function QuestCard({ quest, onStart, onComplete }: QuestCardProps) {
 
           {/* 期間情報 */}
           {isLimited && quest.start_date && quest.end_date && (
-            <div className="mb-4 flex items-center rounded bg-[#2761c3]/10 px-3 py-2 text-sm text-[#27c39f]">
+            <div className="mb-4 flex items-center rounded bg-[#2761c3]/10 px-3 py-2 text-sm text-[#27c39f] backdrop-blur-sm">
               <svg className="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
@@ -84,13 +84,13 @@ export function QuestCard({ quest, onStart, onComplete }: QuestCardProps) {
                 {quest.participant_count || 0}/{quest.participants_limit || '∞'}
               </span>
             </div>
-            <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#2761c3]/20">
+            <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#2761c3]/20 backdrop-blur-sm">
               <div
                 className={cn(
                   'h-full rounded-full transition-all duration-500',
                   quest.participant_count && quest.participants_limit && quest.participant_count >= quest.participants_limit
-                    ? 'bg-gradient-to-r from-[#27c39f] to-[#2761c3]'
-                    : 'bg-gradient-to-r from-[#2761c3] to-[#27c39f]'
+                    ? 'bg-gradient-to-r from-[#27c39f] to-[#2761c3] shadow-neon-progress'
+                    : 'bg-gradient-to-r from-[#2761c3] to-[#27c39f] shadow-neon-progress'
                 )}
                 style={{
                   width: `${
@@ -134,7 +134,7 @@ export function QuestCard({ quest, onStart, onComplete }: QuestCardProps) {
 
         {/* 追加情報 */}
         {(quest.estimated_time || quest.max_attempts) && (
-          <div className="border-t border-[#2761c3]/30 bg-[#2761c3]/5 px-4 py-3">
+          <div className="border-t border-[#2761c3]/30 bg-[#2761c3]/5 px-4 py-3 backdrop-blur-sm">
             <div className="flex flex-wrap gap-4 text-sm text-[#ddebf0]/60">
               {quest.estimated_time && (
                 <span className="flex items-center gap-1.5">
