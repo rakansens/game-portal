@@ -1,7 +1,6 @@
 import { NextRequest } from 'next/server';
 import {
   supabaseAdmin,
-  withTransaction,
   createErrorResponse,
   checkAdminAuth,
 } from '../../../../../src/lib/supabase-admin';
@@ -26,20 +25,28 @@ export async function PUT(request: NextRequest) {
 
     const { quests } = validation.data;
 
-    // トランザクション内でバルク更新を実行
-    await withTransaction(async () => {
-      for (const quest of quests) {
-        const { error } = await supabaseAdmin
-          .from('quests')
-          .update({ order_position: quest.order_position })
-          .eq('id', quest.id);
+    // 一括更新用のデータを準備
+    const updates = quests.map(quest => ({
+      id: quest.id,
+      order_position: quest.order_position
+    }));
 
-        if (error) {
-          console.error('Error updating quest order:', error);
-          throw error;
-        }
-      }
-    });
+    // 一括更新を実行
+    const { error } = await supabaseAdmin
+      .from('quests')
+      .upsert(updates, {
+        onConflict: 'id',
+        ignoreDuplicates: false
+      });
+
+    if (error) {
+      console.error('Error updating quest order:', error);
+      return createErrorResponse(
+        '並び順の更新に失敗しました',
+        500,
+        error
+      );
+    }
 
     return Response.json({ success: true });
   } catch (error) {

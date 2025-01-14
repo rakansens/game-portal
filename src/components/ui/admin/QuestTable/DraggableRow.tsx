@@ -21,7 +21,6 @@ function DraggableRowComponent({ quest, onDelete }: DraggableRowProps) {
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1,
-    cursor: 'move',
   };
 
   const formattedEndDate = quest.end_date
@@ -32,14 +31,45 @@ function DraggableRowComponent({ quest, onDelete }: DraggableRowProps) {
       })
     : '-';
 
+  const handleDelete = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (onDelete) {
+      if (window.confirm('このクエストを削除してもよろしいですか？')) {
+        onDelete(quest);
+      }
+    }
+  };
+
   return (
     <tr
       ref={setNodeRef}
       style={style}
-      {...attributes}
-      {...listeners}
-      className="hover:bg-gray-50"
+      className={`group transition-colors duration-200 hover:bg-gray-50 ${
+        isDragging ? 'bg-blue-50 shadow-lg' : ''
+      }`}
     >
+      <td className="w-10 px-2 py-4">
+        <div
+          {...attributes}
+          {...listeners}
+          className="flex h-full cursor-move items-center justify-center opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+        >
+          <svg
+            className="h-5 w-5 text-gray-400 hover:text-gray-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M4 8h16M4 12h16M4 16h16"
+            />
+          </svg>
+        </div>
+      </td>
       <td className="whitespace-nowrap px-6 py-4">
         <div className="text-sm font-medium text-gray-900">{quest.title}</div>
         <div className="text-sm text-gray-500">{quest.description}</div>
@@ -79,7 +109,7 @@ function DraggableRowComponent({ quest, onDelete }: DraggableRowProps) {
         </Link>
         {onDelete && (
           <button
-            onClick={() => onDelete(quest)}
+            onClick={handleDelete}
             className="ml-4 text-red-600 hover:text-red-900"
           >
             削除

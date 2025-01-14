@@ -16,8 +16,8 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import { Quest } from '../../types/supabase';
-import { DraggableQuestRow } from './DraggableQuestRow';
+import { DraggableRow } from '@/components/ui/admin/QuestTable/DraggableRow';
+import type { Quest } from '@/types/quest';
 
 interface QuestTableProps {
   quests: Quest[];
@@ -26,19 +26,24 @@ interface QuestTableProps {
 }
 
 const TABLE_HEADERS = [
-  { label: 'タイトル', className: '' },
-  { label: 'ステータス', className: 'w-24' },
-  { label: 'タイプ', className: 'w-24' },
-  { label: '報酬', className: 'w-32' },
-  { label: '期限', className: 'w-28' },
-  { label: '操作', className: 'w-24 text-right' },
+  { label: '', className: 'w-10 px-2' }, // ドラッグハンドル用
+  { label: 'タイトル', className: 'px-6' },
+  { label: 'ステータス', className: 'w-24 px-6' },
+  { label: 'タイプ', className: 'w-24 px-6' },
+  { label: '報酬', className: 'w-32 px-6' },
+  { label: '期限', className: 'w-28 px-6' },
+  { label: '操作', className: 'w-24 px-6 text-right' },
 ] as const;
 
 export function QuestTable({ quests, onDelete, onOrderChange }: QuestTableProps) {
   const [items, setItems] = useState(quests);
 
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8, // 8ピクセル以上動かさないとドラッグを開始しない
+      },
+    }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     })
@@ -59,6 +64,7 @@ export function QuestTable({ quests, onDelete, onOrderChange }: QuestTableProps)
             order_position: index,
           }));
 
+          // 親コンポーネントに通知
           onOrderChange?.(newItems);
           return newItems;
         });
@@ -87,7 +93,7 @@ export function QuestTable({ quests, onDelete, onOrderChange }: QuestTableProps)
               {TABLE_HEADERS.map((header) => (
                 <th
                   key={header.label}
-                  className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 ${header.className}`}
+                  className={`py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 ${header.className}`}
                 >
                   {header.label}
                 </th>
@@ -100,7 +106,7 @@ export function QuestTable({ quests, onDelete, onOrderChange }: QuestTableProps)
               strategy={verticalListSortingStrategy}
             >
               {items.map((quest) => (
-                <DraggableQuestRow
+                <DraggableRow
                   key={quest.id}
                   quest={quest}
                   onDelete={onDelete ? () => onDelete(quest) : undefined}

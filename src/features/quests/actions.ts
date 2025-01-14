@@ -9,8 +9,8 @@ export async function fetchPublicQuests() {
     const { data, error } = await supabase
       .from('quests')
       .select('*')
-      .eq('status', 'published')
-      .order('order_index', { ascending: true })
+      .eq('status', 'active')
+      .order('order_position', { ascending: true })
       .order('created_at', { ascending: false });
 
     if (error) {
@@ -32,7 +32,7 @@ export async function fetchPublicQuestById(id: string) {
     const { data, error } = await supabase
       .from('quests')
       .select('*')
-      .eq('status', 'published')
+      .eq('status', 'active')
       .eq('id', id)
       .single();
 

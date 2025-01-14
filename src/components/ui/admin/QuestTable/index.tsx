@@ -20,6 +20,7 @@ import { DraggableRow } from './DraggableRow';
 import { QuestTableProps } from './types';
 
 const TABLE_HEADERS = [
+  { label: '', className: 'w-10' }, // ドラッグハンドル用
   { label: 'タイトル', className: '' },
   { label: 'ステータス', className: 'w-24' },
   { label: 'タイプ', className: 'w-24' },
@@ -32,7 +33,11 @@ export function QuestTable({ quests, onDelete, onOrderChange }: QuestTableProps)
   const [items, setItems] = useState(quests);
 
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8, // 8ピクセル以上動かさないとドラッグを開始しない
+      },
+    }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     })
@@ -53,6 +58,7 @@ export function QuestTable({ quests, onDelete, onOrderChange }: QuestTableProps)
             order_position: index,
           }));
 
+          // 親コンポーネントに通知
           onOrderChange?.(newItems);
           return newItems;
         });

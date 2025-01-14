@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { Quest } from '../src/types/supabase';
 import { QuestCard } from '../src/components/quest/QuestCard';
 import { useAuthStore } from '../src/store/auth';
-import { fetchQuests } from '../src/lib/api';
+import { fetchPublicQuests } from '../src/features/quests/actions';
 
 export default function Home() {
   const { user, isLoading: authLoading } = useAuthStore();
@@ -17,9 +17,12 @@ export default function Home() {
       try {
         setLoading(true);
         setError(null);
-        const data = await fetchQuests();
-        console.log('Fetched quests:', JSON.stringify(data, null, 2));
-        setQuests(data);
+        const result = await fetchPublicQuests();
+        if (result.error) {
+          throw new Error(result.error);
+        }
+        console.log('Fetched quests:', JSON.stringify(result.data, null, 2));
+        setQuests(result.data || []);
       } catch (err) {
         console.error('Error loading quests:', err);
         setError('クエストの読み込みに失敗しました');
