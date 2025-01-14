@@ -23,7 +23,7 @@ export function QuestCard({ quest, onStart, onComplete }: QuestCardProps) {
         className={cn(
           'relative overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 shadow-lg transition-all duration-500',
           'border-2 transform-gpu group-hover:scale-[1.02] group-hover:rotate-y-[-5deg]',
-          'clip-corners',
+          'rounded-3xl',
           'before:absolute before:inset-0 before:bg-gradient-to-br before:from-transparent before:via-[#2761c3]/10 before:to-[#27c39f]/20 before:transition-opacity before:duration-500',
           'after:absolute after:inset-0 after:bg-[linear-gradient(45deg,transparent_25%,rgba(68,68,68,0.2)_50%,transparent_75%,transparent_100%)] after:bg-[length:250%_250%] after:animate-shimmer',
           'group-hover:before:opacity-50',
@@ -32,10 +32,6 @@ export function QuestCard({ quest, onStart, onComplete }: QuestCardProps) {
           !isImportant && !isLimited && 'border-[#2761c3] shadow-[0_0_15px_rgba(39,97,195,0.3)] group-hover:shadow-[0_0_25px_rgba(39,97,195,0.5)]'
         )}
       >
-        {/* 装飾的な切れ目 */}
-        <div className="absolute -left-2 top-1/2 h-2 w-2 -translate-y-1/2 bg-current opacity-100" />
-        <div className="absolute -right-2 top-1/2 h-2 w-2 -translate-y-1/2 bg-current opacity-100" />
-
         {/* ヘッダー部分 */}
         <div className="flex items-center justify-between border-b border-[#2761c3]/30 p-4 backdrop-blur-sm">
           <h3 className="text-lg font-bold text-[#ddebf0] text-shadow-neon transition-all duration-300 group-hover:text-shadow-neon-strong">{quest.title}</h3>
@@ -70,7 +66,7 @@ export function QuestCard({ quest, onStart, onComplete }: QuestCardProps) {
 
           {/* 期間情報 */}
           {isLimited && quest.start_date && quest.end_date && (
-            <div className="mb-4 flex items-center rounded-lg bg-[#2761c3]/10 px-3 py-2 text-sm text-[#27c39f] backdrop-blur-sm transition-all duration-300 group-hover:bg-[#2761c3]/20 group-hover:scale-[1.02]">
+            <div className="mb-4 flex items-center rounded-2xl bg-[#2761c3]/10 px-3 py-2 text-sm text-[#27c39f] backdrop-blur-sm transition-all duration-300 group-hover:bg-[#2761c3]/20 group-hover:scale-[1.02]">
               <svg className="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
@@ -160,6 +156,9 @@ export function QuestCard({ quest, onStart, onComplete }: QuestCardProps) {
         {/* 装飾的な要素 */}
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 group-hover:animate-shine" />
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 group-hover:animate-shine" style={{ animationDelay: '0.2s' }} />
+        
+        {/* グロー効果 */}
+        <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-transparent via-current to-transparent opacity-0 blur-lg transition-opacity duration-300 group-hover:opacity-20" />
       </div>
     </div>
   );

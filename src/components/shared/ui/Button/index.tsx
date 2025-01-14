@@ -19,11 +19,11 @@ export function Button({
     <button
       className={cn(
         'group relative inline-flex items-center justify-center font-bold transition-all duration-300',
+        'rounded-2xl overflow-hidden',
         'before:absolute before:inset-0 before:transition-all before:duration-300',
         'after:absolute after:inset-0 after:transition-all after:duration-300',
         variant === 'primary' && [
           'text-[#ddebf0] hover:text-white',
-          'clip-corners overflow-hidden',
           'before:bg-[#2761c3] before:opacity-100 hover:before:opacity-0',
           'after:bg-[#27c39f] after:opacity-0 hover:after:opacity-100',
           'before:transform before:transition-transform hover:before:scale-[1.02]',
@@ -35,7 +35,6 @@ export function Button({
         ],
         variant === 'success' && [
           'text-[#ddebf0] hover:text-white',
-          'clip-corners overflow-hidden',
           'before:bg-[#27c39f] before:opacity-100 hover:before:opacity-0',
           'after:bg-[#2761c3] after:opacity-0 hover:after:opacity-100',
           'before:transform before:transition-transform hover:before:scale-[1.02]',
@@ -59,9 +58,9 @@ export function Button({
         {(isLoading || loading) && (
           <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
         )}
-        <span className="text-shadow-neon tracking-wider">{children}</span>
+        <span className="text-shadow-neon tracking-wider group-hover:text-shadow-neon-strong transition-all duration-300">{children}</span>
         <svg
-          className="h-5 w-5 transform transition-all duration-300 group-hover:translate-x-1"
+          className="h-5 w-5 transform transition-all duration-300 group-hover:translate-x-1 group-hover:scale-110"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -74,10 +73,20 @@ export function Button({
           />
         </svg>
       </span>
-      <div className="absolute -left-2 top-1/2 h-2 w-2 -translate-y-1/2 bg-current opacity-0 transition-all group-hover:opacity-100" />
-      <div className="absolute -right-2 top-1/2 h-2 w-2 -translate-y-1/2 bg-current opacity-0 transition-all group-hover:opacity-100" />
+
+      {/* 装飾的な要素 */}
+      <div className="absolute -left-2 top-1/2 h-2 w-2 -translate-y-1/2 rounded-full bg-current opacity-0 transition-all group-hover:opacity-100 group-hover:translate-x-1" />
+      <div className="absolute -right-2 top-1/2 h-2 w-2 -translate-y-1/2 rounded-full bg-current opacity-0 transition-all group-hover:opacity-100 group-hover:-translate-x-1" />
+      
+      {/* シャインエフェクト */}
       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 group-hover:animate-shine" />
       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 group-hover:animate-shine" style={{ animationDelay: '0.2s' }} />
+      
+      {/* グラデーションボーダー */}
+      <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-[#2761c3] via-[#27c39f] to-[#2761c3] opacity-0 group-hover:opacity-20 transition-opacity duration-300" />
+
+      {/* グロー効果 */}
+      <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-transparent via-current to-transparent opacity-0 blur-lg transition-opacity duration-300 group-hover:opacity-20" />
     </button>
   );
 }
