@@ -47,7 +47,9 @@ export default function HomePage() {
 
   return (
     <div className="container mx-auto min-h-screen px-4 pb-20 pt-4">
-      <h1 className="mb-6 text-xl font-bold text-gray-900">クエスト一覧</h1>
+   •	角丸デザイン (border-radius: 8px ~ 12px 相当)
+	•	ホバー時（またはタップ時）にふわっと膨らむようなアニメーション (transform: scale, box-shadow の変化)
+	•	ボタンやバッジなどの要素も共通スタイルに合わせて角丸にして欲しい   <h1 className="mb-6 text-xl font-bold text-gray-900">クエスト一覧</h1>
       
       {/* クエストリスト */}
       <div className="space-y-4">
@@ -71,21 +73,21 @@ export default function HomePage() {
       )}
 
       {/* 下部ナビゲーション */}
-      <nav className="fixed bottom-0 left-0 right-0 border-t bg-white py-2">
+      <nav className="fixed bottom-0 left-0 right-0 border-t border-gray-700 bg-gray-800 py-2">
         <div className="container mx-auto flex justify-around">
-          <button className="flex flex-col items-center p-2 text-blue-600">
+          <button className="flex flex-col items-center p-2 text-blue-400">
             <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
             </svg>
             <span className="mt-1 text-xs">クエスト</span>
           </button>
-          <button className="flex flex-col items-center p-2 text-gray-600">
+          <button className="flex flex-col items-center p-2 text-gray-400 hover:text-blue-400">
             <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
             </svg>
             <span className="mt-1 text-xs">ランキング</span>
           </button>
-          <button className="flex flex-col items-center p-2 text-gray-600">
+          <button className="flex flex-col items-center p-2 text-gray-400 hover:text-blue-400">
             <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
             </svg>
