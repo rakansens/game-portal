@@ -11,7 +11,8 @@ export class APIError extends Error {
   constructor(
     message: string,
     public status?: number,
-    public code?: string
+    public code?: string,
+    public details?: any
   ) {
     super(message);
     this.name = 'APIError';
@@ -24,10 +25,12 @@ export async function handleAPIResponse<T>(
 ): Promise<T> {
   if (!response.ok) {
     const error = await response.json().catch(() => ({}));
+    console.log('API Error:', error);
     throw new APIError(
-      error.message || errorMessage,
+      error.error || errorMessage,
       response.status,
-      error.code
+      error.code,
+      error.details
     );
   }
   return response.json();

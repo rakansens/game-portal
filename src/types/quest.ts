@@ -1,4 +1,4 @@
-import { Database } from './supabase';
+import type { Database } from './database';
 
 export type QuestStatus = 'draft' | 'active' | 'completed' | 'archived';
 export type QuestType = 'normal' | 'limited_time' | 'roulette';

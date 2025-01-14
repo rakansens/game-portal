@@ -33,20 +33,22 @@ create table public.quests (
   constraint quests_verification_type_check check (verification_type in ('manual', 'automatic'))
 );
 
--- RLSポリシーの設定
-alter table public.quests enable row level security;
-
-create policy "Quests are viewable by everyone" on public.quests
-  for select using (true);
-
-create policy "Quests are insertable by authenticated users" on public.quests
-  for insert with check (auth.role() = 'authenticated');
-
-create policy "Quests are updatable by authenticated users" on public.quests
-  for update using (auth.role() = 'authenticated');
-
 -- インデックスの作成
 create index quests_order_position_idx on public.quests(order_position);
 create index quests_status_idx on public.quests(status);
 create index quests_type_idx on public.quests(type);
-create index quests_category_idx on public.quests(category); 
+create index quests_category_idx on public.quests(category);
+
+-- RLSポリシーの設定
+alter table public.quests enable row level security;
+
+create policy "Anyone can view quests"
+on public.quests for select
+to public
+using (true);
+
+create policy "Authenticated users can manage quests"
+on public.quests for all
+to authenticated
+using (true)
+with check (true);

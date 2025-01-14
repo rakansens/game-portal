@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-import { Database } from '@/types/supabase';
+import type { Database } from '../../types/database';
 
 if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
   throw new Error('Missing env.NEXT_PUBLIC_SUPABASE_URL');
@@ -25,23 +25,6 @@ export const supabaseAdmin = createClient<Database>(
 );
 
 /**
- * トランザクションを実行する
- */
-export async function withTransaction<T>(
-  callback: () => Promise<T>
-): Promise<T> {
-  try {
-    await supabaseAdmin.rpc('begin_transaction');
-    const result = await callback();
-    await supabaseAdmin.rpc('commit_transaction');
-    return result;
-  } catch (error) {
-    await supabaseAdmin.rpc('rollback_transaction');
-    throw error;
-  }
-}
-
-/**
  * APIエラーレスポンスを生成する
  */
 export function createErrorResponse(
@@ -52,7 +35,7 @@ export function createErrorResponse(
   if (error) {
     console.error(`Error: ${message}`, error);
   }
-  return Response.json({ error: message }, { status });
+  return Response.json({ error: message, details: error }, { status });
 }
 
 /**

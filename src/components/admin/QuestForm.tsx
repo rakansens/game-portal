@@ -83,14 +83,22 @@ export function QuestForm({ quest, onSubmit, onCancel, loading = false, submitLa
       difficulty: parseInt(formData.get('difficulty') as string) || 1,
       is_important: formState.isImportant,
       is_limited: formState.isLimited,
-      category: formData.get('category') as string || null,
-      tags: null, // TODO: タグの実装
-      exp_reward: parseInt(formData.get('points') as string) || 0, // pointsと同じ値を使用
+      category: null,
+      tags: [],
+      exp_reward: parseInt(formData.get('points') as string) || 0,
       start_date: formState.isLimited ? formatDateForSubmit(startDate) : null,
       end_date: formState.isLimited ? formatDateForSubmit(endDate) : null,
       participants_limit: formState.hasParticipantsLimit ? parseInt(formData.get('participants_limit') as string) || null : null,
-      participant_count: null,
       order_position: parseInt(formData.get('order_position') as string) || 0,
+      estimated_time: parseInt(formData.get('estimated_time') as string) || 0,
+      required_points: parseInt(formData.get('required_points') as string) || 0,
+      auto_progress: false,
+      verification_required: false,
+      verification_type: null,
+      max_attempts: null,
+      cooldown_period: null,
+      external_url: null,
+      banner_url: null,
     };
 
     console.log('Form data:', data);
@@ -193,6 +201,32 @@ export function QuestForm({ quest, onSubmit, onCancel, loading = false, submitLa
               type="number"
               name="points"
               defaultValue={quest.points || 0}
+              min={0}
+              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            />
+          </label>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            所要時間（分）
+            <input
+              type="number"
+              name="estimated_time"
+              defaultValue={quest.estimated_time || 0}
+              min={0}
+              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            />
+          </label>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            必要ポイント
+            <input
+              type="number"
+              name="required_points"
+              defaultValue={quest.required_points || 0}
               min={0}
               className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             />

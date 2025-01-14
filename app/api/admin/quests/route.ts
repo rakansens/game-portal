@@ -1,7 +1,6 @@
 import { NextRequest } from 'next/server';
 import {
   supabaseAdmin,
-  withTransaction,
   createErrorResponse,
   checkAdminAuth,
 } from '../../../../src/lib/supabase-admin';
@@ -38,6 +37,7 @@ export async function GET(request: NextRequest) {
 
     return Response.json(data);
   } catch (error) {
+    console.error('GET error details:', error);
     if (error instanceof Error) {
       return createErrorResponse('Failed to fetch quests', 500, { message: error.message });
     }
@@ -51,9 +51,11 @@ export async function POST(request: Request) {
 
     // リクエストデータのバリデーション
     const body = await request.json();
+    console.log('Request body:', body);
     const validation = validateQuest(body);
 
     if (validation.error) {
+      console.log('Validation error:', validation.error);
       return createErrorResponse(
         'Invalid request data',
         400,
@@ -62,34 +64,49 @@ export async function POST(request: Request) {
     }
 
     const quest = validation.data;
+    console.log('Validated quest:', quest);
 
-    // トランザクション内で新規クエストを作成
-    const result = await withTransaction(async () => {
-      // 最大のorder_positionを取得
-      const { data: maxOrderQuest } = await supabaseAdmin
-        .from('quests')
-        .select('order_position')
-        .order('order_position', { ascending: false })
-        .limit(1)
-        .single();
+    // 最大のorder_positionを取得
+    const { data: maxOrderQuest, error: orderError } = await supabaseAdmin
+      .from('quests')
+      .select('order_position')
+      .order('order_position', { ascending: false })
+      .limit(1)
+      .single();
 
-      const newOrderPosition = maxOrderQuest ? maxOrderQuest.order_position + 1 : 0;
-      quest.order_position = newOrderPosition;
+    if (orderError) {
+      console.error('Error fetching max order:', orderError);
+      return createErrorResponse('Failed to fetch max order', 500, orderError);
+    }
 
-      const { data, error } = await supabaseAdmin
-        .from('quests')
-        .insert([quest])
-        .select()
-        .single();
+    const newOrderPosition = maxOrderQuest ? maxOrderQuest.order_position + 1 : 0;
+    quest.order_position = newOrderPosition;
 
-      if (error) throw error;
-      return data;
-    });
+    console.log('Inserting quest with data:', quest);
+    const { data, error } = await supabaseAdmin
+      .from('quests')
+      .insert([quest])
+      .select()
+      .single();
 
-    return Response.json(result);
+    if (error) {
+      console.error('Insert error details:', error);
+      return createErrorResponse('Failed to insert quest', 500, error);
+    }
+
+    if (!data) {
+      console.error('No data returned after insert');
+      return createErrorResponse('Failed to create quest: No data returned', 500);
+    }
+
+    return Response.json(data);
   } catch (error) {
+    console.error('POST error full details:', error);
     if (error instanceof Error) {
-      return createErrorResponse('Failed to create quest', 500, { message: error.message });
+      return createErrorResponse('Failed to create quest', 500, { 
+        message: error.message,
+        details: error
+      });
     }
     return createErrorResponse('Failed to create quest', 500);
   }
@@ -128,8 +145,14 @@ export async function PUT(request: NextRequest) {
       .eq('id', id)
       .single();
 
-    if (fetchError) throw fetchError;
-    if (!existingQuest) return createErrorResponse('Quest not found', 404);
+    if (fetchError) {
+      console.error('Error fetching existing quest:', fetchError);
+      return createErrorResponse('Failed to fetch existing quest', 500, fetchError);
+    }
+
+    if (!existingQuest) {
+      return createErrorResponse('Quest not found', 404);
+    }
 
     // order_positionを維持
     const updatedQuest = {
@@ -144,11 +167,18 @@ export async function PUT(request: NextRequest) {
       .select()
       .single();
 
-    if (error) throw error;
-    if (!data) return createErrorResponse('Quest not found', 404);
+    if (error) {
+      console.error('Update error:', error);
+      return createErrorResponse('Failed to update quest', 500, error);
+    }
+
+    if (!data) {
+      return createErrorResponse('Quest not found', 404);
+    }
 
     return Response.json(data);
   } catch (error) {
+    console.error('PUT error details:', error);
     if (error instanceof Error) {
       return createErrorResponse('Failed to update quest', 500, { message: error.message });
     }
@@ -167,35 +197,46 @@ export async function DELETE(request: NextRequest) {
       return createErrorResponse('ID is required', 400);
     }
 
-    // トランザクション内で削除と並び順の更新を実行
-    await withTransaction(async () => {
-      // 削除対象のクエストの現在の並び順を取得
-      const { data: targetQuest } = await supabaseAdmin
-        .from('quests')
-        .select('order_position')
-        .eq('id', id)
-        .single();
+    // 削除対象のクエストの現在の並び順を取得
+    const { data: targetQuest, error: fetchError } = await supabaseAdmin
+      .from('quests')
+      .select('order_position')
+      .eq('id', id)
+      .single();
 
-      if (!targetQuest) throw new Error('Quest not found');
+    if (fetchError) {
+      console.error('Error fetching quest for delete:', fetchError);
+      return createErrorResponse('Failed to fetch quest for delete', 500, fetchError);
+    }
 
-      // クエストを削除
-      const { error: deleteError } = await supabaseAdmin
-        .from('quests')
-        .delete()
-        .eq('id', id);
+    if (!targetQuest) {
+      return createErrorResponse('Quest not found', 404);
+    }
 
-      if (deleteError) throw deleteError;
+    // クエストを削除
+    const { error: deleteError } = await supabaseAdmin
+      .from('quests')
+      .delete()
+      .eq('id', id);
 
-      // 削除したクエストより後ろの並び順を更新
-      const { error: updateError } = await supabaseAdmin.rpc('update_quest_order_after_delete', {
-        target_position: targetQuest.order_position
-      });
+    if (deleteError) {
+      console.error('Error deleting quest:', deleteError);
+      return createErrorResponse('Failed to delete quest', 500, deleteError);
+    }
 
-      if (updateError) throw updateError;
+    // 削除したクエストより後ろの並び順を更新
+    const { error: updateError } = await supabaseAdmin.rpc('update_quest_order_after_delete', {
+      target_position: targetQuest.order_position
     });
+
+    if (updateError) {
+      console.error('Error updating order after delete:', updateError);
+      return createErrorResponse('Failed to update order after delete', 500, updateError);
+    }
 
     return Response.json({ success: true });
   } catch (error) {
+    console.error('DELETE error details:', error);
     if (error instanceof Error) {
       return createErrorResponse('Failed to delete quest', 500, { message: error.message });
     }
