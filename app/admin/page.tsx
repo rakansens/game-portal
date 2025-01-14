@@ -6,7 +6,7 @@ import { Quest } from '@/types/quest';
 import { QuestTable } from '@/components/admin/quests/QuestTable';
 import { QuestFilters } from '@/components/admin/quests/QuestFilters';
 import { fetchQuests, deleteQuest, updateQuestsOrder } from '@/lib/admin-api';
-import { DeleteConfirmModal } from '@/components/admin/DeleteConfirmModal';
+import { DeleteConfirmModal } from '@/components/admin/shared/DeleteConfirmModal';
 
 export default function AdminPage() {
   const [quests, setQuests] = useState<Quest[]>([]);
