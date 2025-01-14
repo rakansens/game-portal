@@ -17,10 +17,13 @@ export default function HomePage() {
         setLoading(true);
         const { data, error } = await supabase
           .from('quests')
-          .select('*')
-          .order('order_position', { ascending: true });
+          .select('*');
 
-        if (error) throw error;
+        if (error) {
+          console.error('Supabase error:', error);
+          throw error;
+        }
+        console.log('Fetched quests:', data);
         setQuests(data || []);
       } catch (err) {
         setError('クエストの読み込みに失敗しました');

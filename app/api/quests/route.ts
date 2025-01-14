@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { Database } from '../../../src/types/supabase';
+import { Database } from '../../../src/types/database';
 import { createErrorResponse } from '../../../src/lib/supabase-admin';
 import { toPublicQuest } from '../../../src/types/quest';
 
@@ -18,26 +18,10 @@ const supabase = createClient<Database>(
 
 export async function GET(request: NextRequest) {
   try {
-    const searchParams = request.nextUrl.searchParams;
-    const type = searchParams.get('type');
-    const category = searchParams.get('category');
-
     // 公開クエストのみを取得するクエリを構築
-    let query = supabase
+    const { data, error } = await supabase
       .from('quests')
-      .select('*')
-      .eq('status', 'active')
-      .order('order_position', { ascending: true });
-
-    // フィルター条件を追加
-    if (type) {
-      query = query.eq('type', type);
-    }
-    if (category) {
-      query = query.eq('category', category);
-    }
-
-    const { data, error } = await query;
+      .select('*');
 
     if (error) throw error;
     if (!data) throw new Error('No data returned from database');

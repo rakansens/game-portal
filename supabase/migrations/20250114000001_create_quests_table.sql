@@ -1,5 +1,5 @@
 -- quests テーブルの作成
-create table public.quests (
+create table if not exists public.quests (
   id uuid default gen_random_uuid() primary key,
   title text not null,
   description text not null,
@@ -33,11 +33,10 @@ create table public.quests (
   constraint quests_verification_type_check check (verification_type in ('manual', 'automatic'))
 );
 
--- インデックスの作成
-create index quests_order_position_idx on public.quests(order_position);
-create index quests_status_idx on public.quests(status);
-create index quests_type_idx on public.quests(type);
-create index quests_category_idx on public.quests(category);
+-- インデックスの作成（既存のインデックスがある場合はスキップ）
+create index if not exists quests_status_idx on public.quests(status);
+create index if not exists quests_category_idx on public.quests(category);
+create index if not exists quests_order_position_idx on public.quests(order_position);
 
 -- RLSポリシーの設定
 alter table public.quests enable row level security;
