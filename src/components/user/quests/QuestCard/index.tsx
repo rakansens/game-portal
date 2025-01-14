@@ -31,6 +31,10 @@ export function QuestCard({ quest, onStart, onComplete }: QuestCardProps) {
           !isImportant && !isLimited && 'border-[#2761c3] shadow-[0_0_15px_rgba(39,97,195,0.3)] group-hover:shadow-[0_0_25px_rgba(39,97,195,0.5)]'
         )}
       >
+        {/* 装飾的な切れ目 */}
+        <div className="absolute -left-2 top-1/2 h-2 w-2 -translate-y-1/2 bg-current opacity-100" />
+        <div className="absolute -right-2 top-1/2 h-2 w-2 -translate-y-1/2 bg-current opacity-100" />
+
         {/* ヘッダー部分 */}
         <div className="flex items-center justify-between border-b border-[#2761c3]/30 p-4 backdrop-blur-sm">
           <h3 className="text-lg font-bold text-[#ddebf0] text-shadow-neon group-hover:text-shadow-neon-strong">{quest.title}</h3>
@@ -154,8 +158,6 @@ export function QuestCard({ quest, onStart, onComplete }: QuestCardProps) {
 
         {/* 装飾的な要素 */}
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 group-hover:animate-shine" />
-        <div className="absolute -left-2 top-1/2 h-2 w-2 -translate-y-1/2 bg-current opacity-0 transition-all group-hover:opacity-100" />
-        <div className="absolute -right-2 top-1/2 h-2 w-2 -translate-y-1/2 bg-current opacity-0 transition-all group-hover:opacity-100" />
       </div>
     </div>
   );

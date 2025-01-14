@@ -61,7 +61,7 @@ export function Button({
         )}
         <span className="text-shadow-neon tracking-wider">{children}</span>
         <svg
-          className="h-4 w-4 transform transition-transform duration-300 group-hover:translate-x-1"
+          className="h-5 w-5 transform transition-all duration-300 group-hover:translate-x-1"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -77,6 +77,7 @@ export function Button({
       <div className="absolute -left-2 top-1/2 h-2 w-2 -translate-y-1/2 bg-current opacity-0 transition-all group-hover:opacity-100" />
       <div className="absolute -right-2 top-1/2 h-2 w-2 -translate-y-1/2 bg-current opacity-0 transition-all group-hover:opacity-100" />
       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 group-hover:animate-shine" />
+      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 group-hover:animate-shine" style={{ animationDelay: '0.2s' }} />
     </button>
   );
 }
