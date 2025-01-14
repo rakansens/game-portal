@@ -15,6 +15,9 @@ import {
   infoItemStyles,
   infoLabelStyles,
   infoValueStyles,
+  tagContainerStyles,
+  rewardContainerStyles,
+  rewardItemStyles,
 } from './styles';
 
 export function QuestCard({ quest }: QuestCardProps) {
@@ -37,13 +40,20 @@ export function QuestCard({ quest }: QuestCardProps) {
         {quest.platform && (
           <Badge variant="secondary">{quest.platform}</Badge>
         )}
-        <Badge variant="info">
-          {quest.exp_reward}EXP
-        </Badge>
-        {quest.points && (
-          <Badge variant="success">
-            {quest.points}ポイント
+      </div>
+
+      <div className={rewardContainerStyles}>
+        <div className={rewardItemStyles}>
+          <Badge variant="info">
+            {quest.exp_reward}EXP
           </Badge>
+        </div>
+        {quest.points && (
+          <div className={rewardItemStyles}>
+            <Badge variant="success">
+              {quest.points}ポイント
+            </Badge>
+          </div>
         )}
       </div>
 
@@ -52,7 +62,7 @@ export function QuestCard({ quest }: QuestCardProps) {
           <div className={infoItemStyles}>
             <span className={infoLabelStyles}>開始日:</span>
             <span className={infoValueStyles}>
-              {format(new Date(quest.start_date), 'yyyy/MM/dd', { locale: ja })}
+              {format(new Date(quest.start_date), 'yyyy年MM月dd日', { locale: ja })}
             </span>
           </div>
         )}
@@ -60,19 +70,19 @@ export function QuestCard({ quest }: QuestCardProps) {
           <div className={infoItemStyles}>
             <span className={infoLabelStyles}>終了日:</span>
             <span className={infoValueStyles}>
-              {format(new Date(quest.end_date), 'yyyy/MM/dd', { locale: ja })}
+              {format(new Date(quest.end_date), 'yyyy年MM月dd日', { locale: ja })}
             </span>
           </div>
         )}
         {quest.estimated_time && (
           <div className={infoItemStyles}>
             <span className={infoLabelStyles}>所要時間:</span>
-            <span className={infoValueStyles}>{quest.estimated_time}分</span>
+            <span className={infoValueStyles}>約{quest.estimated_time}分</span>
           </div>
         )}
         {quest.participants_limit && (
           <div className={infoItemStyles}>
-            <span className={infoLabelStyles}>参加上限:</span>
+            <span className={infoLabelStyles}>参加状況:</span>
             <span className={infoValueStyles}>
               {quest.participant_count || 0}/{quest.participants_limit}人
             </span>
@@ -87,13 +97,13 @@ export function QuestCard({ quest }: QuestCardProps) {
         {quest.max_attempts && (
           <div className={infoItemStyles}>
             <span className={infoLabelStyles}>挑戦回数:</span>
-            <span className={infoValueStyles}>{quest.max_attempts}回まで</span>
+            <span className={infoValueStyles}>最大{quest.max_attempts}回まで</span>
           </div>
         )}
       </div>
 
       {quest.tags && quest.tags.length > 0 && (
-        <div className={badgeContainerStyles}>
+        <div className={tagContainerStyles}>
           {quest.tags.map((tag) => (
             <Badge key={tag} variant="gray">
               {tag}
