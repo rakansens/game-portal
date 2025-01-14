@@ -24,13 +24,14 @@ export default function EditQuestPage({ params }: EditQuestPageProps) {
     const loadQuest = async () => {
       try {
         setLoading(true);
-        const result = await fetchQuestById(id);
-        if (result.error) {
-          throw new Error(result.error);
+        const response = await fetch(`/api/admin/quests?id=${id}`);
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to fetch quest');
         }
-        if (result.data) {
-          setQuest(result.data);
-        }
+
+        setQuest(data);
       } catch (err) {
         setError('クエストの読み込みに失敗しました');
         console.error('Error loading quest:', err);
