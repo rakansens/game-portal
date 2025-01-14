@@ -21,14 +21,19 @@ export function QuestCard({ quest, onStart, onComplete }: QuestCardProps) {
     <div className="w-full max-w-md animate-fade-in mx-auto">
       <div
         className={cn(
-          'relative overflow-hidden rounded-xl border-2 bg-white shadow-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-xl active:scale-[0.98]',
-          isImportant ? 'border-yellow-400 bg-gradient-to-br from-yellow-50 to-white' : 'border-gray-100',
-          isLimited && 'border-blue-400 bg-gradient-to-br from-blue-50 to-white'
+          'relative overflow-hidden bg-gradient-to-br from-gray-900 to-gray-800 shadow-lg transition-all duration-300',
+          'border-2 border-[#2761c3]',
+          'before:absolute before:inset-0 before:bg-gradient-to-br before:from-transparent before:to-[#2761c3]/20',
+          'after:absolute after:inset-0 after:bg-gradient-to-br after:from-transparent after:to-black/5',
+          '-webkit-clip-path: polygon(92% 0, 100% 25%, 100% 100%, 8% 100%, 0 75%, 0 0)',
+          'clip-path: polygon(92% 0, 100% 25%, 100% 100%, 8% 100%, 0 75%, 0 0)',
+          isImportant && 'border-yellow-400 from-yellow-900/50 to-gray-800',
+          isLimited && 'border-[#27c39f] from-[#27c39f]/20 to-gray-800'
         )}
       >
         {/* ヘッダー部分 */}
-        <div className="flex items-center justify-between border-b p-4">
-          <h3 className="text-lg font-bold text-gray-900">{quest.title}</h3>
+        <div className="flex items-center justify-between border-b border-[#2761c3]/30 p-4">
+          <h3 className="text-lg font-bold text-[#ddebf0]">{quest.title}</h3>
           <div className="flex gap-1.5">
             <Badge variant={quest.type === 'normal' ? 'default' : 'special'} size="sm">
               {quest.type === 'normal' ? 'ノーマル' : 'スペシャル'}
@@ -40,18 +45,18 @@ export function QuestCard({ quest, onStart, onComplete }: QuestCardProps) {
         {/* メインコンテンツ */}
         <div className="p-4">
           {/* 説明文 */}
-          <p className="mb-4 text-sm text-gray-600 line-clamp-2">{quest.description}</p>
+          <p className="mb-4 text-sm text-[#ddebf0]/80 line-clamp-2">{quest.description}</p>
 
           {/* 報酬情報 */}
           <div className="mb-4 flex flex-wrap gap-2">
             {quest.exp_reward > 0 && (
-              <Badge variant="exp" size="lg" className="flex items-center gap-1 shadow-sm">
+              <Badge variant="exp" size="lg" className="flex items-center gap-1 shadow-neon-exp">
                 <span className="font-bold">{quest.exp_reward}</span>
                 <span>EXP</span>
               </Badge>
             )}
             {quest.points && quest.points > 0 && (
-              <Badge variant="points" size="lg" className="flex items-center gap-1 shadow-sm">
+              <Badge variant="points" size="lg" className="flex items-center gap-1 shadow-neon-points">
                 <span className="font-bold">{quest.points}</span>
                 <span>ポイント</span>
               </Badge>
@@ -60,7 +65,7 @@ export function QuestCard({ quest, onStart, onComplete }: QuestCardProps) {
 
           {/* 期間情報 */}
           {isLimited && quest.start_date && quest.end_date && (
-            <div className="mb-4 flex items-center rounded-lg bg-blue-50 px-3 py-2 text-sm text-blue-700">
+            <div className="mb-4 flex items-center rounded bg-[#2761c3]/10 px-3 py-2 text-sm text-[#27c39f]">
               <svg className="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
@@ -73,19 +78,19 @@ export function QuestCard({ quest, onStart, onComplete }: QuestCardProps) {
 
           {/* 進捗情報 */}
           <div className="mb-4">
-            <div className="mb-2 flex items-center justify-between text-sm text-gray-600">
+            <div className="mb-1.5 flex items-center justify-between text-sm text-[#ddebf0]/80">
               <span>進捗状況</span>
               <span className="font-medium">
                 {quest.participant_count || 0}/{quest.participants_limit || '∞'}
               </span>
             </div>
-            <div className="h-2 w-full overflow-hidden rounded-full bg-gray-100 shadow-inner">
+            <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#2761c3]/20">
               <div
                 className={cn(
                   'h-full rounded-full transition-all duration-500',
                   quest.participant_count && quest.participants_limit && quest.participant_count >= quest.participants_limit
-                    ? 'bg-gradient-to-r from-green-400 to-green-500'
-                    : 'bg-gradient-to-r from-blue-400 to-blue-500'
+                    ? 'bg-gradient-to-r from-[#27c39f] to-[#2761c3]'
+                    : 'bg-gradient-to-r from-[#2761c3] to-[#27c39f]'
                 )}
                 style={{
                   width: `${
@@ -99,15 +104,17 @@ export function QuestCard({ quest, onStart, onComplete }: QuestCardProps) {
           </div>
 
           {/* アクションボタン */}
-          <div className="flex justify-end gap-2">
+          <div className="flex justify-end">
             {onStart && (
               <Button
                 onClick={onStart}
                 variant="primary"
                 size="lg"
-                className="w-full transform transition-all duration-200 hover:scale-105 active:scale-95"
+                className="group relative w-full transform-gpu transition-all duration-300"
               >
-                クエストを開始
+                <span className="relative z-10 font-bold tracking-wider">クエストを開始</span>
+                <div className="clip-corners absolute inset-0 bg-[#2761c3] transition-all duration-300 group-hover:bg-[#27c39f]" />
+                <div className="clip-corners-sm absolute inset-0 bg-[#2761c3] opacity-0 transition-all duration-300 group-hover:translate-x-1 group-hover:translate-y-1 group-hover:opacity-100" />
               </Button>
             )}
             {onComplete && (
@@ -115,9 +122,11 @@ export function QuestCard({ quest, onStart, onComplete }: QuestCardProps) {
                 onClick={onComplete}
                 variant="success"
                 size="lg"
-                className="w-full transform transition-all duration-200 hover:scale-105 active:scale-95"
+                className="group relative w-full transform-gpu transition-all duration-300"
               >
-                クエストを完了
+                <span className="relative z-10 font-bold tracking-wider">クエストを完了</span>
+                <div className="clip-corners absolute inset-0 bg-[#27c39f] transition-all duration-300" />
+                <div className="clip-corners-sm absolute inset-0 bg-[#27c39f] opacity-0 transition-all duration-300 group-hover:translate-x-1 group-hover:translate-y-1 group-hover:opacity-100" />
               </Button>
             )}
           </div>
@@ -125,8 +134,8 @@ export function QuestCard({ quest, onStart, onComplete }: QuestCardProps) {
 
         {/* 追加情報 */}
         {(quest.estimated_time || quest.max_attempts) && (
-          <div className="border-t bg-gradient-to-b from-gray-50 to-white px-4 py-3">
-            <div className="flex flex-wrap gap-4 text-sm text-gray-500">
+          <div className="border-t border-[#2761c3]/30 bg-[#2761c3]/5 px-4 py-3">
+            <div className="flex flex-wrap gap-4 text-sm text-[#ddebf0]/60">
               {quest.estimated_time && (
                 <span className="flex items-center gap-1.5">
                   <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
