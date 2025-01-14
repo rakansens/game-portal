@@ -1,6 +1,6 @@
 'use client';
 
-import { Footer } from '@/components/layout/Footer';
+import { Footer } from '@/components/shared/layout/Footer';
 
 export default function UserLayout({
   children,
