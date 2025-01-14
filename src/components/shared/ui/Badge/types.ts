@@ -1,7 +1,24 @@
-import { HTMLAttributes } from 'react';
-import { VariantProps } from 'class-variance-authority';
-import { badgeVariants } from './styles';
+export type BadgeVariant =
+  | 'default'
+  | 'primary'
+  | 'secondary'
+  | 'success'
+  | 'danger'
+  | 'warning'
+  | 'info'
+  | 'gray'
+  | 'indigo'
+  | 'purple'
+  | 'special'
+  | 'limited'
+  | 'exp'
+  | 'points';
 
-export interface BadgeProps
-  extends HTMLAttributes<HTMLSpanElement>,
-    VariantProps<typeof badgeVariants> {}
+export type BadgeSize = 'default' | 'sm' | 'lg';
+
+export interface BadgeProps {
+  children: React.ReactNode;
+  variant?: BadgeVariant;
+  size?: BadgeSize;
+  className?: string;
+}

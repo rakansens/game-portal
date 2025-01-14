@@ -1,32 +1,21 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { PublicQuest } from '@/types/quest';
 import { QuestCard } from '@/components/user/quests/QuestCard';
-import { useAuthStore } from '@/store/auth';
-import { fetchPublicQuests } from '@/features/quests/actions';
-import { toPublicQuest } from '@/types/quest';
+import { Quest } from '@/types/quest';
+import { fetchQuests } from '@/lib/api';
 
 export default function HomePage() {
-  const [quests, setQuests] = useState<PublicQuest[]>([]);
+  const [quests, setQuests] = useState<Quest[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { user } = useAuthStore();
 
   useEffect(() => {
     const loadQuests = async () => {
       try {
         setLoading(true);
-        const result = await fetchPublicQuests();
-        if (result.error) {
-          throw new Error(result.error);
-        }
-        if (result.data) {
-          const publicQuests = result.data.map(quest => 
-            toPublicQuest(quest, true)
-          );
-          setQuests(publicQuests);
-        }
+        const data = await fetchQuests();
+        setQuests(data);
       } catch (err) {
         setError('クエストの読み込みに失敗しました');
         console.error('Error loading quests:', err);
@@ -57,13 +46,44 @@ export default function HomePage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="mb-6 text-2xl font-bold text-gray-900">クエスト一覧</h1>
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+    <div className="container mx-auto min-h-screen px-4 py-4">
+      <h1 className="mb-6 text-xl font-bold text-gray-900">クエスト一覧</h1>
+      
+      {/* クエストリスト */}
+      <div className="space-y-4">
         {quests.map((quest) => (
-          <QuestCard key={quest.id} quest={quest} />
+          <QuestCard
+            key={quest.id}
+            quest={quest}
+            onStart={() => {
+              // クエスト開始処理
+              console.log('Start quest:', quest.id);
+            }}
+          />
         ))}
       </div>
+
+      {/* クエストが0件の場合 */}
+      {quests.length === 0 && (
+        <div className="rounded-lg border-2 border-gray-200 bg-gray-50 p-8 text-center">
+          <p className="text-gray-600">現在利用可能なクエストはありません</p>
+        </div>
+      )}
+
+      {/* 下部ナビゲーション */}
+      <nav className="fixed bottom-0 left-0 right-0 border-t bg-white py-2">
+        <div className="container mx-auto flex justify-around">
+          <button className="flex flex-col items-center p-2 text-blue-600">
+            <span className="text-xs">クエスト</span>
+          </button>
+          <button className="flex flex-col items-center p-2 text-gray-600">
+            <span className="text-xs">ランキング</span>
+          </button>
+          <button className="flex flex-col items-center p-2 text-gray-600">
+            <span className="text-xs">報酬</span>
+          </button>
+        </div>
+      </nav>
     </div>
   );
 }
