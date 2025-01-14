@@ -76,45 +76,45 @@ export function QuestFilters({ filters = {}, onChange }: QuestFiltersProps) {
   const hasActiveFilters = Object.values(filters).some((values) => values?.length > 0);
 
   return (
-    <div className="space-y-6 rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-      <div className="flex items-center justify-between">
-        <h2 className="text-base font-semibold text-gray-900">フィルター</h2>
+    <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+      <div className="flex items-center justify-between mb-3">
+        <h2 className="text-sm font-medium text-gray-900">フィルター</h2>
         {hasActiveFilters && (
           <Button
             variant="ghost"
             size="sm"
             onClick={clearFilters}
-            className="text-sm text-gray-500 hover:text-gray-700"
+            className="text-xs text-gray-500 hover:text-gray-700 h-7 px-2"
           >
             クリア
           </Button>
         )}
       </div>
 
-      <div className="space-y-6">
+      <div className="grid grid-cols-3 gap-4">
         {FILTER_GROUPS.map((group) => (
-          <div key={group.key} className="space-y-3">
-            <div className="flex items-center justify-between">
-              <h3 className="text-sm font-medium text-gray-900">{group.label}</h3>
+          <div key={group.key}>
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-xs font-medium text-gray-700">{group.label}</h3>
               {filters[group.key]?.length ? (
-                <Badge variant="info" size="sm">
-                  {filters[group.key]?.length}個選択中
+                <Badge variant="info" size="sm" className="text-xs px-1.5 py-0.5">
+                  {filters[group.key]?.length}
                 </Badge>
               ) : null}
             </div>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="space-y-1">
               {group.options.map((option) => (
                 <button
                   key={option.value}
                   onClick={() => handleFilterChange(group.key, option.value)}
                   className={cn(
-                    'flex w-full cursor-pointer items-center justify-center rounded-lg border p-3 transition-colors',
+                    'flex w-full cursor-pointer items-center rounded px-2 py-1 text-sm transition-colors',
                     filters[group.key]?.includes(option.value)
-                      ? 'border-admin-primary bg-admin-primary/5'
-                      : 'border-gray-200 hover:bg-gray-50'
+                      ? 'bg-admin-primary/10 text-admin-primary'
+                      : 'hover:bg-gray-50 text-gray-600'
                   )}
                 >
-                  <Badge variant={option.color} size="sm">
+                  <Badge variant={option.color} size="sm" className="text-xs">
                     {option.label}
                   </Badge>
                 </button>
@@ -125,8 +125,8 @@ export function QuestFilters({ filters = {}, onChange }: QuestFiltersProps) {
       </div>
 
       {hasActiveFilters && (
-        <div className="border-t border-gray-200 pt-4">
-          <div className="flex items-center justify-between text-sm text-gray-500">
+        <div className="mt-3 pt-3 border-t border-gray-200">
+          <div className="flex items-center justify-between text-xs text-gray-500">
             <span>適用中のフィルター:</span>
             <span className="font-medium text-gray-900">
               {Object.values(filters).reduce(
