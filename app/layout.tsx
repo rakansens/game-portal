@@ -1,7 +1,6 @@
-import './globals.css';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
-import ClientLayout from '@/components/layout/ClientLayout';
+import './globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -16,9 +15,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ja" suppressHydrationWarning>
-      <body className={inter.className} suppressHydrationWarning>
-        <ClientLayout>{children}</ClientLayout>
+    <html lang="ja" className="dark">
+      <body className={`${inter.className} bg-[#070809] min-h-screen`}>
+        {children}
       </body>
     </html>
   );

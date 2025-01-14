@@ -51,12 +51,12 @@ export function Footer() {
   ];
 
   return (
-    <footer className="fixed bottom-0 left-0 right-0 z-50">
+    <footer className="fixed bottom-0 left-0 right-0 z-50 bg-[#070809]">
       {/* グラデーションボーダー */}
       <div className="h-px w-full bg-gradient-to-r from-[#2761c3] via-[#27c39f] to-[#2761c3] opacity-20" />
       
       {/* メインコンテンツ */}
-      <nav className="bg-[#070809]/95 backdrop-blur-md">
+      <nav className="bg-[#070809] border-t border-[#2761c3]/10">
         <div className="mx-auto max-w-[280px] px-2">
           <div className="flex h-14 items-center justify-around">
             {menuItems.map((item) => (
