@@ -11,6 +11,60 @@ interface GameCardProps {
 }
 
 export function GameCard({ game, featured = false }: GameCardProps) {
+  const buttonVariants = {
+    initial: { 
+      scale: 1,
+      boxShadow: '0 10px 30px -15px rgba(39, 97, 195, 0.3)',
+      background: 'linear-gradient(to right, #2761c3, #27c39f)'
+    },
+    hover: { 
+      scale: 1.05,
+      boxShadow: '0 20px 40px -20px rgba(39, 97, 195, 0.5)',
+      background: 'linear-gradient(to right, #3172d4, #32d4ae)',
+      transition: { 
+        type: "spring",
+        stiffness: 400,
+        damping: 10,
+        background: {
+          duration: 0.3
+        }
+      }
+    },
+    tap: { 
+      scale: 0.95,
+      boxShadow: '0 5px 15px -10px rgba(39, 97, 195, 0.4)',
+      background: 'linear-gradient(to right, #1f50a0, #1ea88a)',
+      transition: {
+        type: "spring",
+        stiffness: 400,
+        damping: 10,
+        background: {
+          duration: 0.1
+        }
+      }
+    }
+  };
+
+  const buttonClasses = cn(
+    'relative inline-flex items-center justify-center rounded-xl overflow-hidden',
+    'px-8 py-3.5 text-base font-semibold text-white transition-all duration-300',
+    'before:absolute before:inset-0 before:bg-[linear-gradient(110deg,transparent_25%,rgba(255,255,255,0.2)_50%,transparent_75%)] before:opacity-0 before:transition-opacity',
+    'focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-2 focus:ring-offset-gray-900'
+  );
+
+  const playIconVariants = {
+    initial: { x: -5, opacity: 0 },
+    hover: { 
+      x: 0,
+      opacity: 1,
+      transition: {
+        type: "spring",
+        stiffness: 300,
+        damping: 15
+      }
+    }
+  };
+
   return (
     <motion.div
       className={cn(
@@ -76,16 +130,37 @@ export function GameCard({ game, featured = false }: GameCardProps) {
                 href={game.play_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={cn(
-                  'inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-[#2761c3] to-[#27c39f] px-8 py-3.5',
-                  'text-base font-semibold text-white shadow-lg shadow-blue-500/25 transition-all duration-300',
-                  'hover:shadow-xl hover:shadow-blue-500/35 hover:scale-105 active:scale-95',
-                  'focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-2 focus:ring-offset-gray-900'
-                )}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                className={buttonClasses}
+                initial="initial"
+                whileHover="hover"
+                whileTap="tap"
+                variants={buttonVariants}
               >
-                プレイする
+                <motion.span
+                  className="absolute left-4 text-xl"
+                  variants={playIconVariants}
+                >
+                  ▶
+                </motion.span>
+                <span className="relative z-10">プレイする</span>
+                <motion.div
+                  className="absolute inset-0 bg-white/20"
+                  initial={{ scale: 0, opacity: 0 }}
+                  whileTap={{ 
+                    scale: 4,
+                    opacity: 0.3,
+                    transition: { duration: 0.5 }
+                  }}
+                />
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-blue-400/20 to-cyan-400/20"
+                  initial={{ opacity: 0, rotate: -45 }}
+                  whileHover={{ 
+                    opacity: 1,
+                    rotate: 0,
+                    transition: { duration: 0.3 }
+                  }}
+                />
               </motion.a>
             </div>
           </div>
@@ -97,17 +172,37 @@ export function GameCard({ game, featured = false }: GameCardProps) {
             href={game.play_url}
             target="_blank"
             rel="noopener noreferrer"
-            className={cn(
-              'absolute right-4 top-4 inline-flex items-center justify-center rounded-xl',
-              'bg-gradient-to-r from-[#2761c3] to-[#27c39f] px-8 py-3.5',
-              'text-base font-semibold text-white shadow-lg shadow-blue-500/25 transition-all duration-300',
-              'hover:shadow-xl hover:shadow-blue-500/35 hover:scale-105 active:scale-95',
-              'focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-2 focus:ring-offset-gray-900'
-            )}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            className={cn(buttonClasses, 'absolute right-4 top-4')}
+            initial="initial"
+            whileHover="hover"
+            whileTap="tap"
+            variants={buttonVariants}
           >
-            今すぐプレイ
+            <motion.span
+              className="absolute left-4 text-xl"
+              variants={playIconVariants}
+            >
+              ▶
+            </motion.span>
+            <span className="relative z-10">今すぐプレイ</span>
+            <motion.div
+              className="absolute inset-0 bg-white/20"
+              initial={{ scale: 0, opacity: 0 }}
+              whileTap={{ 
+                scale: 4,
+                opacity: 0.3,
+                transition: { duration: 0.5 }
+              }}
+            />
+            <motion.div
+              className="absolute inset-0 bg-gradient-to-r from-blue-400/20 to-cyan-400/20"
+              initial={{ opacity: 0, rotate: -45 }}
+              whileHover={{ 
+                opacity: 1,
+                rotate: 0,
+                transition: { duration: 0.3 }
+              }}
+            />
           </motion.a>
         )}
 
