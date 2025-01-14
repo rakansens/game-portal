@@ -2,68 +2,91 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { cn } from '@/utils/cn';
 
 export function Footer() {
   const pathname = usePathname();
 
+  const menuItems = [
+    {
+      icon: (
+        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+        </svg>
+      ),
+      label: 'EARN',
+      href: '/',
+      active: pathname === '/',
+    },
+    {
+      icon: (
+        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
+        </svg>
+      ),
+      label: 'GAMES',
+      href: '/games',
+      active: pathname === '/games',
+    },
+    {
+      icon: (
+        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+        </svg>
+      ),
+      label: 'RANKING',
+      href: '/ranking',
+      active: pathname === '/ranking',
+    },
+    {
+      icon: (
+        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+        </svg>
+      ),
+      label: 'TREASURE',
+      href: '/treasure',
+      active: pathname === '/treasure',
+    },
+  ];
+
   return (
-    <footer className="fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 bg-white/95 backdrop-blur-sm">
-      <nav className="container mx-auto flex h-14 max-w-md items-center justify-around px-4">
-        <Link
-          href="/"
-          className={`flex flex-1 flex-col items-center justify-center ${
-            pathname === '/'
-              ? 'text-blue-600'
-              : 'text-gray-600 active:text-blue-600'
-          }`}
-        >
-          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <span className="mt-0.5 text-xs font-medium">EARN</span>
-        </Link>
+    <footer className="fixed bottom-0 left-0 right-0 z-50">
+      {/* グラデーションボーダー */}
+      <div className="h-px w-full bg-gradient-to-r from-[#2761c3] via-[#27c39f] to-[#2761c3] opacity-30" />
+      
+      {/* メインコンテンツ */}
+      <nav className="bg-[#0a0b0d]/95 backdrop-blur-md">
+        <div className="mx-auto max-w-sm px-4">
+          <div className="flex h-16 items-center justify-around">
+            {menuItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  'group flex flex-col items-center gap-1 transition-all duration-300',
+                  'relative px-3 py-1.5',
+                  'hover:text-[#27c39f]',
+                  item.active ? 'text-[#27c39f]' : 'text-[#ddebf0]/80'
+                )}
+              >
+                {/* アイコン */}
+                <div className="relative">
+                  {item.icon}
+                  <div className="absolute inset-0 rounded-full bg-current opacity-0 blur-lg transition-opacity duration-300 group-hover:opacity-20" />
+                </div>
 
-        <Link 
-          href="/games"
-          className={`flex flex-1 flex-col items-center justify-center ${
-            pathname === '/games'
-              ? 'text-blue-600'
-              : 'text-gray-600 active:text-blue-600'
-          }`}
-        >
-          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
-          </svg>
-          <span className="mt-0.5 text-xs font-medium">GAMES</span>
-        </Link>
+                {/* ラベル */}
+                <span className="text-[10px] font-bold tracking-wider">{item.label}</span>
 
-        <Link 
-          href="/ranking"
-          className={`flex flex-1 flex-col items-center justify-center ${
-            pathname === '/ranking'
-              ? 'text-blue-600'
-              : 'text-gray-600 active:text-blue-600'
-          }`}
-        >
-          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-          </svg>
-          <span className="mt-0.5 text-xs font-medium">RANKING</span>
-        </Link>
-
-        <Link 
-          href="/treasure"
-          className={`flex flex-1 flex-col items-center justify-center ${
-            pathname === '/treasure'
-              ? 'text-blue-600'
-              : 'text-gray-600 active:text-blue-600'
-          }`}
-        >
-          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-          </svg>
-          <span className="mt-0.5 text-xs font-medium">TREASURE</span>
-        </Link>
+                {/* アクティブインジケーター */}
+                {item.active && (
+                  <div className="absolute -bottom-1 left-1/2 h-0.5 w-8 -translate-x-1/2 rounded-full bg-gradient-to-r from-[#2761c3] via-[#27c39f] to-[#2761c3] shadow-[0_0_10px_rgba(39,193,159,0.5)]" />
+                )}
+              </Link>
+            ))}
+          </div>
+        </div>
       </nav>
     </footer>
   );
