@@ -1,163 +1,104 @@
-# Next.js App Router推奨ディレクトリ構造
+# ディレクトリ構造の改善提案
+
+## 現状の問題点
+
+1. コンポーネントの重複
+   - 同じ機能のコンポーネントが異なる場所に存在
+   - 管理が複雑化し、メンテナンスが困難
+
+2. UIの一貫性の欠如
+   - 共通のUIコンポーネントが複数の場所に分散
+   - デザインシステムの統一が困難
+
+3. ルーティングの複雑さ
+   - 同様のページが異なるパスに存在
+   - ナビゲーションの管理が困難
+
+## 改善案
 
 ```
-/app
-  /admin
-    /quests
-      /[id]
-        /edit
-          /components
-            EditQuestForm.tsx
-          page.tsx
-      /new
-        page.tsx
-    layout.tsx
-    page.tsx
-  /api
-    /admin
-      /quests
-        /order
-          route.ts
-          schema.ts
-        route.ts
-        schema.ts
-    /quest-progress
-      route.ts
-      schema.ts
-    /quests
-      route.ts
-      schema.ts
-    /ranking
-      route.ts
-      schema.ts
-  layout.tsx
-  page.tsx
+app/
+├── (admin)/                # 管理者用ルート
+│   ├── layout.tsx
+│   ├── page.tsx
+│   └── quests/
+│       ├── page.tsx
+│       ├── new/
+│       └── [id]/
+├── (user)/                 # ユーザー用ルート
+│   ├── layout.tsx
+│   ├── page.tsx
+│   └── quests/
+│       ├── page.tsx
+│       └── [id]/
+└── api/                    # API ルート
+    ├── admin/
+    └── user/
 
-/src
-  /components
-    /ui
-      /admin
-        DeleteConfirmModal.tsx
-        QuestFilterBar.tsx
-        QuestFilters.tsx
-        QuestTable/
-          index.tsx
-          DraggableRow.tsx
-          types.ts
-      /common
-        Button.tsx
-        Input.tsx
-        Select.tsx
-      /forms
-        QuestForm/
-          index.tsx
-          validation.ts
-          types.ts
-      /layout
-        Footer.tsx
-        Header.tsx
-      /quest
-        QuestCard/
-          index.tsx
-          types.ts
-    /providers
-      ClientLayout.tsx
-      LiffProvider.tsx
-
-  /features
-    /admin
-      /quests
-        actions.ts
-        types.ts
-    /quests
-      actions.ts
-      types.ts
-    /ranking
-      actions.ts
-      types.ts
-
-  /lib
-    /api
-      admin.ts
-      client.ts
-    /supabase
-      admin.ts
-      client.ts
-    /validation
-      quest.ts
-      common.ts
-
-  /store
-    auth.ts
-    quest.ts
-
-  /types
-    database.ts
-    shared.ts
-
-  /utils
-    date.ts
-    format.ts
-    validation.ts
+src/
+├── components/
+│   ├── ui/                 # 共通UIコンポーネント
+│   │   ├── Button/
+│   │   ├── Input/
+│   │   ├── Select/
+│   │   └── Badge/
+│   ├── forms/             # フォームコンポーネント
+│   │   └── QuestForm/
+│   ├── quests/            # クエスト関連コンポーネント
+│   │   ├── QuestCard/
+│   │   └── QuestTable/
+│   └── layout/            # レイアウトコンポーネント
+│       ├── AdminLayout/
+│       └── UserLayout/
+├── features/              # 機能単位のロジック
+│   ├── admin/
+│   └── user/
+├── lib/                   # ユーティリティ関数
+│   ├── api/
+│   ├── supabase/
+│   └── validations/
+├── store/                 # 状態管理
+└── types/                 # 型定義
 ```
 
-## ディレクトリ構造の説明
+## 改善のポイント
 
-### /app
-- Next.js App Routerのルーティング構造
-- 各ページコンポーネントとAPIルート
-- ページ固有のコンポーネントは`/components`サブディレクトリに配置
+1. コンポーネントの整理
+   - UIコンポーネントを`src/components/ui`に集約
+   - 機能別のコンポーネントを適切なディレクトリに配置
 
-### /src/components
-- `/ui`: 再利用可能なUIコンポーネント
-  - 機能ごとにサブディレクトリを作成
-  - 複雑なコンポーネントは独自のディレクトリに分割
-- `/providers`: アプリケーション全体のプロバイダーコンポーネント
+2. 機能の分離
+   - 管理者機能とユーザー機能を明確に分離
+   - 共通機能を適切に共有
 
-### /src/features
-- 機能ごとのビジネスロジック
-- アクション、型定義、ユーティリティを含む
+3. ルーティングの整理
+   - App Routerの機能を活用したグループ化
+   - 管理者とユーザーのルートを明確に分離
 
-### /src/lib
-- 外部サービスとの統合
-- APIクライアント
-- バリデーションスキーマ
+## 移行手順
 
-### /src/store
-- グローバルステート管理
-- ストア設定とスライス
+1. UIコンポーネントの統合
+   - 重複するUIコンポーネントを`src/components/ui`に移動
+   - 既存の参照を新しいパスに更新
 
-### /src/types
-- プロジェクト全体で共有される型定義
-- データベース型定義
+2. 機能コンポーネントの整理
+   - クエスト関連のコンポーネントを`src/components/quests`に集約
+   - 管理者/ユーザー固有のコンポーネントを適切なディレクトリに移動
 
-### /src/utils
-- 汎用ユーティリティ関数
-- 日付操作、フォーマット処理など
+3. ルーティングの修正
+   - App Routerのグループ化を活用してルートを整理
+   - 重複するページコンポーネントを統合
 
-## 命名規則
+## 期待される効果
 
-- コンポーネント: PascalCase (例: QuestCard.tsx)
-- ユーティリティ/アクション: camelCase (例: formatDate.ts)
-- 型定義: PascalCase (例: QuestType.ts)
-- APIルート: kebab-case (例: create-quest.ts)
+1. コードの保守性向上
+   - 明確な責任分担
+   - 重複の削減
 
-## ベストプラクティス
+2. 開発効率の向上
+   - コンポーネントの再利用性向上
+   - 一貫したコーディング規約
 
-1. コンポーネントの分割
-- 単一責任の原則に従う
-- 再利用可能なコンポーネントは/ui以下に配置
-- ページ固有のコンポーネントはそのページのディレクトリに配置
-
-2. 型の管理
-- データベース型は/types/database.tsに集中
-- 共有型は/types/shared.tsに配置
-- コンポーネント固有の型は各コンポーネントと同じディレクトリに配置
-
-3. APIとバリデーション
-- APIルートごとにスキーマファイルを作成
-- 共通のバリデーションロジックは/lib/validationに配置
-
-4. ステート管理
-- グローバルステートは/storeに集中
-- コンポーネント固有のステートは各コンポーネント内に保持
+3. パフォーマンスの改善
+   - 適切なコード分割
+   - 効率的なバンドリング
