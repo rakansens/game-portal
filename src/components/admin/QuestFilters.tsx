@@ -1,103 +1,98 @@
-'use client';
-
-import React from 'react';
+import { Select } from '@/components/shared/ui/Select';
 import { Quest } from '@/types/quest';
-import { Select } from '@/components/admin/ui/Select';
-import { Checkbox } from '@/components/admin/ui/Checkbox';
+import { Checkbox } from '@/components/shared/ui/Checkbox';
 
 interface QuestFiltersProps {
   quests: Quest[];
-  onFilterChange: (filters: QuestFilters) => void;
+  selectedTypes: string[];
+  selectedPlatforms: string[];
+  selectedStatuses: string[];
+  onTypeChange: (types: string[]) => void;
+  onPlatformChange: (platforms: string[]) => void;
+  onStatusChange: (statuses: string[]) => void;
 }
 
-export interface QuestFilters {
-  type: string;
-  platform: string;
-  status: string;
-  isLimited: boolean | null;
-  isImportant: boolean | null;
-}
-
-export function QuestFilters({ quests, onFilterChange }: QuestFiltersProps) {
-  const [filters, setFilters] = React.useState<QuestFilters>({
-    type: '',
-    platform: '',
-    status: '',
-    isLimited: null,
-    isImportant: null,
-  });
-
-  const handleFilterChange = (key: keyof QuestFilters, value: string | boolean | null) => {
-    const newFilters = { ...filters, [key]: value };
-    setFilters(newFilters as QuestFilters);
-    onFilterChange(newFilters as QuestFilters);
-  };
-
-  const uniqueTypes = React.useMemo(() => {
-    const types = new Set(quests.map((quest) => quest.type || ''));
-    return Array.from(types) as string[];
-  }, [quests]);
-
-  const uniquePlatforms = React.useMemo(() => {
-    const platforms = new Set(quests.map((quest) => quest.platform || '').filter(Boolean));
-    return Array.from(platforms) as string[];
-  }, [quests]);
+export function QuestFilters({
+  quests,
+  selectedTypes,
+  selectedPlatforms,
+  selectedStatuses,
+  onTypeChange,
+  onPlatformChange,
+  onStatusChange,
+}: QuestFiltersProps) {
+  // クエストの種類、プラットフォーム、ステータスの一覧を取得（nullを除外）
+  const types = Array.from(
+    new Set(quests.map((quest) => quest.type).filter((type): type is string => type !== null))
+  );
+  const platforms = Array.from(
+    new Set(quests.map((quest) => quest.platform).filter((platform): platform is string => platform !== null))
+  );
+  const statuses = Array.from(
+    new Set(quests.map((quest) => quest.status))
+  );
 
   return (
-    <div className="mb-4 flex flex-wrap gap-4">
-      <Select
-        label="タイプ"
-        value={filters.type}
-        onChange={(e) => handleFilterChange('type', e.target.value)}
-      >
-        <option value="">すべて</option>
-        {uniqueTypes.map((type) => (
-          <option key={type} value={type}>
-            {type}
-          </option>
-        ))}
-      </Select>
+    <div className="space-y-4">
+      <div>
+        <h3 className="mb-2 text-sm font-medium text-gray-700">タイプ</h3>
+        <div className="space-y-2">
+          {types.map((type) => (
+            <Checkbox
+              key={type}
+              label={type}
+              checked={selectedTypes.includes(type)}
+              onChange={(e) => {
+                if (e.target.checked) {
+                  onTypeChange([...selectedTypes, type]);
+                } else {
+                  onTypeChange(selectedTypes.filter((t) => t !== type));
+                }
+              }}
+            />
+          ))}
+        </div>
+      </div>
 
-      <Select
-        label="プラットフォーム"
-        value={filters.platform}
-        onChange={(e) => handleFilterChange('platform', e.target.value)}
-      >
-        <option value="">すべて</option>
-        {uniquePlatforms.map((platform) => (
-          <option key={platform} value={platform}>
-            {platform}
-          </option>
-        ))}
-      </Select>
+      <div>
+        <h3 className="mb-2 text-sm font-medium text-gray-700">プラットフォーム</h3>
+        <div className="space-y-2">
+          {platforms.map((platform) => (
+            <Checkbox
+              key={platform}
+              label={platform}
+              checked={selectedPlatforms.includes(platform)}
+              onChange={(e) => {
+                if (e.target.checked) {
+                  onPlatformChange([...selectedPlatforms, platform]);
+                } else {
+                  onPlatformChange(selectedPlatforms.filter((p) => p !== platform));
+                }
+              }}
+            />
+          ))}
+        </div>
+      </div>
 
-      <Select
-        label="ステータス"
-        value={filters.status}
-        onChange={(e) => handleFilterChange('status', e.target.value)}
-      >
-        <option value="">すべて</option>
-        <option value="draft">下書き</option>
-        <option value="active">アクティブ</option>
-        <option value="completed">完了</option>
-        <option value="archived">アーカイブ</option>
-      </Select>
-
-      <div className="flex items-center space-x-4">
-        <Checkbox
-          label="期間限定のみ"
-          checked={filters.isLimited || false}
-          onChange={(e) => handleFilterChange('isLimited', e.target.checked || null)}
-        />
-
-        <Checkbox
-          label="重要のみ"
-          checked={filters.isImportant || false}
-          onChange={(e) => handleFilterChange('isImportant', e.target.checked || null)}
-        />
+      <div>
+        <h3 className="mb-2 text-sm font-medium text-gray-700">ステータス</h3>
+        <div className="space-y-2">
+          {statuses.map((status) => (
+            <Checkbox
+              key={status}
+              label={status}
+              checked={selectedStatuses.includes(status)}
+              onChange={(e) => {
+                if (e.target.checked) {
+                  onStatusChange([...selectedStatuses, status]);
+                } else {
+                  onStatusChange(selectedStatuses.filter((s) => s !== status));
+                }
+              }}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );
 }
-
-export default QuestFilters;
