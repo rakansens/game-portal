@@ -25,19 +25,11 @@ export async function PUT(request: NextRequest) {
 
     const { quests } = validation.data;
 
-    // 一括更新用のデータを準備
-    const updates = quests.map(quest => ({
-      id: quest.id,
-      order_position: quest.order_position
-    }));
-
     // 一括更新を実行
-    const { error } = await supabaseAdmin
-      .from('quests')
-      .upsert(updates, {
-        onConflict: 'id',
-        ignoreDuplicates: false
-      });
+    const { error } = await supabaseAdmin.rpc(
+      'update_quests_order',
+      { quest_updates: quests }
+    );
 
     if (error) {
       console.error('Error updating quest order:', error);
