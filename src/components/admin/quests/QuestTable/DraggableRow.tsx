@@ -6,8 +6,8 @@ import { CSS } from '@dnd-kit/utilities';
 import { format } from 'date-fns';
 import { ja } from 'date-fns/locale';
 import { Quest } from '@/types/quest';
-import { Badge } from '@/components/admin/ui/Badge';
-import { Button } from '@/components/admin/ui/Button';
+import { Badge } from '@/components/shared/ui/Badge';
+import { Button } from '@/components/shared/ui/Button';
 import { cn } from '@/utils/cn';
 
 interface DraggableRowProps {
@@ -70,38 +70,21 @@ export function DraggableRow({ quest, onDelete }: DraggableRowProps) {
         </div>
       </td>
       <td className="whitespace-nowrap px-6 py-4">
-        <Badge
-          variant={
-            quest.status === 'active'
-              ? 'success'
-              : quest.status === 'draft'
-              ? 'warning'
-              : quest.status === 'completed'
-              ? 'primary'
-              : 'default'
-          }
-          className="capitalize"
-        >
-          {quest.status}
-        </Badge>
+        <div className="flex items-center gap-1 text-sm text-gray-900">
+          <span className="font-medium">{quest.points || 0}</span>
+          <span className="text-gray-500">ポイント</span>
+        </div>
       </td>
       <td className="whitespace-nowrap px-6 py-4">
-        <Badge variant="info" className="capitalize">
-          {quest.type}
-        </Badge>
+        <div className="flex items-center gap-1 text-sm text-gray-900">
+          <span className="font-medium">{quest.required_points || 0}</span>
+          <span className="text-gray-500">ポイント</span>
+        </div>
       </td>
       <td className="whitespace-nowrap px-6 py-4">
-        <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-1 text-sm text-gray-900">
-            <span className="font-medium">{quest.exp_reward}</span>
-            <span className="text-gray-500">EXP</span>
-          </div>
-          {quest.points && quest.points > 0 && (
-            <div className="flex items-center gap-1 text-sm text-gray-900">
-              <span className="font-medium">{quest.points}</span>
-              <span className="text-gray-500">ポイント</span>
-            </div>
-          )}
+        <div className="flex items-center gap-1 text-sm text-gray-900">
+          <span className="font-medium">{quest.participants_limit || '∞'}</span>
+          <span className="text-gray-500">人</span>
         </div>
       </td>
       <td className="whitespace-nowrap px-6 py-4">

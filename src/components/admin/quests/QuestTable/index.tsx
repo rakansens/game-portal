@@ -30,9 +30,9 @@ interface QuestTableProps {
 const TABLE_HEADERS = [
   { label: '', className: 'w-10 px-2' }, // ドラッグハンドル用
   { label: 'タイトル', className: 'px-6' },
-  { label: 'ステータス', className: 'w-24 px-6' },
-  { label: 'タイプ', className: 'w-24 px-6' },
-  { label: '報酬', className: 'w-32 px-6' },
+  { label: 'ポイント', className: 'w-24 px-6' },
+  { label: '必要ポイント', className: 'w-28 px-6' },
+  { label: '参加者上限', className: 'w-24 px-6' },
   { label: '期限', className: 'w-28 px-6' },
   { label: '操作', className: 'w-24 px-6 text-right' },
 ] as const;
