@@ -47,9 +47,7 @@ export default function HomePage() {
 
   return (
     <div className="container mx-auto min-h-screen px-4 pb-20 pt-4">
-   •	角丸デザイン (border-radius: 8px ~ 12px 相当)
-	•	ホバー時（またはタップ時）にふわっと膨らむようなアニメーション (transform: scale, box-shadow の変化)
-	•	ボタンやバッジなどの要素も共通スタイルに合わせて角丸にして欲しい   <h1 className="mb-6 text-xl font-bold text-gray-900">クエスト一覧</h1>
+      <h1 className="mb-6 text-xl font-bold text-gray-900">クエスト一覧</h1>
       
       {/* クエストリスト */}
       <div className="space-y-4">
