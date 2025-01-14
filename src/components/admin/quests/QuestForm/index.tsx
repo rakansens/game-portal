@@ -2,7 +2,7 @@
 
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Button } from '@/components/shared/ui/Button';
+import { Button } from '@/components/admin/ui/Button';
 import { QuestFormData } from '@/types/quest';
 import { questSchema } from '@/lib/validations/quest';
 import { QuestFormFields } from './QuestFormFields';
@@ -73,7 +73,7 @@ export function QuestForm({
             キャンセル
           </Button>
         )}
-        <Button type="submit" disabled={isSubmitting}>
+        <Button type="submit" variant="primary" disabled={isSubmitting}>
           {isSubmitting ? '保存中...' : '保存'}
         </Button>
       </div>

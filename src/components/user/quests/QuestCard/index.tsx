@@ -2,7 +2,7 @@
 
 import { Quest } from '@/types/quest';
 import { Badge } from '@/components/shared/ui/Badge';
-import { Button } from '@/components/shared/ui/Button';
+import { Button } from '@/components/user/ui/Button';
 import { cn } from '@/utils/cn';
 import { format } from 'date-fns';
 import { ja } from 'date-fns/locale';
@@ -105,7 +105,7 @@ export function QuestCard({ quest, onStart, onComplete }: QuestCardProps) {
           </div>
 
           {/* アクションボタン */}
-          <div className="flex justify-end">
+          <div className="flex justify-end gap-2">
             {onStart && (
               <Button
                 onClick={onStart}

@@ -1,15 +1,15 @@
 'use client';
 
-import { ClientLayout } from '@/components/shared/layout/ClientLayout';
+import { UserLayout } from '@/components/user/layout/UserLayout';
 
-export default function UserLayout({
+export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <ClientLayout>
+    <UserLayout>
       {children}
-    </ClientLayout>
+    </UserLayout>
   );
 }

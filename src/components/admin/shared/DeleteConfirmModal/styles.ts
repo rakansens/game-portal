@@ -17,7 +17,3 @@ export const titleStyles = 'mt-3 text-center sm:mt-5';
 export const titleTextStyles = 'text-lg font-medium leading-6 text-gray-900';
 
 export const buttonContainerStyles = 'mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3';
-
-export const cancelButtonStyles = 'mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-1 sm:mt-0';
-
-export const confirmButtonStyles = 'inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:col-start-2';

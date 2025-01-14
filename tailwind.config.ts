@@ -10,13 +10,25 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: {
-          DEFAULT: '#070809',
-          dark: '#050607',
+        user: {
+          background: {
+            DEFAULT: '#040506',
+            dark: '#020304',
+          },
+          primary: {
+            DEFAULT: '#2761c3',
+            hover: '#27c39f',
+          },
         },
-        primary: {
-          DEFAULT: '#2761c3',
-          hover: '#27c39f',
+        admin: {
+          background: {
+            DEFAULT: '#f8fafc',
+            dark: '#e2e8f0',
+          },
+          primary: {
+            DEFAULT: '#3b82f6',
+            hover: '#2563eb',
+          },
         },
       },
       animation: {

@@ -7,6 +7,7 @@ import { format } from 'date-fns';
 import { ja } from 'date-fns/locale';
 import { Quest } from '@/types/quest';
 import { Badge } from '@/components/shared/ui/Badge';
+import { Button } from '@/components/admin/ui/Button';
 
 interface DraggableRowProps {
   quest: Quest;
@@ -107,18 +108,23 @@ export function DraggableRow({ quest, onDelete }: DraggableRowProps) {
       </td>
       <td className="whitespace-nowrap px-6 py-4 text-right text-sm">
         <div className="flex justify-end space-x-2">
-          <Link
-            href={`/admin/quests/${quest.id}/edit`}
-            className="text-blue-600 hover:text-blue-900"
-          >
-            編集
+          <Link href={`/admin/quests/${quest.id}/edit`}>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-admin-primary hover:text-admin-primary-hover"
+            >
+              編集
+            </Button>
           </Link>
-          <button
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={onDelete}
             className="text-red-600 hover:text-red-900"
           >
             削除
-          </button>
+          </Button>
         </div>
       </td>
     </tr>

@@ -3,6 +3,7 @@
 import { Fragment } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
+import { Button } from '@/components/admin/ui/Button';
 import { DeleteConfirmModalProps } from './types';
 import {
   overlayStyles,
@@ -14,8 +15,6 @@ import {
   titleStyles,
   titleTextStyles,
   buttonContainerStyles,
-  cancelButtonStyles,
-  confirmButtonStyles,
 } from './styles';
 
 export function DeleteConfirmModal({
@@ -65,20 +64,18 @@ export function DeleteConfirmModal({
                   </div>
                 </div>
                 <div className={buttonContainerStyles}>
-                  <button
-                    type="button"
-                    className={confirmButtonStyles}
+                  <Button
+                    variant="danger"
                     onClick={onConfirm}
                   >
                     削除
-                  </button>
-                  <button
-                    type="button"
-                    className={cancelButtonStyles}
+                  </Button>
+                  <Button
+                    variant="outline"
                     onClick={onClose}
                   >
                     キャンセル
-                  </button>
+                  </Button>
                 </div>
               </Dialog.Panel>
             </Transition.Child>
