@@ -2,9 +2,10 @@
 
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { Quest } from '@/types/supabase';
-import { QuestForm } from '@/components/ui/forms/QuestForm';
+import { Quest, QuestFormData } from '@/types/quest';
+import { QuestForm } from '@/components/admin/quests/QuestForm';
 import { updateQuest } from '@/features/admin/quests/actions';
+import { questToFormData } from '@/utils/quest-utils';
 
 interface EditQuestFormProps {
   quest: Quest;
@@ -12,12 +13,17 @@ interface EditQuestFormProps {
 
 export function EditQuestForm({ quest }: EditQuestFormProps) {
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = async (data: Quest) => {
+  const handleSubmit = async (data: QuestFormData) => {
     try {
-      setLoading(true);
-      const result = await updateQuest(quest.id, data);
+      setIsSubmitting(true);
+      const result = await updateQuest(quest.id, {
+        ...data,
+        id: quest.id,
+        created_at: quest.created_at,
+        updated_at: quest.updated_at,
+      });
       
       if (result.error) {
         throw new Error(result.error);
@@ -29,17 +35,16 @@ export function EditQuestForm({ quest }: EditQuestFormProps) {
       console.error('Failed to update quest:', error);
       alert('クエストの更新に失敗しました');
     } finally {
-      setLoading(false);
+      setIsSubmitting(false);
     }
   };
 
   return (
     <QuestForm
-      quest={quest}
+      initialData={questToFormData(quest)}
       onSubmit={handleSubmit}
       onCancel={() => router.back()}
-      loading={loading}
-      submitLabel="更新"
+      isSubmitting={isSubmitting}
     />
   );
 }

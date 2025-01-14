@@ -1,5 +1,6 @@
 'use client';
 
+import { use } from 'react';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Quest } from '@/types/quest';
@@ -7,12 +8,13 @@ import { EditQuestForm } from './components/EditQuestForm';
 import { fetchQuestById } from '@/lib/admin-api';
 
 interface EditQuestPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default function EditQuestPage({ params }: EditQuestPageProps) {
+  const { id } = use(params);
   const router = useRouter();
   const [quest, setQuest] = useState<Quest | null>(null);
   const [loading, setLoading] = useState(true);
@@ -22,7 +24,7 @@ export default function EditQuestPage({ params }: EditQuestPageProps) {
     const loadQuest = async () => {
       try {
         setLoading(true);
-        const result = await fetchQuestById(params.id);
+        const result = await fetchQuestById(id);
         if (result.error) {
           throw new Error(result.error);
         }
@@ -38,7 +40,7 @@ export default function EditQuestPage({ params }: EditQuestPageProps) {
     };
 
     loadQuest();
-  }, [params.id]);
+  }, [id]);
 
   if (loading) {
     return (
