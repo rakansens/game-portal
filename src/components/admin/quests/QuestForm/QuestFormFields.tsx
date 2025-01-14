@@ -4,7 +4,6 @@ import { Input } from '@/components/shared/ui/Input';
 import { Select } from '@/components/shared/ui/Select';
 import { Checkbox } from '@/components/shared/ui/Checkbox';
 import { QuestFormFieldsProps } from './types';
-import { QuestStatus, QuestType, VerificationType } from '@/types/quest';
 
 export function QuestFormFields({
   register,
@@ -40,8 +39,8 @@ export function QuestFormFields({
           disabled={isSubmitting}
           options={[
             { value: 'normal', label: 'ノーマル' },
+            { value: 'special', label: 'スペシャル' },
             { value: 'limited_time', label: '期間限定' },
-            { value: 'roulette', label: 'ルーレット' },
           ]}
         />
 
@@ -161,33 +160,6 @@ export function QuestFormFields({
           {...register('is_limited')}
           error={errors.is_limited?.message}
           disabled={isSubmitting}
-        />
-
-        <Checkbox
-          label="自動進行"
-          {...register('auto_progress')}
-          error={errors.auto_progress?.message}
-          disabled={isSubmitting}
-        />
-
-        <Checkbox
-          label="検証必須"
-          {...register('verification_required')}
-          error={errors.verification_required?.message}
-          disabled={isSubmitting}
-        />
-      </div>
-
-      <div>
-        <Select
-          label="検証タイプ"
-          {...register('verification_type')}
-          error={errors.verification_type?.message}
-          disabled={isSubmitting}
-          options={[
-            { value: 'manual', label: '手動' },
-            { value: 'automatic', label: '自動' },
-          ]}
         />
       </div>
     </div>
