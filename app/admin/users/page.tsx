@@ -178,19 +178,19 @@ export default function AdminUsersPage() {
                     </Badge>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">{user.totalPoints.toLocaleString()} pt</div>
+                    <div className="text-sm font-medium text-gray-900">{user.totalPoints?.toLocaleString() ?? 0} pt</div>
                   </td>
                   <td className="px-6 py-4">
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
                         <Badge variant="success" className="text-xs">
-                          完了: {user.completedQuests.length}
+                          完了: {user.completedQuests?.length ?? 0}
                         </Badge>
                         <Badge variant="secondary" className="text-xs">
-                          進行中: {user.currentQuests.length}
+                          進行中: {user.currentQuests?.length ?? 0}
                         </Badge>
                       </div>
-                      {user.currentQuests.length > 0 && (
+                      {user.currentQuests?.length > 0 && (
                         <div className="text-xs text-gray-500">
                           現在のクエスト: {user.currentQuests[0].questName}
                         </div>
