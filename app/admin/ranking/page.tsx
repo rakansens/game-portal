@@ -86,7 +86,7 @@ export default function AdminRankingPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-white">ランキング管理</h1>
+        <h1 className="text-2xl font-bold text-gray-900">ランキング管理</h1>
         <Button onClick={handleCreate} variant="primary">新規作成</Button>
       </div>
 
@@ -94,35 +94,28 @@ export default function AdminRankingPage() {
         {rankings.map((ranking) => (
           <div
             key={ranking.id}
-            className="group relative overflow-hidden rounded-xl backdrop-blur-sm
-              hover:scale-[1.01] transition-all duration-300"
+            className="group relative overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm
+              hover:shadow-md transition-shadow duration-200"
           >
-            <div className={cn(
-              "relative overflow-hidden rounded-xl p-[1px]",
-              ranking.rank === 1 && "bg-gradient-to-r from-yellow-400/80 via-yellow-500/80 to-yellow-600/80",
-              ranking.rank === 2 && "bg-gradient-to-r from-gray-300/80 via-gray-400/80 to-gray-500/80",
-              ranking.rank === 3 && "bg-gradient-to-r from-amber-700/80 via-amber-800/80 to-amber-900/80",
-              ranking.rank > 3 && "bg-gradient-to-r from-[#2761c3]/80 via-[#27c39f]/80 to-[#2761c3]/80"
-            )}>
-              <div className="relative flex items-center gap-4 rounded-xl bg-gray-800/90 p-4 backdrop-blur-sm">
+            <div className="relative flex items-center gap-4 p-4">
                 <div className={cn(
-                  "flex h-12 w-12 items-center justify-center rounded-full text-xl font-bold ring-2 ring-white/20",
-                  ranking.rank === 1 && "bg-gradient-to-br from-yellow-400 to-yellow-600 text-black",
-                  ranking.rank === 2 && "bg-gradient-to-br from-gray-300 to-gray-500 text-black",
-                  ranking.rank === 3 && "bg-gradient-to-br from-amber-700 to-amber-900 text-white",
-                  ranking.rank > 3 && "bg-gradient-to-br from-[#2761c3] to-[#27c39f] text-white"
+                  "flex h-12 w-12 items-center justify-center rounded-full text-xl font-bold border-2",
+                  ranking.rank === 1 && "bg-yellow-50 border-yellow-500 text-yellow-700",
+                  ranking.rank === 2 && "bg-gray-50 border-gray-400 text-gray-700",
+                  ranking.rank === 3 && "bg-orange-50 border-orange-500 text-orange-700",
+                  ranking.rank > 3 && "bg-blue-50 border-admin-primary text-admin-primary"
                 )}>
                   {ranking.rank}
                 </div>
 
                 <div className="flex-grow">
                   <div className="flex items-center gap-2">
-                    <h3 className="font-bold text-white">{ranking.username}</h3>
-                    <span className="rounded bg-[#2761c3]/20 px-2 py-0.5 text-sm text-[#27c39f]">
+                    <h3 className="font-medium text-gray-900">{ranking.username}</h3>
+                    <span className="rounded-full bg-admin-primary/10 px-2 py-0.5 text-sm text-admin-primary">
                       Lv.{ranking.level}
                     </span>
                   </div>
-                  <div className="mt-1 text-sm text-[#ddebf0]/60">
+                  <div className="mt-1 text-sm text-gray-500">
                     完了クエスト: {ranking.quest_completed} | ポイント: {ranking.points}
                   </div>
                 </div>

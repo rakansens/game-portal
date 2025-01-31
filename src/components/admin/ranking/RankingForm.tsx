@@ -1,8 +1,8 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { rankingSchema, type RankingFormData } from '@/lib/validations/ranking';
-import { Input } from '@/components/user/ui/Input';
-import { Button } from '@/components/user/ui/Button';
+import { Input } from '@/components/admin/ui/Input';
+import { Button } from '@/components/admin/ui/Button';
 import { UserRanking } from '@/types/ranking';
 
 interface RankingFormProps {
