@@ -1,8 +1,8 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { rankingSchema, type RankingFormData } from '@/lib/validations/ranking';
-import { Input } from '@/components/user/ui/Input';
-import { Button } from '@/components/user/ui/Button';
+import { Input } from '@/components/admin/ui/Input';
+import { Button } from '@/components/admin/ui/Button';
 import { UserRanking } from '@/types/ranking';
 
 interface RankingFormProps {
@@ -22,10 +22,13 @@ export function RankingForm({ initialData, onSubmit, onCancel }: RankingFormProp
   });
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 bg-white">
+      <div className="border-b border-gray-200 pb-6">
+        <p className="text-sm text-gray-500">ランキング情報を入力してください</p>
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-2">
-          <label className="text-sm font-medium text-white">ユーザー名</label>
+          <label className="text-sm font-medium text-gray-700">ユーザー名</label>
           <Input
             {...register('username')}
             type="text"
@@ -35,7 +38,7 @@ export function RankingForm({ initialData, onSubmit, onCancel }: RankingFormProp
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium text-white">アバターURL</label>
+          <label className="text-sm font-medium text-gray-700">アバターURL</label>
           <Input
             {...register('avatar_url')}
             type="url"
@@ -45,7 +48,7 @@ export function RankingForm({ initialData, onSubmit, onCancel }: RankingFormProp
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium text-white">ポイント</label>
+          <label className="text-sm font-medium text-gray-700">ポイント</label>
           <Input
             {...register('points', { valueAsNumber: true })}
             type="number"
@@ -56,7 +59,7 @@ export function RankingForm({ initialData, onSubmit, onCancel }: RankingFormProp
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium text-white">レベル</label>
+          <label className="text-sm font-medium text-gray-700">レベル</label>
           <Input
             {...register('level', { valueAsNumber: true })}
             type="number"
@@ -67,7 +70,7 @@ export function RankingForm({ initialData, onSubmit, onCancel }: RankingFormProp
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium text-white">完了クエスト数</label>
+          <label className="text-sm font-medium text-gray-700">完了クエスト数</label>
           <Input
             {...register('quest_completed', { valueAsNumber: true })}
             type="number"
@@ -78,7 +81,7 @@ export function RankingForm({ initialData, onSubmit, onCancel }: RankingFormProp
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium text-white">ランク</label>
+          <label className="text-sm font-medium text-gray-700">ランク</label>
           <Input
             {...register('rank', { valueAsNumber: true })}
             type="number"
@@ -89,7 +92,7 @@ export function RankingForm({ initialData, onSubmit, onCancel }: RankingFormProp
         </div>
       </div>
 
-      <div className="flex justify-end gap-4">
+      <div className="flex justify-end gap-4 pt-4 border-t border-gray-200">
         <Button
           type="button"
           variant="secondary"
