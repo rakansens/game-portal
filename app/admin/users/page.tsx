@@ -3,17 +3,9 @@
 import { useState } from 'react';
 import { Button } from '@/components/admin/ui/Button';
 import { Badge } from '@/components/admin/ui/Badge';
+import { LineUser, QuestProgress } from '@/types/line';
 
-interface LineUser {
-  id: string;
-  displayName: string;
-  pictureUrl: string;
-  statusMessage?: string;
-  email?: string;
-  isBlocked: boolean;
-  registeredAt: string;
-  lastLoginAt: string;
-}
+
 
 // モックデータ
 const mockUsers: LineUser[] = [
@@ -26,6 +18,29 @@ const mockUsers: LineUser[] = [
     isBlocked: false,
     registeredAt: '2024-01-15T10:30:00Z',
     lastLoginAt: '2024-01-31T08:15:00Z',
+    totalPoints: 2500,
+    completedQuests: [
+      {
+        questId: 1,
+        questName: '初心者チュートリアル',
+        points: 500,
+        completedAt: '2024-01-16T10:30:00Z',
+      },
+      {
+        questId: 2,
+        questName: '宝探しミッション',
+        points: 1000,
+        completedAt: '2024-01-20T15:45:00Z',
+      },
+    ],
+    currentQuests: [
+      {
+        questId: 3,
+        questName: '伝説の剣を探せ',
+        points: 2000,
+        completedAt: '',
+      },
+    ],
   },
   {
     id: 'U1234567890abcdef2',
@@ -34,6 +49,16 @@ const mockUsers: LineUser[] = [
     isBlocked: true,
     registeredAt: '2024-01-10T15:45:00Z',
     lastLoginAt: '2024-01-20T12:00:00Z',
+    totalPoints: 500,
+    completedQuests: [
+      {
+        questId: 1,
+        questName: '初心者チュートリアル',
+        points: 500,
+        completedAt: '2024-01-11T10:30:00Z',
+      },
+    ],
+    currentQuests: [],
   },
   {
     id: 'U1234567890abcdef3',
@@ -43,6 +68,29 @@ const mockUsers: LineUser[] = [
     isBlocked: false,
     registeredAt: '2024-01-05T09:20:00Z',
     lastLoginAt: '2024-01-30T22:45:00Z',
+    totalPoints: 1500,
+    completedQuests: [
+      {
+        questId: 1,
+        questName: '初心者チュートリアル',
+        points: 500,
+        completedAt: '2024-01-06T10:30:00Z',
+      },
+      {
+        questId: 2,
+        questName: '宝探しミッション',
+        points: 1000,
+        completedAt: '2024-01-25T15:45:00Z',
+      },
+    ],
+    currentQuests: [
+      {
+        questId: 4,
+        questName: '魔法の書を集めよう',
+        points: 1500,
+        completedAt: '',
+      },
+    ],
   },
 ];
 
@@ -91,6 +139,8 @@ export default function AdminUsersPage() {
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ユーザー</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ステータス</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">獲得ポイント</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">クエスト進捗</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">登録日時</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">最終ログイン</th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
@@ -126,6 +176,26 @@ export default function AdminUsersPage() {
                     >
                       {user.isBlocked ? 'ブロック中' : 'アクティブ'}
                     </Badge>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm font-medium text-gray-900">{user.totalPoints.toLocaleString()} pt</div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <Badge variant="success" className="text-xs">
+                          完了: {user.completedQuests.length}
+                        </Badge>
+                        <Badge variant="secondary" className="text-xs">
+                          進行中: {user.currentQuests.length}
+                        </Badge>
+                      </div>
+                      {user.currentQuests.length > 0 && (
+                        <div className="text-xs text-gray-500">
+                          現在のクエスト: {user.currentQuests[0].questName}
+                        </div>
+                      )}
+                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {formatDate(user.registeredAt)}

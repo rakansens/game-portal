@@ -1,3 +1,10 @@
+export interface QuestProgress {
+  questId: number;
+  questName: string;
+  points: number;
+  completedAt: string;
+}
+
 export interface LineUser {
   id: string;
   displayName: string;
@@ -7,4 +14,7 @@ export interface LineUser {
   isBlocked: boolean;
   registeredAt: string;
   lastLoginAt: string;
+  totalPoints: number;
+  completedQuests: QuestProgress[];
+  currentQuests: QuestProgress[];
 }
