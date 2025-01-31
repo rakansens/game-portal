@@ -1,23 +1,41 @@
 'use client';
 
+import { useState } from 'react';
 import Image from 'next/image';
 import { UserRanking } from '@/types/ranking';
 import { cn } from '@/utils/cn';
+import { UserProfileModal } from './UserProfileModal';
 
 interface RankingListProps {
   rankings: UserRanking[];
 }
 
 export function RankingList({ rankings }: RankingListProps) {
+  const [selectedUser, setSelectedUser] = useState<UserRanking | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleUserClick = (user: UserRanking) => {
+    setSelectedUser(user);
+    setIsModalOpen(true);
+  };
+
   return (
     <div className="space-y-4">
+      {selectedUser && (
+        <UserProfileModal
+          user={selectedUser}
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+        />
+      )}
       {rankings.map((user) => (
         <div
           key={user.id}
+          onClick={() => handleUserClick(user)}
           className="group relative w-full animate-fade-in rounded-xl backdrop-blur-sm
             hover:scale-[1.02] hover:-translate-y-0.5 hover:shadow-lg
             active:scale-[0.98] active:translate-y-0 active:shadow-sm
-            transition-all duration-300 ease-out"
+            transition-all duration-300 ease-out cursor-pointer"
         >
           <div className={cn(
             "relative overflow-hidden rounded-xl p-[1px]",
