@@ -111,7 +111,7 @@ export function QuestCard({ quest, onStart, onComplete }: QuestCardProps) {
                 onClick={onStart}
                 variant="primary"
                 size="lg"
-                className="w-full transform-gpu transition-all duration-300 group-hover:scale-105"
+                className="w-full transform-gpu transition-all duration-300 hover:scale-105 hover:shadow-lg hover:brightness-110 active:scale-95"
               >
                 クエストを開始
               </Button>
@@ -121,7 +121,7 @@ export function QuestCard({ quest, onStart, onComplete }: QuestCardProps) {
                 onClick={onComplete}
                 variant="success"
                 size="lg"
-                className="w-full transform-gpu transition-all duration-300 group-hover:scale-105"
+                className="w-full transform-gpu transition-all duration-300 hover:scale-105 hover:shadow-lg hover:brightness-110 active:scale-95"
               >
                 クエストを完了
               </Button>
