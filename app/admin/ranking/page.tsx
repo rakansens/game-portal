@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Dialog } from '@headlessui/react';
 import { UserRanking } from '@/types/ranking';
 import { RankingForm } from '@/components/admin/ranking/RankingForm';
-import { Button } from '@/components/user/ui/Button';
+import { Button } from '@/components/admin/ui/Button';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
@@ -84,62 +84,81 @@ export default function AdminRankingPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="flex-1 bg-white p-8">
       <div className="mb-8 flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-900">ランキング管理</h1>
         <Button onClick={handleCreate} variant="primary">新規作成</Button>
       </div>
 
-      <div className="space-y-4">
-        {rankings.map((ranking) => (
-          <div
-            key={ranking.id}
-            className="group relative overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm
-              hover:shadow-md transition-shadow duration-200"
-          >
-            <div className="relative flex items-center gap-4 p-4">
-                <div className={cn(
-                  "flex h-12 w-12 items-center justify-center rounded-full text-xl font-bold border-2",
-                  ranking.rank === 1 && "bg-yellow-50 border-yellow-500 text-yellow-700",
-                  ranking.rank === 2 && "bg-gray-50 border-gray-400 text-gray-700",
-                  ranking.rank === 3 && "bg-orange-50 border-orange-500 text-orange-700",
-                  ranking.rank > 3 && "bg-blue-50 border-admin-primary text-admin-primary"
-                )}>
-                  {ranking.rank}
-                </div>
-
-                <div className="flex-grow">
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-medium text-gray-900">{ranking.username}</h3>
-                    <span className="rounded-full bg-admin-primary/10 px-2 py-0.5 text-sm text-admin-primary">
-                      Lv.{ranking.level}
-                    </span>
-                  </div>
-                  <div className="mt-1 text-sm text-gray-500">
-                    完了クエスト: {ranking.quest_completed} | ポイント: {ranking.points}
-                  </div>
-                </div>
-
-                <div className="flex gap-2">
-                  <Button
-                    onClick={() => handleEdit(ranking)}
-                    variant="secondary"
-                    size="sm"
-                  >
-                    編集
-                  </Button>
-                  <Button
-                    onClick={() => handleDelete(ranking.id)}
-                    variant="danger"
-                    size="sm"
-                  >
-                    削除
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
-        ))}
+      <div className="rounded-lg border border-gray-200 bg-white shadow">
+        <div className="overflow-hidden">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rank</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ユーザー</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">レベル</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ポイント</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">クエスト完了数</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {rankings.map((ranking) => (
+                <tr key={ranking.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className={cn(
+                      "inline-flex h-8 w-8 items-center justify-center rounded-full font-semibold",
+                      ranking.rank === 1 && "bg-yellow-100 text-yellow-800",
+                      ranking.rank === 2 && "bg-gray-100 text-gray-800",
+                      ranking.rank === 3 && "bg-amber-100 text-amber-800",
+                      ranking.rank > 3 && "bg-blue-100 text-blue-800"
+                    )}>
+                      {ranking.rank}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center">
+                      <div className="h-10 w-10 flex-shrink-0">
+                        <img className="h-10 w-10 rounded-full" src={ranking.avatar_url} alt="" />
+                      </div>
+                      <div className="ml-4">
+                        <div className="text-sm font-medium text-gray-900">{ranking.username}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-900">Lv.{ranking.level}</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {ranking.points.toLocaleString()}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    {ranking.quest_completed}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <div className="flex justify-end gap-2">
+                      <Button
+                        onClick={() => handleEdit(ranking)}
+                        variant="secondary"
+                        size="sm"
+                      >
+                        編集
+                      </Button>
+                      <Button
+                        onClick={() => handleDelete(ranking.id)}
+                        variant="danger"
+                        size="sm"
+                      >
+                        削除
+                      </Button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <Dialog
@@ -150,8 +169,8 @@ export default function AdminRankingPage() {
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm" aria-hidden="true" />
 
         <div className="fixed inset-0 flex items-center justify-center p-4">
-          <Dialog.Panel className="w-full max-w-2xl rounded-2xl bg-gray-800/90 p-6 backdrop-blur-sm">
-            <Dialog.Title className="text-xl font-bold text-white mb-6">
+          <Dialog.Panel className="w-full max-w-2xl rounded-lg bg-white p-6 shadow-xl">
+            <Dialog.Title className="text-xl font-bold text-gray-900 mb-6">
               {selectedRanking ? 'ランキングを編集' : 'ランキングを作成'}
             </Dialog.Title>
 
