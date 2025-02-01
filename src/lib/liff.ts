@@ -31,6 +31,29 @@ export const initializeLiff = async (): Promise<void> => {
     }
 
     const user = await liff.getProfile();
+    
+    // ユーザー情報をSupabaseに保存
+    try {
+      const response = await fetch('/api/auth/line', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          line_user_id: user.userId,
+          display_name: user.displayName,
+          picture_url: user.pictureUrl,
+          status_message: user.statusMessage,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save user data');
+      }
+    } catch (error) {
+      console.error('Failed to save user data:', error);
+    }
+
     auth.setUser({
       id: user.userId,
       displayName: user.displayName,
