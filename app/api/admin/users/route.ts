@@ -16,20 +16,21 @@ export async function GET() {
 
     if (error) throw error;
 
-    const lineUsers: LineUser[] = users.map((user) => ({
-      id: user.line_user_id,
-      displayName: user.display_name,
-      pictureUrl: user.picture_url,
-      statusMessage: user.status_message,
-      email: user.email,
-      isBlocked: user.is_blocked,
-      registeredAt: user.created_at,
-      lastLoginAt: user.last_login_at,
-      totalPoints: 0,
-      completedQuests: [],
-      currentQuests: []
-    }));
-
+    const lineUsers = users.map((user) => {
+      return {
+        id: user.line_user_id,
+        displayName: user.display_name,
+        pictureUrl: user.picture_url,
+        statusMessage: user.status_message,
+        email: user.email,
+        isBlocked: user.is_blocked,
+        registeredAt: user.created_at,
+        lastLoginAt: user.last_login_at,
+        totalPoints: 0,
+        completedQuests: [],
+        currentQuests: []
+      };
+    });
 
     return NextResponse.json(lineUsers);
   } catch (error) {
