@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import { redirect } from 'next/navigation';
-import { AdminLayout } from '@/components/admin/layout/AdminLayout';
+import { AdminLayout } from '@/components/layout/AdminLayout';
 import { getProfile } from '@/lib/supabase';
 
 export const metadata: Metadata = {
