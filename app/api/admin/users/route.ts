@@ -27,9 +27,9 @@ export async function GET() {
       lastLoginAt: user.last_login_at,
       totalPoints: 0,
       completedQuests: [],
-      currentQuests: [],
-        })),
+      currentQuests: []
     }));
+
 
     return NextResponse.json(lineUsers);
   } catch (error) {
