@@ -11,15 +11,7 @@ export async function GET() {
   try {
     const { data: users, error } = await supabase
       .from('users')
-      .select(`
-        *,
-        quests:user_quests(
-          quest_id,
-          quest:quests(name),
-          points,
-          completed_at
-        )
-      `)
+      .select('*')
       .order('created_at', { ascending: false });
 
     if (error) throw error;
@@ -33,22 +25,9 @@ export async function GET() {
       isBlocked: user.is_blocked,
       registeredAt: user.created_at,
       lastLoginAt: user.last_login_at,
-      totalPoints: user.total_points,
-      completedQuests: user.quests
-        .filter((q: any) => q.completed_at)
-        .map((q: any) => ({
-          questId: q.quest_id,
-          questName: q.quest.name,
-          points: q.points,
-          completedAt: q.completed_at,
-        })),
-      currentQuests: user.quests
-        .filter((q: any) => !q.completed_at)
-        .map((q: any) => ({
-          questId: q.quest_id,
-          questName: q.quest.name,
-          points: q.points,
-          completedAt: '',
+      totalPoints: 0,
+      completedQuests: [],
+      currentQuests: [],
         })),
     }));
 
