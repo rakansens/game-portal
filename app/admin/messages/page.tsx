@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { LineUser } from '@/types/line';
+import MessageLogs from '@/components/admin/line/MessageLogs';
 
 type MessageType = 'text' | 'image' | 'template' | 'flex' | 'multicast' | 'broadcast';
 
@@ -110,12 +111,12 @@ export default function MessagesPage() {
                 <form onSubmit={handleSubmit(onSubmit)} className="mt-5 space-y-6">
                   {/* メッセージタイプ選択 */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700">
+                    <label className="block text-sm font-medium text-gray-900">
                       メッセージタイプ
                     </label>
                     <select
                       {...register('type')}
-                      className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+                      className="mt-1 block w-full pl-3 pr-10 py-2 text-base text-gray-900 border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
                     >
                       {messageTypes.map((type) => (
                         <option key={type.value} value={type.value}>
@@ -128,11 +129,11 @@ export default function MessagesPage() {
                   {/* ユーザー選択 */}
                   {(selectedType === 'text' || selectedType === 'image' || selectedType === 'template' || selectedType === 'flex') && (
                     <div>
-                      <label className="block text-sm font-medium text-gray-700">
+                      <label className="block text-sm font-medium text-gray-900">
                         送信先ユーザー
                       </label>
                       <select
-                        className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+                        className="mt-1 block w-full pl-3 pr-10 py-2 text-base text-gray-900 border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
                         onChange={(e) => setSelectedUsers([e.target.value])}
                       >
                         <option value="">送信先を選択してください</option>
@@ -148,13 +149,13 @@ export default function MessagesPage() {
                   {/* テキストメッセージ入力 */}
                   {selectedType !== 'image' && (
                     <div>
-                      <label className="block text-sm font-medium text-gray-700">
+                      <label className="block text-sm font-medium text-gray-900">
                         メッセージ内容
                       </label>
                       <textarea
                         {...register('text')}
                         rows={4}
-                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                         placeholder="メッセージを入力してください"
                       />
                     </div>
@@ -163,13 +164,13 @@ export default function MessagesPage() {
                   {/* 画像メッセージ入力 */}
                   {selectedType === 'image' && (
                     <div>
-                      <label className="block text-sm font-medium text-gray-700">
+                      <label className="block text-sm font-medium text-gray-900">
                         画像URL
                       </label>
                       <input
                         type="url"
                         {...register('imageUrl')}
-                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                         placeholder="https://example.com/image.jpg"
                       />
                     </div>
