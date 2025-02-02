@@ -167,8 +167,33 @@ export async function POST(request: Request) {
       );
     }
 
-    // 送信ログをデータベースに保存（後で実装）
-    // await saveMessageLog(data, messages);
+    // 送信ログをデータベースに保存
+    const { createClient } = await import('@supabase/supabase-js');
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+    if (!supabaseUrl || !supabaseServiceKey) {
+      throw new Error('Missing environment variables for Supabase');
+    }
+
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    const { error: logError } = await supabase
+      .from('message_logs')
+      .insert({
+        message_type: data.type,
+        message_content: data.type === 'image' 
+          ? { url: data.imageUrl }
+          : { text: data.text },
+        target_users: data.type === 'broadcast' 
+          ? null 
+          : data.targetUserIds?.map(id => ({ id })),
+        is_broadcast: data.type === 'broadcast',
+        status: 'success'
+      });
+
+    if (logError) {
+      console.error('Error saving message log:', logError);
+    }
 
     return NextResponse.json({ success: true });
   } catch (error) {

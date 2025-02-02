@@ -103,6 +103,28 @@ export default function AdminUsersPage() {
     fetchUsers();
   }, []);
 
+  const syncUsers = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('/api/admin/users/sync', {
+        method: 'POST',
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'ユーザー同期に失敗しました');
+      }
+      
+      // 同期後にユーザーリストを再取得
+      await fetchUsers();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'ユーザー同期に失敗しました');
+      console.error('Error syncing users:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const fetchUsers = async () => {
     try {
       const response = await fetch('/api/admin/users');
@@ -176,6 +198,13 @@ export default function AdminUsersPage() {
               <div className="text-sm text-gray-500">
                 総ユーザー数: <span className="font-semibold text-gray-900">{users.length}</span>
               </div>
+              <Button
+                onClick={syncUsers}
+                disabled={loading}
+                className="bg-blue-500 hover:bg-blue-600 text-white"
+              >
+                {loading ? 'LINEユーザー同期中...' : 'LINEユーザーを同期'}
+              </Button>
             </div>
           </div>
 

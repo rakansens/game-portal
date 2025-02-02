@@ -1,5 +1,8 @@
 -- テーブルのクリーンアップ
 TRUNCATE TABLE public.quests CASCADE;
+TRUNCATE TABLE public.users CASCADE;
+
+\ir seed_users.sql
 
 -- サンプルデータの挿入
 INSERT INTO public.quests (
