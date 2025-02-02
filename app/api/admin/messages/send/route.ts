@@ -9,7 +9,32 @@ interface MessageRequest {
 
 export async function POST(request: Request) {
   try {
+    // LINE Channel Access Tokenの確認
+    const token = process.env.LINE_CHANNEL_ACCESS_TOKEN;
+    if (!token) {
+      return NextResponse.json(
+        { error: 'LINE Channel Access Tokenが設定されていません' },
+        { status: 500 }
+      );
+    }
+
     const data: MessageRequest = await request.json();
+    console.log('Received request data:', data);
+    
+    // メッセージのバリデーション
+    if (data.type !== 'image' && (!data.text || data.text.trim() === '')) {
+      return NextResponse.json(
+        { error: 'メッセージの内容を入力してください' },
+        { status: 400 }
+      );
+    }
+
+    if (data.type === 'image' && (!data.imageUrl || !data.imageUrl.startsWith('https://'))) {
+      return NextResponse.json(
+        { error: '有効な画像URLを入力してください' },
+        { status: 400 }
+      );
+    }
     
     // LINE Messaging APIのエンドポイント
     const url = 'https://api.line.me/v2/bot/message/push';
@@ -73,10 +98,14 @@ export async function POST(request: Request) {
         break;
     }
 
+    console.log('Constructed messages:', messages);
+
     // 送信処理
     let response;
     if (data.type === 'broadcast') {
       // 全員に送信
+      const requestBody = { messages };
+      console.log('Sending broadcast request:', requestBody);
       response = await fetch('https://api.line.me/v2/bot/message/broadcast', {
         method: 'POST',
         headers: {
@@ -87,6 +116,8 @@ export async function POST(request: Request) {
       });
     } else if (data.type === 'multicast' && data.targetUserIds?.length) {
       // 複数ユーザーに送信
+      const requestBody = { to: data.targetUserIds, messages };
+      console.log('Sending multicast request:', requestBody);
       response = await fetch('https://api.line.me/v2/bot/message/multicast', {
         method: 'POST',
         headers: {
@@ -100,6 +131,8 @@ export async function POST(request: Request) {
       });
     } else {
       // 個別に送信
+      const requestBody = { to: data.targetUserIds?.[0], messages };
+      console.log('Sending push request:', requestBody);
       response = await fetch(url, {
         method: 'POST',
         headers: {
@@ -115,7 +148,11 @@ export async function POST(request: Request) {
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(JSON.stringify(errorData));
+      console.error('LINE API Error:', errorData);
+      return NextResponse.json(
+        { error: errorData.message || 'LINEメッセージの送信に失敗しました' },
+        { status: response.status }
+      );
     }
 
     // 送信ログをデータベースに保存（後で実装）

@@ -41,7 +41,8 @@ export default function MessagesPage() {
       });
 
       if (!response.ok) {
-        throw new Error('送信に失敗しました');
+        const errorData = await response.json();
+        throw new Error(errorData.error || '送信に失敗しました');
       }
 
       toast.success('メッセージを送信しました');
