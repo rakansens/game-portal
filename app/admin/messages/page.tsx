@@ -82,7 +82,7 @@ export default function MessagesPage() {
                   </div>
 
                   {/* テキストメッセージ入力 */}
-                  {selectedType === 'text' && (
+                  {selectedType !== 'image' && (
                     <div>
                       <label className="block text-sm font-medium text-gray-700">
                         メッセージ内容
