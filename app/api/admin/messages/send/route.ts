@@ -42,6 +42,14 @@ export async function POST(request: Request) {
     // メッセージの内容を構築
     let messages = [];
     
+    // メッセージが空でないことを確認
+    if (!data.text && data.type !== 'image') {
+      return NextResponse.json(
+        { error: 'メッセージの内容を入力してください' },
+        { status: 400 }
+      );
+    }
+    
     switch (data.type) {
       case 'text':
         messages.push({
@@ -131,7 +139,16 @@ export async function POST(request: Request) {
       });
     } else {
       // 個別に送信
-      const requestBody = { to: data.targetUserIds?.[0], messages };
+      // テスト用にダミーのuser IDを使用
+      const testUserId = process.env.LINE_TEST_USER_ID;
+      if (!testUserId) {
+        return NextResponse.json(
+          { error: 'テスト用のuser IDが設定されていません' },
+          { status: 400 }
+        );
+      }
+
+      const requestBody = { to: testUserId, messages };
       console.log('Sending push request:', requestBody);
       response = await fetch(url, {
         method: 'POST',
@@ -139,10 +156,7 @@ export async function POST(request: Request) {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${process.env.LINE_CHANNEL_ACCESS_TOKEN}`
         },
-        body: JSON.stringify({
-          to: data.targetUserIds?.[0],
-          messages
-        })
+        body: JSON.stringify(requestBody)
       });
     }
 

@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
+import { LineUser } from '@/types/line';
 
 type MessageType = 'text' | 'image' | 'template' | 'flex' | 'multicast' | 'broadcast';
 
@@ -23,12 +24,50 @@ const messageTypes = [
 ];
 
 export default function MessagesPage() {
+  const [users, setUsers] = useState<LineUser[]>([]);
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
   const { register, handleSubmit, watch, reset } = useForm<MessageForm>();
   const selectedType = watch('type');
 
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await fetch('/api/admin/users');
+        if (!response.ok) {
+          throw new Error('ユーザー情報の取得に失敗しました');
+        }
+        const data = await response.json();
+        setUsers(data);
+      } catch (error) {
+        console.error('Error fetching users:', error);
+        toast.error('ユーザー情報の取得に失敗しました');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUsers();
+  }, []);
+
   const onSubmit = async (data: MessageForm) => {
     try {
+      // 送信先ユーザーのバリデーション
+      if (data.type !== 'broadcast' && selectedUsers.length === 0) {
+        toast.error('送信先ユーザーを選択してください');
+        return;
+      }
+
+      // メッセージ内容のバリデーション
+      if (data.type !== 'image' && (!data.text || data.text.trim() === '')) {
+        toast.error('メッセージの内容を入力してください');
+        return;
+      }
+
+      if (data.type === 'image' && (!data.imageUrl || !data.imageUrl.startsWith('https://'))) {
+        toast.error('有効な画像URLを入力してください');
+        return;
+      }
       const response = await fetch('/api/admin/messages/send', {
         method: 'POST',
         headers: {
@@ -81,6 +120,26 @@ export default function MessagesPage() {
                       ))}
                     </select>
                   </div>
+
+                  {/* ユーザー選択 */}
+                  {(selectedType === 'text' || selectedType === 'image' || selectedType === 'template' || selectedType === 'flex') && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">
+                        送信先ユーザー
+                      </label>
+                      <select
+                        className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+                        onChange={(e) => setSelectedUsers([e.target.value])}
+                      >
+                        <option value="">送信先を選択してください</option>
+                        {users.map((user) => (
+                          <option key={user.id} value={user.id}>
+                            {user.displayName || user.id}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
 
                   {/* テキストメッセージ入力 */}
                   {selectedType !== 'image' && (
