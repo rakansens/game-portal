@@ -139,16 +139,14 @@ export async function POST(request: Request) {
       });
     } else {
       // 個別に送信
-      // テスト用にダミーのuser IDを使用
-      const testUserId = process.env.LINE_TEST_USER_ID;
-      if (!testUserId) {
+      if (!data.targetUserIds?.[0]) {
         return NextResponse.json(
-          { error: 'テスト用のuser IDが設定されていません' },
+          { error: '送信先ユーザーを選択してください' },
           { status: 400 }
         );
       }
 
-      const requestBody = { to: testUserId, messages };
+      const requestBody = { to: data.targetUserIds[0], messages };
       console.log('Sending push request:', requestBody);
       response = await fetch(url, {
         method: 'POST',

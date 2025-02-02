@@ -68,15 +68,19 @@ export default function MessagesPage() {
         toast.error('有効な画像URLを入力してください');
         return;
       }
+      // 送信データの準備
+      const requestData = {
+        ...data,
+        targetUserIds: data.type === 'broadcast' ? [] : selectedUsers,
+      };
+      console.log('Sending request:', requestData);
+
       const response = await fetch('/api/admin/messages/send', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          ...data,
-          targetUserIds: selectedUsers,
-        }),
+        body: JSON.stringify(requestData),
       });
 
       if (!response.ok) {
