@@ -3,8 +3,11 @@ import { useEffect, useState } from 'react';
 interface MessageLog {
   id: number;
   message_type: string;
-  message_content: string;
-  target_user_id: string | null;
+  message_content: {
+    text?: string;
+    url?: string;
+  };
+  target_users: { id: string }[] | null;
   is_broadcast: boolean;
   status: string;
   error_message?: string;
@@ -14,27 +17,51 @@ interface MessageLog {
   };
 }
 
-export default function MessageLogs() {
+interface Props {
+  autoRefresh?: boolean;
+}
+
+export const MessageLogs = ({ autoRefresh = false }: Props) => {
   const [logs, setLogs] = useState<MessageLog[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchLogs = async () => {
-      try {
-        const response = await fetch('/api/admin/messages/logs');
-        if (!response.ok) {
-          throw new Error('送信ログの取得に失敗しました');
-        }
-        const data = await response.json();
-        setLogs(data);
-      } catch (error) {
-        console.error('Error fetching logs:', error);
-      } finally {
-        setLoading(false);
+  const fetchLogs = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch('/api/admin/messages/logs');
+      if (!response.ok) {
+        throw new Error('送信ログの取得に失敗しました');
       }
-    };
+      const data = await response.json();
+      setLogs(data);
+    } catch (error) {
+      console.error('Error fetching logs:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchLogs();
+  }, []);
+
+  // 自動更新が有効な場合、5秒ごとに更新
+  useEffect(() => {
+    if (!autoRefresh) return;
+
+    const interval = setInterval(fetchLogs, 5000);
+    return () => clearInterval(interval);
+  }, [autoRefresh]);
+
+  const refresh = () => {
+    fetchLogs();
+  };
+
+  // コンポーネントの関数を外部に公開
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      (window as any).refreshMessageLogs = refresh;
+    }
   }, []);
 
   if (loading) {
@@ -77,12 +104,14 @@ export default function MessageLogs() {
                 {log.message_type}
               </td>
               <td className="px-6 py-4 text-sm text-gray-700">
-                {log.message_content}
+                {log.message_content.text || (
+                  log.message_content.url ? '画像メッセージ' : '不明なメッセージタイプ'
+                )}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                 {log.is_broadcast
                   ? '全員'
-                  : log.users?.display_name || log.target_user_id}
+                  : log.target_users?.map(user => user.id).join(', ')}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm">
                 <span
@@ -101,4 +130,4 @@ export default function MessageLogs() {
       </table>
     </div>
   );
-}
+};
