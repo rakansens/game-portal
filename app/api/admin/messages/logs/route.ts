@@ -1,20 +1,37 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { supabaseAdmin } from '@/lib/supabase-admin';
+import { Database } from '@/types/database';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-
-const supabase = createClient(supabaseUrl, supabaseServiceKey);
+type MessageLog = Database['public']['Tables']['message_logs']['Row'];
 
 export async function GET() {
   try {
-    const { data: logs, error } = await supabase
+    console.log('Fetching message logs from Supabase...');
+    const { data: logs, error } = await supabaseAdmin
       .from('message_logs')
-      .select('*, users(display_name)')
+      .select('*')
       .order('created_at', { ascending: false });
 
-    if (error) throw error;
+    console.log('Supabase response:', { logs, error });
 
+    if (error) {
+      console.error('Supabase error:', error);
+      throw error;
+    }
+
+    if (!logs) {
+      console.log('No logs found');
+      return NextResponse.json([]);
+    }
+
+    console.log('Found logs:', logs.length);
+    console.log('Raw logs:', JSON.stringify(logs, null, 2));
+
+    if (!logs) {
+      return NextResponse.json([]);
+    }
+
+    console.log('Formatted logs:', JSON.stringify(logs, null, 2));
     return NextResponse.json(logs);
   } catch (error) {
     console.error('Error fetching message logs:', error);

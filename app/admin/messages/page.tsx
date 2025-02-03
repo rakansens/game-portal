@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import { LineUser } from '@/types/line';
-import MessageLogs from '@/components/admin/line/MessageLogs';
+import { LineUser } from '../../../types/line';
+import { MessageLogs } from '@/components/admin/line/MessageLogs';
 
 type MessageType = 'text' | 'image' | 'template' | 'flex' | 'multicast' | 'broadcast';
 
@@ -91,6 +91,10 @@ export default function MessagesPage() {
 
       toast.success('メッセージを送信しました');
       reset();
+      // 送信ログを更新
+      if (typeof window !== 'undefined') {
+        (window as any).refreshMessageLogs?.();
+      }
     } catch (error) {
       toast.error('エラーが発生しました');
       console.error('Error:', error);
@@ -198,10 +202,7 @@ export default function MessagesPage() {
                   送信ログ
                 </h3>
                 <div className="mt-5 space-y-4">
-                  {/* ここにログを表示 */}
-                  <p className="text-sm text-gray-500">
-                    送信ログはまだありません
-                  </p>
+                  <MessageLogs autoRefresh={true} />
                 </div>
               </div>
             </div>

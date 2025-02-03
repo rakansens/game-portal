@@ -1,21 +1,9 @@
 import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
-interface MessageLog {
-  id: number;
-  message_type: string;
-  message_content: {
-    text?: string;
-    url?: string;
-  };
-  target_users: { id: string }[] | null;
-  is_broadcast: boolean;
-  status: string;
-  error_message?: string;
-  created_at: string;
-  users?: {
-    display_name: string;
-  };
-}
+import { Database } from '@/types/database';
+
+type MessageLog = Database['public']['Tables']['message_logs']['Row'];
 
 interface Props {
   autoRefresh?: boolean;
@@ -28,14 +16,27 @@ export const MessageLogs = ({ autoRefresh = false }: Props) => {
   const fetchLogs = async () => {
     setLoading(true);
     try {
+      console.log('Fetching message logs from API...');
       const response = await fetch('/api/admin/messages/logs');
-      if (!response.ok) {
-        throw new Error('送信ログの取得に失敗しました');
-      }
+      console.log('API Response status:', response.status);
+      
       const data = await response.json();
-      setLogs(data);
+      console.log('API Response data:', JSON.stringify(data, null, 2));
+      
+      if (!response.ok) {
+        throw new Error(data.error || '送信ログの取得に失敗しました');
+      }
+      if (Array.isArray(data)) {
+        setLogs(data);
+      } else if (data.error) {
+        throw new Error(data.error);
+      } else {
+        console.error('Unexpected data format:', data);
+        throw new Error('予期しないデータ形式です');
+      }
     } catch (error) {
       console.error('Error fetching logs:', error);
+      toast.error(error instanceof Error ? error.message : '送信ログの取得に失敗しました');
     } finally {
       setLoading(false);
     }
@@ -45,22 +46,10 @@ export const MessageLogs = ({ autoRefresh = false }: Props) => {
     fetchLogs();
   }, []);
 
-  // 自動更新が有効な場合、5秒ごとに更新
-  useEffect(() => {
-    if (!autoRefresh) return;
-
-    const interval = setInterval(fetchLogs, 5000);
-    return () => clearInterval(interval);
-  }, [autoRefresh]);
-
-  const refresh = () => {
-    fetchLogs();
-  };
-
-  // コンポーネントの関数を外部に公開
+  // メッセージ送信時に更新するための関数を外部に公開
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      (window as any).refreshMessageLogs = refresh;
+      (window as any).refreshMessageLogs = fetchLogs;
     }
   }, []);
 
@@ -104,14 +93,14 @@ export const MessageLogs = ({ autoRefresh = false }: Props) => {
                 {log.message_type}
               </td>
               <td className="px-6 py-4 text-sm text-gray-700">
-                {log.message_content.text || (
-                  log.message_content.url ? '画像メッセージ' : '不明なメッセージタイプ'
-                )}
+                {(log.message_content as { text: string })?.text || '不明なメッセージタイプ'}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                {log.is_broadcast
-                  ? '全員'
-                  : log.target_users?.map(user => user.id).join(', ')}
+                {log.is_broadcast ? '全員' : (
+                  Array.isArray(log.target_users)
+                    ? (log.target_users as { id: string }[]).map(user => user.id).join(', ')
+                    : '不明'
+                )}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm">
                 <span
