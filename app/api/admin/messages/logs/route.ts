@@ -24,14 +24,45 @@ export async function GET() {
       return NextResponse.json([]);
     }
 
-    console.log('Found logs:', logs.length);
-    console.log('Raw logs:', JSON.stringify(logs, null, 2));
+    // ユーザー情報を取得
+    const userIds = logs.flatMap(log => 
+      Array.isArray(log.target_users) 
+        ? log.target_users.map((user: any) => user.id)
+        : []
+    );
 
-    if (!logs) {
-      return NextResponse.json([]);
+    if (userIds.length > 0) {
+      const { data: users, error: usersError } = await supabaseAdmin
+        .from('users')
+        .select('line_user_id, display_name, picture_url, status_message')
+        .in('line_user_id', userIds);
+
+      if (usersError) {
+        console.error('Error fetching users:', usersError);
+        throw usersError;
+      }
+
+      // ログにユーザー情報を追加
+      const logsWithUsers = logs.map(log => ({
+        ...log,
+        target_users: Array.isArray(log.target_users)
+          ? log.target_users.map((targetUser: any) => {
+              const user = users?.find(u => u.line_user_id === targetUser.id);
+              return user ? {
+                ...targetUser,
+                display_name: user.display_name,
+                picture_url: user.picture_url,
+                status_message: user.status_message
+              } : targetUser;
+            })
+          : log.target_users
+      }));
+
+      console.log('Found logs:', logsWithUsers.length);
+      console.log('Raw logs:', JSON.stringify(logsWithUsers, null, 2));
+      return NextResponse.json(logsWithUsers);
     }
 
-    console.log('Formatted logs:', JSON.stringify(logs, null, 2));
     return NextResponse.json(logs);
   } catch (error) {
     console.error('Error fetching message logs:', error);

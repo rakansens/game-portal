@@ -96,10 +96,27 @@ export const MessageLogs = ({ autoRefresh = false }: Props) => {
                 {(log.message_content as { text: string })?.text || '不明なメッセージタイプ'}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                {log.is_broadcast ? '全員' : (
-                  Array.isArray(log.target_users)
-                    ? (log.target_users as { id: string }[]).map(user => user.id).join(', ')
-                    : '不明'
+                {log.is_broadcast ? (
+                  <span className="text-sm text-gray-700">全員</span>
+                ) : (
+                  Array.isArray(log.target_users) ? (
+                    <div className="flex items-center gap-2">
+                      {(log.target_users as { id: string; display_name?: string; picture_url?: string }[]).map(user => (
+                        <div key={user.id} className="flex items-center">
+                          {user.picture_url ? (
+                            <img src={user.picture_url} alt="" className="h-6 w-6 rounded-full" />
+                          ) : (
+                            <div className="h-6 w-6 rounded-full bg-gray-200" />
+                          )}
+                          <span className="ml-2 text-sm text-gray-700">
+                            {user.display_name || user.id}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <span className="text-sm text-gray-500">不明</span>
+                  )
                 )}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm">
