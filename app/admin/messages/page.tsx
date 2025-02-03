@@ -3,10 +3,11 @@
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
+import { MessageSquare, Image } from 'lucide-react';
 import { LineUser } from '../../../types/line';
 import { MessageLogs } from '@/components/admin/line/MessageLogs';
 
-type MessageType = 'text' | 'image' | 'template' | 'flex' | 'multicast' | 'broadcast';
+type MessageType = 'text' | 'image';
 
 interface MessageForm {
   type: MessageType;
@@ -16,12 +17,18 @@ interface MessageForm {
 }
 
 const messageTypes = [
-  { value: 'text', label: 'テキストメッセージ' },
-  { value: 'image', label: '画像メッセージ' },
-  { value: 'template', label: 'テンプレートメッセージ' },
-  { value: 'flex', label: 'Flexメッセージ' },
-  { value: 'multicast', label: '複数ユーザーに送信' },
-  { value: 'broadcast', label: '全員に送信' },
+  { 
+    value: 'text', 
+    label: 'テキストメッセージ',
+    icon: MessageSquare,
+    description: 'テキストを送信します'
+  },
+  { 
+    value: 'image', 
+    label: '画像メッセージ',
+    icon: Image,
+    description: '画像URLを指定して画像を送信します'
+  },
 ];
 
 export default function MessagesPage() {
@@ -53,14 +60,13 @@ export default function MessagesPage() {
 
   const onSubmit = async (data: MessageForm) => {
     try {
-      // 送信先ユーザーのバリデーション
-      if (data.type !== 'broadcast' && selectedUsers.length === 0) {
+      // バリデーション
+      if (selectedUsers.length === 0) {
         toast.error('送信先ユーザーを選択してください');
         return;
       }
 
-      // メッセージ内容のバリデーション
-      if (data.type !== 'image' && (!data.text || data.text.trim() === '')) {
+      if (data.type === 'text' && (!data.text || data.text.trim() === '')) {
         toast.error('メッセージの内容を入力してください');
         return;
       }
@@ -73,7 +79,7 @@ export default function MessagesPage() {
       // 送信データの準備
       const requestData = {
         ...data,
-        targetUserIds: data.type === 'broadcast' ? [] : selectedUsers,
+        targetUserIds: selectedUsers,
       };
       console.log('Sending request:', requestData);
 
@@ -113,44 +119,69 @@ export default function MessagesPage() {
             </h3>
             <form onSubmit={handleSubmit(onSubmit)} className="mt-5 space-y-6">
               {/* メッセージタイプ選択 */}
-              <div>
+              <div className="space-y-4">
                 <label className="block text-sm font-medium text-gray-900">
                   メッセージタイプ
                 </label>
+                <div className="grid grid-cols-2 gap-4">
+                  {messageTypes.map((type) => {
+                    const Icon = type.icon;
+                    return (
+                      <label
+                        key={type.value}
+                        className={`flex flex-col items-center p-4 border rounded-lg cursor-pointer transition-colors ${
+                          selectedType === type.value
+                            ? 'border-indigo-500 bg-indigo-50'
+                            : 'border-gray-200 hover:border-indigo-200'
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          {...register('type')}
+                          value={type.value}
+                          className="sr-only"
+                        />
+                        <Icon className={`w-8 h-8 mb-2 ${
+                          selectedType === type.value
+                            ? 'text-indigo-500'
+                            : 'text-gray-400'
+                        }`} />
+                        <span className={`text-sm font-medium ${
+                          selectedType === type.value
+                            ? 'text-indigo-700'
+                            : 'text-gray-900'
+                        }`}>
+                          {type.label}
+                        </span>
+                        <span className="text-xs text-gray-500 text-center mt-1">
+                          {type.description}
+                        </span>
+                      </label>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* ユーザー選択 */}
+              <div>
+                <label className="block text-sm font-medium text-gray-900">
+                  送信先ユーザー
+                </label>
                 <select
-                  {...register('type')}
                   className="mt-1 block w-full pl-3 pr-10 py-2 text-base text-gray-900 border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+                  onChange={(e) => setSelectedUsers([e.target.value])}
                 >
-                  {messageTypes.map((type) => (
-                    <option key={type.value} value={type.value}>
-                      {type.label}
+                  <option value="">送信先を選択してください</option>
+                  {users.map((user) => (
+                    <option key={user.id} value={user.id}>
+                      {user.displayName || user.id}
                     </option>
                   ))}
                 </select>
               </div>
 
-              {/* ユーザー選択 */}
-              {(selectedType === 'text' || selectedType === 'image' || selectedType === 'template' || selectedType === 'flex') && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-900">
-                    送信先ユーザー
-                  </label>
-                  <select
-                    className="mt-1 block w-full pl-3 pr-10 py-2 text-base text-gray-900 border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
-                    onChange={(e) => setSelectedUsers([e.target.value])}
-                  >
-                    <option value="">送信先を選択してください</option>
-                    {users.map((user) => (
-                      <option key={user.id} value={user.id}>
-                        {user.displayName || user.id}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
-
               {/* テキストメッセージ入力 */}
-              {selectedType !== 'image' && (
+              {selectedType === 'text' && (
                 <div>
                   <label className="block text-sm font-medium text-gray-900">
                     メッセージ内容
