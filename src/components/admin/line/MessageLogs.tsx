@@ -4,14 +4,29 @@ import { MessageSquare, Image } from 'lucide-react';
 
 import { Database } from '@/types/database';
 
-type MessageLog = Database['public']['Tables']['message_logs']['Row'];
+type MessageGroup = Database['public']['Tables']['message_groups']['Row'] & {
+  messages: Database['public']['Tables']['message_logs']['Row'][];
+};
+
+interface FormattedLog {
+  id: string;
+  message_type: string;
+  message_content: any;
+  target_users: any;
+  status: string;
+  error_message: string | null;
+  created_at: string;
+  created_by: string | null;
+  is_broadcast: boolean;
+  additional_messages?: Database['public']['Tables']['message_logs']['Row'][];
+}
 
 interface Props {
   autoRefresh?: boolean;
 }
 
 export const MessageLogs = ({ autoRefresh = false }: Props) => {
-  const [logs, setLogs] = useState<MessageLog[]>([]);
+  const [logs, setLogs] = useState<FormattedLog[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchLogs = async () => {
@@ -118,6 +133,11 @@ export const MessageLogs = ({ autoRefresh = false }: Props) => {
                   </div>
                 ) : (
                   <span className="text-sm text-gray-500">不明なメッセージタイプ</span>
+                )}
+                {log.additional_messages && log.additional_messages.length > 0 && (
+                  <div className="mt-2 text-sm text-gray-500">
+                    +{log.additional_messages.length}件のメッセージ
+                  </div>
                 )}
               </td>
               <td className="px-6 py-4 whitespace-nowrap">

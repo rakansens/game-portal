@@ -9,151 +9,119 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
+      message_groups: {
+        Row: {
+          id: string;
+          target_users: Json;
+          status: string;
+          error_message: string | null;
+          is_broadcast: boolean;
+          created_at: string;
+          created_by: string | null;
+        };
+        Insert: {
+          id?: string;
+          target_users?: Json;
+          status: string;
+          error_message?: string | null;
+          is_broadcast?: boolean;
+          created_at?: string;
+          created_by?: string | null;
+        };
+        Update: {
+          id?: string;
+          target_users?: Json;
+          status?: string;
+          error_message?: string | null;
+          is_broadcast?: boolean;
+          created_at?: string;
+          created_by?: string | null;
+        };
+      };
+      message_logs: {
+        Row: {
+          id: string;
+          message_type: string;
+          message_content: Json;
+          group_id: string;
+          status: string;
+          error_message: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          message_type: string;
+          message_content: Json;
+          group_id: string;
+          status: string;
+          error_message?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          message_type?: string;
+          message_content?: Json;
+          group_id?: string;
+          status?: string;
+          error_message?: string | null;
+          created_at?: string;
+        };
+      };
       quests: {
         Row: {
-          id: string
-          created_at: string
-          updated_at: string
-          title: string
-          description: string
-          type: string | null
-          platform: string | null
-          points: number | null
-          status: string
-          difficulty: number
-          is_important: boolean
-          is_limited: boolean
-          category: string | null
-          tags: string[] | null
-          exp_reward: number
-          start_date: string | null
-          end_date: string | null
-          participants_limit: number | null
-          participant_count: number | null
-          order_position: number
-          estimated_time: number | null
-          required_points: number | null
-          auto_progress: boolean
-          verification_required: boolean
-          verification_type: string | null
-          max_attempts: number | null
-          cooldown_period: number | null
-          external_url: string | null
-          banner_url: string | null
-        }
+          id: string;
+          name: string;
+          description: string | null;
+          points: number;
+          created_at: string;
+        };
         Insert: {
-          id?: string
-          created_at?: string
-          updated_at?: string
-          title: string
-          description: string
-          type?: string | null
-          platform?: string | null
-          points?: number | null
-          status?: string
-          difficulty?: number
-          is_important?: boolean
-          is_limited?: boolean
-          category?: string | null
-          tags?: string[] | null
-          exp_reward?: number
-          start_date?: string | null
-          end_date?: string | null
-          participants_limit?: number | null
-          participant_count?: number | null
-          order_position?: number
-          estimated_time?: number | null
-          required_points?: number | null
-          auto_progress?: boolean
-          verification_required?: boolean
-          verification_type?: string | null
-          max_attempts?: number | null
-          cooldown_period?: number | null
-          external_url?: string | null
-          banner_url?: string | null
-        }
+          id?: string;
+          name: string;
+          description?: string | null;
+          points?: number;
+          created_at?: string;
+        };
         Update: {
-          id?: string
-          created_at?: string
-          updated_at?: string
-          title?: string
-          description?: string
-          type?: string | null
-          platform?: string | null
-          points?: number | null
-          status?: string
-          difficulty?: number
-          is_important?: boolean
-          is_limited?: boolean
-          category?: string | null
-          tags?: string[] | null
-          exp_reward?: number
-          start_date?: string | null
-          end_date?: string | null
-          participants_limit?: number | null
-          participant_count?: number | null
-          order_position?: number
-          estimated_time?: number | null
-          required_points?: number | null
-          auto_progress?: boolean
-          verification_required?: boolean
-          verification_type?: string | null
-          max_attempts?: number | null
-          cooldown_period?: number | null
-          external_url?: string | null
-          banner_url?: string | null
-        }
-      }
+          id?: string;
+          name?: string;
+          description?: string | null;
+          points?: number;
+          created_at?: string;
+        };
+      };
       quest_progress: {
         Row: {
-          id: string
-          created_at: string
-          updated_at: string
-          quest_id: string
-          user_id: string
-          status: string
-          started_at: string | null
-          completed_at: string | null
-          attempts: number
-          verification_status: string | null
-          verification_data: Json | null
-        }
+          user_id: string;
+          quest_id: string;
+          points: number;
+          completed_at: string | null;
+          created_at: string;
+        };
         Insert: {
-          id?: string
-          created_at?: string
-          updated_at?: string
-          quest_id: string
-          user_id: string
-          status?: string
-          started_at?: string | null
-          completed_at?: string | null
-          attempts?: number
-          verification_status?: string | null
-          verification_data?: Json | null
-        }
+          user_id: string;
+          quest_id: string;
+          points?: number;
+          completed_at?: string | null;
+          created_at?: string;
+        };
         Update: {
-          id?: string
-          created_at?: string
-          updated_at?: string
-          quest_id?: string
-          user_id?: string
-          status?: string
-          started_at?: string | null
-          completed_at?: string | null
-          attempts?: number
-          verification_status?: string | null
-          verification_data?: Json | null
-        }
-      }
-    }
+          user_id?: string;
+          quest_id?: string;
+          points?: number;
+          completed_at?: string | null;
+          created_at?: string;
+        };
+      };
+    };
     Views: {
-      [_ in never]: never
-    }
+      [_ in never]: never;
+    };
     Functions: {
-      [_ in never]: never
-    }
+      [_ in never]: never;
+    };
     Enums: {
-      [_ in never]: never
-    }
-  }
+      [_ in never]: never;
+    };
+  };
 }
