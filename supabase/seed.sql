@@ -1,91 +1,27 @@
--- テーブルのクリーンアップ
-TRUNCATE TABLE public.quests CASCADE;
-TRUNCATE TABLE public.users CASCADE;
+-- ユーザーのモックデータを追加
+INSERT INTO users (line_user_id, display_name, picture_url, total_points) VALUES
+('U1234567890abcdef1', 'たろう', 'https://example.com/avatar1.jpg', 1500),
+('U1234567890abcdef2', 'はなこ', 'https://example.com/avatar2.jpg', 1200),
+('U1234567890abcdef3', 'けんじ', 'https://example.com/avatar3.jpg', 1000),
+('U1234567890abcdef4', 'さくら', 'https://example.com/avatar4.jpg', 800),
+('U1234567890abcdef5', 'ゆうた', 'https://example.com/avatar5.jpg', 700),
+('U1234567890abcdef6', 'あやか', 'https://example.com/avatar6.jpg', 600),
+('U1234567890abcdef7', 'りょう', 'https://example.com/avatar7.jpg', 500),
+('U1234567890abcdef8', 'みさき', 'https://example.com/avatar8.jpg', 400),
+('U1234567890abcdef9', 'かずき', 'https://example.com/avatar9.jpg', 300),
+('U1234567890abcdef0', 'まなみ', 'https://example.com/avatar10.jpg', 200);
 
-\ir seed_users.sql
+-- クエスト完了のモックデータを追加
+INSERT INTO quests (id, title, description, points) VALUES
+('Q1', 'はじめてのクエスト', 'チュートリアルを完了しよう', 100),
+('Q2', '探検家', '3つのエリアを探索しよう', 200),
+('Q3', 'コレクター', '5つのアイテムを集めよう', 300);
 
--- サンプルデータの挿入
-INSERT INTO public.quests (
-    title,
-    description,
-    type,
-    platform,
-    difficulty,
-    points,
-    required_points,
-    participants_limit,
-    start_date,
-    end_date,
-    status,
-    order_position
-) VALUES
-(
-    'Twitterでフォロー',
-    '公式Twitterアカウントをフォローしよう',
-    'normal',
-    'twitter',
-    1,  -- easy
-    100,
-    0,
-    NULL,
-    CURRENT_TIMESTAMP,
-    CURRENT_TIMESTAMP + INTERVAL '7 days',
-    'active',
-    1
-),
-(
-    'Discordに参加',
-    'コミュニティDiscordサーバーに参加しよう',
-    'normal',
-    'discord',
-    1,  -- easy
-    150,
-    0,
-    NULL,
-    CURRENT_TIMESTAMP,
-    CURRENT_TIMESTAMP + INTERVAL '14 days',
-    'active',
-    2
-),
-(
-    'デイリーチェックイン',
-    '毎日ログインして報酬をゲット',
-    'normal',
-    'other',
-    1,  -- easy
-    50,
-    0,
-    NULL,
-    CURRENT_TIMESTAMP,
-    CURRENT_TIMESTAMP + INTERVAL '30 days',
-    'active',
-    3
-),
-(
-    'コミュニティチャレンジ',
-    'コミュニティメンバーと協力してタスクを達成しよう',
-    'special',
-    'discord',
-    2,  -- medium
-    300,
-    100,
-    100,
-    CURRENT_TIMESTAMP,
-    CURRENT_TIMESTAMP + INTERVAL '10 days',
-    'active',
-    4
-),
-(
-    'リミテッドイベント',
-    '期間限定の特別なイベントに参加しよう',
-    'limited_time',
-    'other',
-    3,  -- hard
-    500,
-    200,
-    50,
-    CURRENT_TIMESTAMP,
-    CURRENT_TIMESTAMP + INTERVAL '3 days',
-    'active',
-    5
-);
+-- クエスト進捗のモックデータを追加
+INSERT INTO user_quests (user_id, quest_id, completed_at) VALUES
+((SELECT id FROM users WHERE line_user_id = 'U1234567890abcdef1'), 'Q1', NOW()),
+((SELECT id FROM users WHERE line_user_id = 'U1234567890abcdef1'), 'Q2', NOW()),
+((SELECT id FROM users WHERE line_user_id = 'U1234567890abcdef1'), 'Q3', NOW()),
+((SELECT id FROM users WHERE line_user_id = 'U1234567890abcdef2'), 'Q1', NOW()),
+((SELECT id FROM users WHERE line_user_id = 'U1234567890abcdef2'), 'Q2', NOW()),
+((SELECT id FROM users WHERE line_user_id = 'U1234567890abcdef3'), 'Q1', NOW());

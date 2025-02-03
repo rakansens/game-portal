@@ -43,46 +43,91 @@ export function RankingList() {
     );
   }
 
-  // トップ3以外のランカー
-  const otherRankings = rankings.slice(3);
+  // トップ3のランカー
+  const topRankers = rankings.slice(0, 3);
+  // 4位以降のランカー
+  const otherRankers = rankings.slice(3);
 
   return (
-    <div className="space-y-6 px-4">
-      {otherRankings.map((ranking) => (
-        <div
-          key={ranking.id}
-          className="transform rounded-xl bg-gradient-to-r from-indigo-50 to-blue-50 p-4 shadow-lg transition-all hover:scale-[1.02] hover:shadow-xl"
-        >
-          <div className="flex items-center space-x-4">
-            <div className={cn(
-              "flex h-12 w-12 items-center justify-center rounded-full font-bold text-xl shadow-inner",
-              "bg-gradient-to-br from-blue-400 to-indigo-500 text-white"
-            )}>
-              {ranking.rank}
-            </div>
-            <div className="flex-shrink-0">
-              <div className="relative">
+    <div className="space-y-8 px-4 py-6">
+      {/* トップ3のカード表示 */}
+      <div className="flex justify-center space-x-4">
+        {topRankers.map((ranking, index) => {
+          const isFirst = index === 0;
+          const isSecond = index === 1;
+          const isThird = index === 2;
+          
+          return (
+            <div
+              key={ranking.id}
+              className={cn(
+                "relative w-[30%] rounded-xl p-4 text-center",
+                isSecond && "bg-gray-100 mt-8",
+                isFirst && "bg-blue-100 -mt-4",
+                isThird && "bg-pink-100 mt-12"
+              )}
+            >
+              {isFirst && (
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+                  <span className="text-2xl">👑</span>
+                </div>
+              )}
+              <div className={cn(
+                "absolute -top-2 left-2 flex h-6 w-6 items-center justify-center rounded-full text-sm font-bold",
+                isFirst && "bg-yellow-400 text-yellow-900",
+                isSecond && "bg-gray-400 text-white",
+                isThird && "bg-amber-600 text-white"
+              )}>
+                {ranking.rank}
+              </div>
+              <div className="mb-2">
                 <img
                   src={ranking.avatar_url || '/default-avatar.png'}
                   alt={ranking.username}
-                  className="h-14 w-14 rounded-full border-2 border-white shadow-md"
+                  className="mx-auto h-16 w-16 rounded-full"
                 />
-                <div className="absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-indigo-500 text-xs font-bold text-white shadow">
-                  {ranking.level}
-                </div>
+              </div>
+              <div className="font-bold text-gray-900">{ranking.username}</div>
+              <div className="mt-1 text-sm font-medium text-rose-500">
+                +{ranking.points.toLocaleString()}
+              </div>
+              <div className="mt-1 text-xs text-gray-500">
+                {ranking.quest_completed}クエスト
               </div>
             </div>
-            <div className="flex-grow">
-              <div className="font-bold text-gray-900">{ranking.username}</div>
-              <div className="flex items-center space-x-2 text-sm">
-                <span className="text-indigo-600">{ranking.points.toLocaleString()} pt</span>
-                <span className="text-gray-400">•</span>
-                <span className="text-gray-600">{ranking.quest_completed} クエスト完了</span>
+          );
+        })}
+      </div>
+
+      {/* 4位以降のリスト表示 */}
+      <div className="space-y-4">
+        {otherRankers.map((ranking) => (
+          <div
+            key={ranking.id}
+            className="flex items-center justify-between rounded-lg bg-gray-50 p-3"
+          >
+            <div className="flex items-center space-x-3">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 text-sm font-bold text-gray-700">
+                {ranking.rank}
+              </div>
+              <img
+                src={ranking.avatar_url || '/default-avatar.png'}
+                alt={ranking.username}
+                className="h-10 w-10 rounded-full"
+              />
+              <div className="font-medium text-gray-900">{ranking.username}</div>
+            </div>
+            <div className="text-right">
+              <div className="font-medium text-rose-500">
+                +{ranking.points.toLocaleString()}
+              </div>
+              <div className="text-xs text-gray-500">
+                {ranking.quest_completed}クエスト
               </div>
             </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }
