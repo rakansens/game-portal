@@ -1,93 +1,100 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog } from '@headlessui/react';
-import { UserRanking } from '@/types/ranking';
+import { UserRanking, RankingFormData } from '@/types/ranking';
 import { RankingForm } from '@/components/admin/ranking/RankingForm';
 import { Button } from '@/components/admin/ui/Button';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
-// 仮のデータ（後でAPIから取得）
-const mockRankings: UserRanking[] = [
-  {
-    id: 1,
-    rank: 1,
-    username: "ゲームマスター",
-    points: 1500,
-    avatar_url: "/avatars/1.png",
-    level: 25,
-    quest_completed: 42,
-  },
-  {
-    id: 2,
-    rank: 2,
-    username: "クエストハンター",
-    points: 1200,
-    avatar_url: "/avatars/2.png",
-    level: 20,
-    quest_completed: 35,
-  },
-  {
-    id: 3,
-    rank: 3,
-    username: "アドベンチャラー",
-    points: 1000,
-    avatar_url: "/avatars/3.png",
-    level: 18,
-    quest_completed: 30,
-  },
-];
-
 export default function AdminRankingPage() {
-  const [rankings, setRankings] = useState<UserRanking[]>(mockRankings);
+  const [rankings, setRankings] = useState<UserRanking[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRanking, setSelectedRanking] = useState<UserRanking | undefined>();
+  const [loading, setLoading] = useState(true);
+
+  const fetchRankings = async () => {
+    try {
+      const response = await fetch('/api/admin/rankings');
+      if (!response.ok) {
+        throw new Error('ランキングの取得に失敗しました');
+      }
+      const data = await response.json();
+      setRankings(data);
+    } catch (error) {
+      console.error('Error fetching rankings:', error);
+      toast.error('ランキングの取得に失敗しました');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchRankings();
+  }, []);
 
   const handleEdit = (ranking: UserRanking) => {
     setSelectedRanking(ranking);
     setIsModalOpen(true);
   };
 
-  const handleCreate = () => {
-    setSelectedRanking(undefined);
-    setIsModalOpen(true);
-  };
-
-  const handleDelete = async (id: number) => {
-    if (confirm('本当に削除しますか？')) {
+  const handleDelete = async (id: string) => {
+    if (confirm('本当に削除しますか?')) {
       try {
-        // TODO: API call to delete ranking
-        setRankings(rankings.filter(r => r.id !== id));
+        const response = await fetch(`/api/admin/rankings?id=${id}`, {
+          method: 'DELETE',
+        });
+        if (!response.ok) {
+          throw new Error('削除に失敗しました');
+        }
+        await fetchRankings();
         toast.success('ランキングを削除しました');
       } catch (error) {
+        console.error('Error deleting ranking:', error);
         toast.error('削除に失敗しました');
       }
     }
   };
 
-  const handleSubmit = async (data: UserRanking) => {
+  const handleSubmit = async (data: RankingFormData) => {
     try {
-      if (selectedRanking) {
-        // TODO: API call to update ranking
-        setRankings(rankings.map(r => r.id === selectedRanking.id ? { ...data, id: r.id } : r));
-        toast.success('ランキングを更新しました');
-      } else {
-        // TODO: API call to create ranking
-        setRankings([...rankings, { ...data, id: Date.now() }]);
-        toast.success('ランキングを作成しました');
+      const response = await fetch('/api/admin/rankings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user_id: data.user_id,
+          points: data.points,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('保存に失敗しました');
       }
+
+      await fetchRankings();
       setIsModalOpen(false);
+      toast.success(selectedRanking ? 'ランキングを更新しました' : 'ランキングを作成しました');
     } catch (error) {
+      console.error('Error saving ranking:', error);
       toast.error('保存に失敗しました');
     }
   };
+
+  if (loading) {
+    return (
+      <div className="flex-1 bg-white p-8">
+        <div className="text-center">読み込み中...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex-1 bg-white p-8">
       <div className="mb-8 flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-900">ランキング管理</h1>
-        <Button onClick={handleCreate} variant="primary">新規作成</Button>
       </div>
 
       <div className="rounded-lg border border-gray-200 bg-white shadow">
@@ -120,7 +127,7 @@ export default function AdminRankingPage() {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <div className="h-10 w-10 flex-shrink-0">
-                        <img className="h-10 w-10 rounded-full" src={ranking.avatar_url} alt="" />
+                        <img className="h-10 w-10 rounded-full" src={ranking.avatar_url || '/default-avatar.png'} alt="" />
                       </div>
                       <div className="ml-4">
                         <div className="text-sm font-medium text-gray-900">{ranking.username}</div>

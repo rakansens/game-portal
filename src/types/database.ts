@@ -9,6 +9,35 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
+      rankings: {
+        Row: {
+          id: string;
+          user_id: string;
+          points: number;
+          level: number;
+          rank: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          points?: number;
+          level?: number;
+          rank?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          points?: number;
+          level?: number;
+          rank?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
       message_groups: {
         Row: {
           id: string;
@@ -111,6 +140,44 @@ export interface Database {
           points?: number;
           completed_at?: string | null;
           created_at?: string;
+        };
+      };
+      users: {
+        Row: {
+          id: string;
+          line_user_id: string;
+          display_name: string | null;
+          picture_url: string | null;
+          status_message: string | null;
+          is_blocked: boolean;
+          last_login_at: string | null;
+          total_points: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          line_user_id: string;
+          display_name?: string | null;
+          picture_url?: string | null;
+          status_message?: string | null;
+          is_blocked?: boolean;
+          last_login_at?: string | null;
+          total_points?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          line_user_id?: string;
+          display_name?: string | null;
+          picture_url?: string | null;
+          status_message?: string | null;
+          is_blocked?: boolean;
+          last_login_at?: string | null;
+          total_points?: number;
+          created_at?: string;
+          updated_at?: string;
         };
       };
     };
