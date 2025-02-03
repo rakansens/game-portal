@@ -5,7 +5,6 @@ import { Input } from '@/components/admin/ui/Input';
 import { Button } from '@/components/admin/ui/Button';
 import { UserRanking, RankingFormData } from '@/types/ranking';
 import { useState, useEffect } from 'react';
-import { supabaseAdmin } from '@/lib/supabase-admin';
 
 interface RankingFormProps {
   initialData?: UserRanking;
@@ -40,15 +39,13 @@ export function RankingForm({ initialData, onSubmit, onCancel }: RankingFormProp
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const { data: users, error } = await supabaseAdmin
-          .from('users')
-          .select('line_user_id, display_name, picture_url')
-          .order('display_name');
-
-        if (error) throw error;
-
+        const response = await fetch('/api/admin/users/list');
+        if (!response.ok) {
+          throw new Error('ユーザー情報の取得に失敗しました');
+        }
+        const users = await response.json();
         setUsers(
-          users.map(user => ({
+          users.map((user: any) => ({
             value: user.line_user_id,
             label: user.display_name || 'Unknown User',
             avatar_url: user.picture_url
@@ -66,6 +63,10 @@ export function RankingForm({ initialData, onSubmit, onCancel }: RankingFormProp
 
   const selectedUserId = watch('user_id');
   const selectedUser = users.find(user => user.value === selectedUserId);
+
+  if (loading) {
+    return <div>読み込み中...</div>;
+  }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 bg-white">
