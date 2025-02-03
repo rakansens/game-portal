@@ -99,17 +99,35 @@ export async function POST(request: Request) {
     // 送信ログの保存
     const { supabaseAdmin } = await import('@/lib/supabase-admin');
     
-    for (const message of data.messages) {
-      await supabaseAdmin
+    // メッセージグループを作成
+    const { data: group, error: groupError } = await supabaseAdmin
+      .from('message_groups')
+      .insert({
+        target_users: data.targetUserIds.map(id => ({ id })),
+        status: 'success',
+        is_broadcast: false
+      })
+      .select()
+      .single();
+
+    if (groupError) {
+      console.error('Error creating message group:', groupError);
+      throw new Error('Failed to save message logs');
+    }
+
+    // 各メッセージを保存
+    const messagePromises = data.messages.map(message =>
+      supabaseAdmin
         .from('message_logs')
         .insert({
           message_type: message.type,
           message_content: message.type === 'text' ? { text: message.text } : { imageUrl: message.imageUrl },
-          target_users: data.targetUserIds.map(id => ({ id })),
-          status: 'success',
-          is_broadcast: false
-        });
-    }
+          group_id: group.id,
+          status: 'success'
+        })
+    );
+
+    await Promise.all(messagePromises);
 
     return NextResponse.json({ success: true });
   } catch (error) {
