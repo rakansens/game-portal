@@ -1,38 +1,26 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase-admin';
-import { Database } from '@/types/database';
 
 type QuestStat = {
   user_id: string;
   completed_count: number;
 };
 
-type UserWithRanking = Database['public']['Tables']['users']['Row'] & {
-  rankings: {
-    level: number;
-    rank: number;
-  }[];
-};
-
 export async function GET() {
   try {
-    // ユーザー情報とランキングを取得(ポイント順)
+    // ユーザー情報を取得(ポイント順)
     const { data: users, error } = await supabaseAdmin
       .from('users')
       .select(`
         line_user_id,
         display_name,
         picture_url,
-        total_points,
-        rankings!inner(
-          level,
-          rank
-        )
+        total_points
       `)
-      .order('total_points', { ascending: false }) as { data: UserWithRanking[] | null; error: any };
+      .order('total_points', { ascending: false });
 
     if (error) {
-      console.error('Error fetching rankings:', error);
+      console.error('Error fetching users:', error);
       throw error;
     }
 
@@ -51,6 +39,9 @@ export async function GET() {
       questStats?.map((stat: QuestStat) => [stat.user_id, stat.completed_count]) || []
     );
 
+    // レベルを計算する関数
+    const calculateLevel = (points: number) => Math.floor(points / 100) + 1;
+
     // レスポンスデータの整形
     const rankings = users?.map((user, index) => ({
       id: user.line_user_id,
@@ -58,7 +49,7 @@ export async function GET() {
       username: user.display_name || 'Unknown User',
       points: user.total_points,
       avatar_url: user.picture_url,
-      level: user.rankings[0]?.level || 1,
+      level: calculateLevel(user.total_points),
       quest_completed: questCountMap.get(user.line_user_id) || 0
     })) || [];
 
