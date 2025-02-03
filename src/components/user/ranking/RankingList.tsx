@@ -43,33 +43,42 @@ export function RankingList() {
     );
   }
 
+  // トップ3以外のランカー
+  const otherRankings = rankings.slice(3);
+
   return (
-    <div className="space-y-4">
-      {rankings.map((ranking) => (
+    <div className="space-y-6 px-4">
+      {otherRankings.map((ranking) => (
         <div
           key={ranking.id}
-          className="flex items-center space-x-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm"
+          className="transform rounded-xl bg-gradient-to-r from-indigo-50 to-blue-50 p-4 shadow-lg transition-all hover:scale-[1.02] hover:shadow-xl"
         >
-          <div className={cn(
-            "flex h-10 w-10 items-center justify-center rounded-full font-bold text-lg",
-            ranking.rank === 1 && "bg-yellow-100 text-yellow-800",
-            ranking.rank === 2 && "bg-gray-100 text-gray-800",
-            ranking.rank === 3 && "bg-amber-100 text-amber-800",
-            ranking.rank > 3 && "bg-blue-100 text-blue-800"
-          )}>
-            {ranking.rank}
-          </div>
-          <div className="flex-shrink-0">
-            <img
-              src={ranking.avatar_url || '/default-avatar.png'}
-              alt={ranking.username}
-              className="h-12 w-12 rounded-full"
-            />
-          </div>
-          <div className="flex-grow">
-            <div className="font-medium">{ranking.username}</div>
-            <div className="text-sm text-gray-500">
-              Lv.{ranking.level} • {ranking.points.toLocaleString()}ポイント • {ranking.quest_completed}クエスト完了
+          <div className="flex items-center space-x-4">
+            <div className={cn(
+              "flex h-12 w-12 items-center justify-center rounded-full font-bold text-xl shadow-inner",
+              "bg-gradient-to-br from-blue-400 to-indigo-500 text-white"
+            )}>
+              {ranking.rank}
+            </div>
+            <div className="flex-shrink-0">
+              <div className="relative">
+                <img
+                  src={ranking.avatar_url || '/default-avatar.png'}
+                  alt={ranking.username}
+                  className="h-14 w-14 rounded-full border-2 border-white shadow-md"
+                />
+                <div className="absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-indigo-500 text-xs font-bold text-white shadow">
+                  {ranking.level}
+                </div>
+              </div>
+            </div>
+            <div className="flex-grow">
+              <div className="font-bold text-gray-900">{ranking.username}</div>
+              <div className="flex items-center space-x-2 text-sm">
+                <span className="text-indigo-600">{ranking.points.toLocaleString()} pt</span>
+                <span className="text-gray-400">•</span>
+                <span className="text-gray-600">{ranking.quest_completed} クエスト完了</span>
+              </div>
             </div>
           </div>
         </div>
